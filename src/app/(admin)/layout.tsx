@@ -5,9 +5,10 @@ import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../api/auth/[...nextauth]/config";
+import { DataRoleType } from "@/src/common/type";
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DataRoleType>(({} as DataRoleType));
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
