@@ -1,3 +1,5 @@
+"use client";
+
 import LayoutWapper from "@/src/component/LayoutWapper";
 import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
 import React, { useEffect, useState } from "react";
