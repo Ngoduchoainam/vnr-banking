@@ -1,30 +1,46 @@
 import LayoutWapper from "@/src/component/LayoutWapper";
 import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { auth } from "../api/auth/[...nextauth]/config";
-import { redirect } from "next/navigation";
 
-const RootLayout: React.FC<{ children: React.ReactNode }> = async ({
-  children,
-}) => {
-  const session = await auth();
-  const responsive = await fetch(
-    "https://apiweb.bankings.vnrsoftware.vn/account/find-role-by-account",
-    {
-      method: "GET",
-      headers: {
-        Authorization: session?.user?.access_token ?? "",
-      },
-    }
-  );
-  const data = responsive ? await responsive.json() : undefined;
-  if (!session?.user?.access_token) {
-    redirect("/login");
+const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [data, setData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const session = await auth();
+      if (!session?.user?.access_token) {
+        router.push("/login");
+        return;
+      }
+
+      const response = await fetch(
+        "https://apiweb.bankings.vnrsoftware.vn/account/find-role-by-account",
+        {
+          method: "GET",
+          headers: {
+            Authorization: session.user.access_token,
+          },
+        }
+      );
+      const result = response ? await response.json() : undefined;
+      setData(result?.data || null);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [router]);
+
+  if (loading) {
+    return <div>Loading...</div>; // Or a spinner component
   }
 
   return (
     <LayoutWapper>
-      <RoleWpparProvidrer data={data.data}>{children}</RoleWpparProvidrer>
+      <RoleWpparProvidrer data={data}>{children}</RoleWpparProvidrer>
     </LayoutWapper>
   );
 };
