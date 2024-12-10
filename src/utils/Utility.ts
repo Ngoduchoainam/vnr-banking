@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 export class Utility {
 
     //Hàm trả về giá trị đầu cuối khi người dùng pick ngày
-    static ConvertDateTimeSameDay = (selectedDate?: any) => {
+    static ConvertDateTimeSameDay = (selectedDate?: string) => {
         if (!selectedDate) return { startOfDay: null, endOfDay: null };
 
         const date = dayjs(selectedDate);

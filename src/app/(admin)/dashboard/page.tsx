@@ -135,8 +135,8 @@ const Dashboard = () => {
       addedParams.add("transType");
     }
 
-    let dateStartFormat = await Utility.ConvertDateTimeSameDay(startDate);
-    let dateEndFormat = await Utility.ConvertDateTimeSameDay(endDate);
+    const dateStartFormat = await Utility.ConvertDateTimeSameDay(startDate);
+    const dateEndFormat = await Utility.ConvertDateTimeSameDay(endDate);
 
     if (startDate && endDate) {
       arrFilter.push({

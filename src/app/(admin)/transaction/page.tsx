@@ -91,8 +91,8 @@ const Transaction = () => {
     const arrRole: FilterRole[] = [];
     const addedParams = new Set<string>();
 
-    let dateStartFormat = await Utility.ConvertDateTimeSameDay(startDate);
-    let dateEndFormat = await Utility.ConvertDateTimeSameDay(endDate);
+    const dateStartFormat = await Utility.ConvertDateTimeSameDay(startDate);
+    const dateEndFormat = await Utility.ConvertDateTimeSameDay(endDate);
 
     if (startDate && endDate) {
       arrRole.push({
