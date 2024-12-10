@@ -1,0 +1,95 @@
+.search-container {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.search-button {
+    margin-right: 10px !important;
+    cursor: pointer !important;
+}
+
+.search-input {
+    flex: 1 !important;
+    padding: 8px !important;
+}
+
+.ant-input-outlined {
+    outline: none;
+}
+
+/* Mặc định cho màn hình lớn */
+.bg-white {
+    background-color: white;
+  }
+  
+  /* .flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  } */
+  
+  .header {
+    height: 70px;
+  }
+  
+  .header {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+  
+  /* .header {
+    margin-right: 30px;
+  } */
+  
+  /* Điều chỉnh cho màn hình nhỏ hơn (tablet) */
+  @media (max-width: 768px) {
+    .header {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  
+    .header {
+      margin-right: 15px;
+    }
+  
+    .header {
+      height: 60px;
+    }
+  
+    .search-container {
+      display: none; /* Ẩn thanh tìm kiếm trên màn hình nhỏ */
+    }
+  }
+  
+  /* Điều chỉnh cho màn hình di động */
+  @media (max-width: 480px) {
+    .header {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+  
+    .header {
+      height: 50px;
+    }
+  
+    .avatar-info {
+      display: none; /* Ẩn thông tin user trên di động */
+    }
+  
+    .avt {
+      width: 12px;
+    }
+  
+    .avt {
+      height: 12px;
+    }
+  
+    .avt {
+      width: 4px;
+    }
+  
+    .avt {
+      height: 2px;
+    }
+  }
+  

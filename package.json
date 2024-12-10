@@ -1,0 +1,46 @@
+{
+  "name": "banking",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "set NODE_ENV = production && next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+  "@ant-design/nextjs-registry": "^1.0.2",
+    "antd": "^5.21.6",
+    "axios": "^1.7.7",
+    "chart.js": "^4.4.5",
+    "dayjs": "^1.11.13",
+    "moment": "^2.30.1",
+    "next": "^15.0.3",
+    "next-antd-less": "^1.0.0",
+    "next-auth": "^5.0.0-beta.25",
+    "nextjs-toploader": "^3.7.15",
+    "rc-util": "^5.43.0",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-toastify": "^10.0.6",
+    "recharts": "^2.13.0",
+    "webpack": "^5.96.1"
+  },
+  "devDependencies": {
+    "@types/moment": "^2.11.29",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "css-loader": "^7.1.2",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.15",
+    "less": "^4.2.0",
+    "less-loader": "^12.2.0",
+    "postcss": "^8",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+}
+}

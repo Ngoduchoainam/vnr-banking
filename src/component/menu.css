@@ -1,0 +1,52 @@
+.side-menu {
+  /* width: 300px !important; */
+  background-color: #4b5cb8;
+  height: 100%;
+}
+
+.side-menu .logo-container {
+  width: 70%;
+  margin-bottom: 20px;
+  margin: auto;
+  padding: 20px 0;
+}
+
+.side-menu .ant-menu {
+  background-color: #4b5cb8;
+  border-right: 0;
+  color: #fff;
+}
+
+.side-menu .ant-menu .ant-menu-item,
+.side-menu .ant-menu .ant-menu-submenu {
+  color: #fff;
+}
+
+:where(.css-dev-only-do-not-override-apn68).ant-menu-dark.ant-menu-inline
+  .ant-menu-sub.ant-menu-inline,
+:where(.css-dev-only-do-not-override-apn68).ant-menu-dark
+  > .ant-menu.ant-menu-inline
+  .ant-menu-sub.ant-menu-inline {
+  background-color: #4b5cb8 !important;
+  background: #4b5cb8 !important;
+}
+
+:where(.css-apn68).ant-menu-dark.ant-menu-inline .ant-menu-sub.ant-menu-inline,
+:where(.css-apn68).ant-menu-dark
+  > .ant-menu.ant-menu-inline
+  .ant-menu-sub.ant-menu-inline {
+  background: #4b5cb8 !important;
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
