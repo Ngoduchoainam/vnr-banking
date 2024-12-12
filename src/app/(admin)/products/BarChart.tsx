@@ -123,7 +123,7 @@ const BarChart = () => {
       {dataChart ? (
         <Bar data={dataChart} options={options} />
       ) : (
-        <p>Loading...</p>
+        <p>Loading char</p>
       )}
     </div>
   );

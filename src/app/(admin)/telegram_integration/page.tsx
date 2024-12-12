@@ -5,7 +5,6 @@ import Header from "@/src/component/Header";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Select, Skeleton, Space, Table } from "antd";
 import {
-  addTelegramIntergration,
   deleteTelegramIntergration,
   getListTelegramIntergration,
 } from "@/src/services/telegram_intergration_list";
@@ -235,47 +234,12 @@ const TelegramIntegration = () => {
       setIsAddModalOpen(false);
       setLoading(true);
       setIsCreateTelegramInter(isCreateTelegramInter);
-      const formData = form.getFieldsValue();
-      let response;
-
-      if (currentTelegram) {
-        response = await addTelegramIntergration({
-          bankAccountId: formData.bankAccountId,
-          id: currentTelegram.id,
-          groupChatId: formData.groupChatId,
-          transType: formData.transType,
-          accountNumber: formData.accountNumber,
-          chatName: "",
-          bankId: undefined,
-          code: "",
-          fullName: "",
-          chatId: "",
-          name: "",
-          typeDescription: formData.typeDescription,
-        });
-      } else {
-        response = await addTelegramIntergration({
-          bankAccountId: bankAccountIdSelect,
-          id: formData.id,
-          groupChatId: formData.groupChatId,
-          transType: formData.transType,
-          accountNumber: formData.accountNumber,
-          chatName: "",
-          bankId: undefined,
-          code: "",
-          fullName: "",
-          chatId: "",
-          name: "",
-          typeDescription: formData.typeDescription,
-        });
-      }
 
       setIsAddModalOpen(false);
       form.resetFields();
       setCurrentTelegram(null);
       fetchListTelegramIntegration();
 
-      console.log(280, "call handleAddConfirm")
     } catch (error) {
       console.error("Lỗi:", error);
     } finally {
@@ -544,7 +508,6 @@ const TelegramIntegration = () => {
     fetchListTelegramIntegration(groupChatFilter);
   }, [checkFilter]);
 
-  const [bankAccountIdSelect, setBankAccountIdSelect] = useState();
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const rowSelection = {
@@ -778,7 +741,6 @@ const TelegramIntegration = () => {
                 placeholder="Chọn ngân hàng"
                 onFocus={genBankData}
                 options={banks}
-                onChange={(value) => setBankAccountIdSelect(value)}
               />
             </Form.Item>
           ) : (
@@ -792,7 +754,6 @@ const TelegramIntegration = () => {
                 onFocus={genBankData}
                 options={banks}
                 onChange={async (value) => {
-                  setBankAccountIdSelect(value);
                   const selectedGroup = await banks.find(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (item: any) => item.value === value
