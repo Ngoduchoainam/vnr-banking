@@ -26,6 +26,8 @@ ChartJS.register(
 const BarChartType = () => {
     const [dataChart, setDataChart] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [countTransactionOut, setCountTransactionOut] = useState(0);
+    const [countTransactionIn, setCountTransactionIn] = useState(0);
 
     const fetchDataGenaral = async () => {
         try {
@@ -35,6 +37,9 @@ const BarChartType = () => {
                     countTransactionOut,
                     countTransactionIn
                 } = response.data;
+
+                setCountTransactionOut(countTransactionOut);
+                setCountTransactionIn(countTransactionIn);
 
                 const data = {
                     labels: ['Giao dịch tiền ra', 'Giao dịch tiền vào'],
@@ -72,18 +77,19 @@ const BarChartType = () => {
 
     const options = {
         scales: {
-          y: {
-            beginAtZero: true,
-            ticks: {
-              stepSize: 1, // Chỉ tăng từng bước 1 (số nguyên)
-              callback: function (value) {
-                return value; // Hiển thị theo đơn vị triệu
-              },
+            y: {
+                beginAtZero: true,
+                max: Math.max(countTransactionOut, countTransactionIn) + 1,
+                ticks: {
+                    stepSize: 1, // Chỉ tăng từng bước 1 (số nguyên)
+                    callback: function (value) {
+                        return value; // Hiển thị theo đơn vị triệu
+                    },
+                },
             },
-          },
         },
-      };
-      
+    };
+
 
     return (
         <div>

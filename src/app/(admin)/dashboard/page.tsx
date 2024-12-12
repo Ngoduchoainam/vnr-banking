@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { DatePicker, Select, Skeleton, Space, Spin, Table } from "antd";
 import type { TableProps } from "antd/es/table";
 import Header from "@/src/component/Header";
@@ -86,6 +86,48 @@ const Dashboard = () => {
   const [dataTransaction, setDataTransaction] =
     useState<TransactionData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize] = useState(20);
+  const [totalRecord, setTotalRecord] = useState(100);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataStatistics.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchListStatistics().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  console.log(130, dataStatistics);
 
   const fetchListStatistics = async (
     bank?: number,
@@ -156,7 +198,7 @@ const Dashboard = () => {
     addedParams.add(keys!);
     setLoading(true);
     try {
-      const response = await getListStatistics(1, 20, undefined, arrFilter);
+      const response = await getListStatistics(pageIndex, 20, undefined, arrFilter);
 
       const formattedData =
         response?.data?.source?.map((x: DataType) => ({
@@ -172,17 +214,18 @@ const Dashboard = () => {
           logStatus: x.logStatus,
           bankAccountId: x.bankAccountId,
         })) || [];
-      setDataStatistics(formattedData);
+
+      console.log(218, response?.data?.totalRecords)
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataStatistics((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching statistics:", error);
     } finally {
       setLoading(false); // Set loading to false after fetching
     }
   };
-
-  useEffect(() => {
-    fetchListStatistics();
-  }, [keys]);
 
   const fetchStatisticsById = async (id: number) => {
     try {
@@ -207,12 +250,6 @@ const Dashboard = () => {
       dataIndex: "fullName",
       key: "fullName",
     },
-    // {
-    //   title: "Số tiền",
-    //   dataIndex: "transAmount",
-    //   key: "transAmount",
-    //   render: (amount: number) => new Intl.NumberFormat("vi-VN").format(amount),
-    // },
     {
       title: "Số tiền",
       dataIndex: "transAmount",
@@ -286,9 +323,6 @@ const Dashboard = () => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
-
-  const pageIndex = 1;
-  const pageSize = 20;
 
   const [bankIdFilterAPI, setBankIdFilterAPI] = useState();
   const [bankFilter, setBankFilter] = useState();
@@ -766,7 +800,7 @@ const Dashboard = () => {
               }))}
             />
           ) : (
-            <Table dataSource={dataStatistics} columns={columns} />
+            <Table dataSource={dataStatistics} columns={columns} pagination={false} />
           )}
         </div>
       </div>

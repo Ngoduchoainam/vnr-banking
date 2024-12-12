@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
 import {
@@ -74,14 +74,48 @@ const Transaction = () => {
     useState<TransactionModal | null>(null);
   const [banks, setBanks] = useState<Array<TransactionModal>>([]);
   const [bankAccount, setBankAccount] = useState<Array<TransactionModal>>([]);
-  const pageIndex = 1;
-  const pageSize = 50;
+  const [pageIndex, setPageIndex] = useState(1);
+  const pageSize = 20;
+  const [totalRecord, setTotalRecord] = useState(100);
 
   const [isAddTransaction, setIsAddTransaction] = useState<boolean>(false);
 
-  // const initialDate = dataTransaction?.transDate
-  //   ? dayjs(dataTransaction.transDate)
-  //   : null;
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataTransaction.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchTransaction().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchTransaction = async (
     globalTerm?: string,
@@ -139,7 +173,9 @@ const Transaction = () => {
             : null,
           // transDate: item.transDate,
         })) || [];
-      setDataTransaction(formattedData);
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+      setDataTransaction((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
@@ -355,14 +391,6 @@ const Transaction = () => {
     }
   };
 
-  useEffect(() => {
-    fetchTransaction(globalTerm);
-  }, [globalTerm]);
-
-  useEffect(() => {
-    fetchTransaction();
-  }, [keys]);
-
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", hidden: true },
     {
@@ -505,7 +533,7 @@ const Transaction = () => {
 
   useEffect(() => {
     fetchTransaction(globalTerm, startDateFilter, startDateFilter);
-  }, [checkFilter]);
+  }, [checkFilter, keys]);
 
   // .........................................................................//
 
@@ -656,6 +684,7 @@ const Transaction = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>

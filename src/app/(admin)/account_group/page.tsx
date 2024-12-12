@@ -3,7 +3,7 @@
 import Header from "@/src/component/Header";
 import { Button, Form, Input, Space, Table, Skeleton } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import BaseModal from "@/src/component/config/BaseModal";
 import { DataAccountGroup } from "@/src/component/modal/modalAccountGroup";
 import {
@@ -39,8 +39,46 @@ const PhoneNumber: React.FC = () => {
   const [, setGlobalTerm] = useState("");
   const [isCreateAccountGroup, setIsCreateAccountGroup] = useState(false);
 
-  const [pageIndex] = useState(1);
-  const [pageSize] = useState(50);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize] = useState(20);
+  const [totalRecord, setTotalRecord] = useState(100);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataAccountGroup.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchAccountGroup().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchAccountGroup = async (globalTerm?: string) => {
     const arr: FilterGroupAccount[] = [];
@@ -64,7 +102,9 @@ const PhoneNumber: React.FC = () => {
           fullName: x.fullName,
           notes: x.notes,
         })) || [];
-      setDataAccountGroup(formattedData);
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+      setDataAccountGroup((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching phone numbers:", error);
       toast.error("Đã có lỗi xảy ra. Vui lòng thử lại!");
@@ -99,10 +139,6 @@ const PhoneNumber: React.FC = () => {
   useEffect(() => {
     loadMoreDataAccountGroup();
   }, []);
-
-  useEffect(() => {
-    fetchAccountGroup();
-  }, [keys]);
 
   const handleAddConfirm = async (isCreateAccountGroup: boolean) => {
     try {
@@ -283,7 +319,7 @@ const PhoneNumber: React.FC = () => {
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
     fetchAccountGroup();
-  }, [checkFilter]);
+  }, [checkFilter, keys]);
 
   return (
     <>
@@ -363,6 +399,7 @@ const PhoneNumber: React.FC = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -410,9 +447,8 @@ const PhoneNumber: React.FC = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isCreateAccountGroup && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`${isCreateAccountGroup && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isCreateAccountGroup}
             >
               {currentAccount ? "Cập nhật" : "Thêm mới"}

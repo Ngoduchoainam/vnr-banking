@@ -7,7 +7,9 @@ import NextTopLoader from "nextjs-toploader";
 import { RoleWpparProvidrer } from "../component/RoleWapper";
 import NextAuthWrapper from "../component/next.auth.wapper";
 
-const MasterRootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const MasterRootLayout: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <html lang="en">
       <body>

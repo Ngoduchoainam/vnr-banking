@@ -3,42 +3,48 @@
 import LayoutWapper from "@/src/component/LayoutWapper";
 import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { auth } from "../api/auth/[...nextauth]/config";
-import { DataRoleType } from "@/src/common/type";
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<DataRoleType>(({} as DataRoleType));
+  const { data: session, status } = useSession();
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-      const session = await auth();
       if (!session?.user?.access_token) {
         router.push("/login");
         return;
       }
 
-      const response = await fetch(
-        "https://apiweb.bankings.vnrsoftware.vn/account/find-role-by-account",
-        {
-          method: "GET",
-          headers: {
-            Authorization: session.user.access_token,
-          },
-        }
-      );
-      const result = response ? await response.json() : undefined;
-      setData(result?.data || null);
-      setLoading(false);
+      try {
+        const response = await fetch(
+          "https://apiweb.bankings.vnrsoftware.vn/account/find-role-by-account",
+          {
+            method: "GET",
+            headers: {
+              Authorization: session.user.access_token,
+            },
+          }
+        );
+        const result = await response.json();
+        setData(result.data);
+      } catch (error) {
+        console.error("Failed to fetch roles:", error);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetchData();
-  }, [router]);
+    if (status === "authenticated") {
+      fetchData();
+    }
+  }, [session, status, router]);
 
-  if (loading) {
-    return <div>Loading...</div>; // Or a spinner component
+  if (status === "loading" || loading) {
+    return <div>Loading...</div>; // Or a custom loading component
   }
 
   return (

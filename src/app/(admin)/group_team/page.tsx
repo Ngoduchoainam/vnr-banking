@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
 import { Button, Form, Input, Select, Skeleton, Space, Table } from "antd";
@@ -43,14 +43,52 @@ const GroupTeamPage = () => {
   const [currentTeam, setCurrentTeam] = useState<DataTeamModal | null>(null);
   const [dataTeam, setDataTeam] = useState<DataTeamModal[]>([]);
   const [, setGlobalTerm] = useState("");
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
+  const [totalRecord, setTotalRecord] = useState(100);
 
   const [groupSystem, setGroupSystem] = useState<Array<DataTeamModal>>([]);
   // const [systemId, setSystemId] = useState<number>(0);
   const [branchSystem, setBranchSystem] = useState<Array<DataTeamModal>>([]);
   // const [parentId, setParentId] = useState<number>(0);
   const [isAddGroupTeam, setIsAddGroupTeam] = useState<boolean>(false);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataTeam.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchGroupSystem().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchGroupSystem = async (globalTerm?: string) => {
     const arrRole: FilterRole[] = [];
@@ -77,17 +115,15 @@ const GroupTeamPage = () => {
           groupBranchId: x.groupBranchId,
           groupBranchName: x.groupBranchName,
         })) || [];
-      setDataTeam(formattedData);
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataTeam((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchGroupSystem();
-  }, [keys]);
 
   const handleAddConfirm = async (isAddGroupTeam: boolean) => {
     try {
@@ -357,7 +393,7 @@ const GroupTeamPage = () => {
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
     fetchGroupSystem();
-  }, [checkFilter]);
+  }, [checkFilter, keys]);
 
   return (
     <>
@@ -437,6 +473,7 @@ const GroupTeamPage = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -552,9 +589,8 @@ const GroupTeamPage = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isAddGroupTeam && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`${isAddGroupTeam && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isAddGroupTeam}
             >
               {currentTeam ? "Cập nhật" : "Thêm mới"}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
 import { Button, Form, Input, Select, Skeleton, Space, Table } from "antd";
@@ -42,12 +42,50 @@ const GroupBranchPage = () => {
   );
   const [dataBranch, setDataBranch] = useState<DataBranchModal[]>([]);
   const [, setGlobalTerm] = useState("");
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
+  const [totalRecord, setTotalRecord] = useState(100);
 
   const [groupSystem, setGroupSystem] = useState<Array<DataBranchModal>>([]);
   // const [systemId, setSystemId] = useState<number>(0);
   const [isAddGroupBranch, setIsAddGroupBranch] = useState<boolean>(false);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataBranch.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchGroupSystem().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchGroupSystem = async (globalTerm?: string) => {
     const arrRole: FilterRole[] = [];
@@ -72,17 +110,16 @@ const GroupBranchPage = () => {
           groupSystemId: x.groupSystemId,
           groupSystemName: x.groupSystemName,
         })) || [];
-      setDataBranch(formattedData);
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataBranch((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchGroupSystem();
-  }, [keys]);
 
   const handleAddConfirm = async (isAddGroupBranch: boolean) => {
     try {
@@ -310,7 +347,7 @@ const GroupBranchPage = () => {
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
     fetchGroupSystem();
-  }, [checkFilter]);
+  }, [checkFilter, keys]);
 
   return (
     <>
@@ -390,6 +427,7 @@ const GroupBranchPage = () => {
             rowSelection={rowSelection}
             loading={loading}
             dataSource={dataSource}
+            pagination={false}
           />
         )}
       </div>
@@ -465,9 +503,8 @@ const GroupBranchPage = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isAddGroupBranch && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`${isAddGroupBranch && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isAddGroupBranch}
             >
               {currentBranch ? "Cập nhật" : "Thêm mới"}

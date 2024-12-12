@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
 import { Button, Form, Input, Skeleton, Space, Table } from "antd";
@@ -40,10 +40,49 @@ const Telegram = () => {
     useState<DataTelegramModal | null>(null);
   const [dataTelegram, setDataTelegram] = useState<DataTelegramModal[]>([]);
   const [, setGlobalTerm] = useState("");
-  const [pageIndex] = useState(1);
   const [pageSize] = useState(20);
 
   const [isAddTelegram, setIsAddTelegram] = useState<boolean>(false);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalRecord, setTotalRecord] = useState(100);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataTelegram.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchTelegram().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
 
   const fetchTelegram = async (globalTerm?: string) => {
     const arr: FilterRole[] = [];
@@ -67,17 +106,14 @@ const Telegram = () => {
           chatId: x.chatId,
           notes: x.notes,
         })) || [];
-      setDataTelegram(formattedData);
+      setTotalRecord(response?.data?.totalRecords || 0);
+      setDataTelegram((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchTelegram();
-  }, [keys]);
 
   const handleAddConfirm = async (isAddTelegram: boolean) => {
     try {
@@ -275,8 +311,9 @@ const Telegram = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
+    console.log(546, "call useEffect")
     fetchTelegram();
-  }, [checkFilter]);
+  }, [checkFilter, keys]);
 
   return (
     <>
@@ -358,6 +395,7 @@ const Telegram = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -416,9 +454,8 @@ const Telegram = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`{${
-                isAddTelegram && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`{${isAddTelegram && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isAddTelegram}
             >
               {currentTelegram ? "Cập nhật" : "Thêm mới"}

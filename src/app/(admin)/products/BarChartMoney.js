@@ -84,9 +84,9 @@ const BarChart = () => {
       },
     },
   };
-  
-  
-  
+
+
+
 
   return (
     <div>

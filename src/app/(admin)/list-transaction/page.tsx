@@ -9,7 +9,7 @@ import {
   Table,
   Tooltip,
 } from "antd";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -196,6 +196,46 @@ const ListTransactionPage = () => {
     },
   ];
 
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalRecord, setTotalRecord] = useState(100);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataTransaction.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchData({}).finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const fetchData = async ({
     transType,
     transKind,
@@ -243,7 +283,7 @@ const ListTransactionPage = () => {
     }
 
     const params = buildSearchParams(arr, {
-      pageIndex: 1,
+      pageIndex: pageIndex,
       pageSize: 20,
     });
 
@@ -256,7 +296,9 @@ const ListTransactionPage = () => {
           return { ...item, key: item.id };
         }
       );
-      setDataTransaction(dataTransactionConvert);
+
+      setTotalRecord(responsive?.data?.data.totalRecords || 0);
+      setDataTransaction((prevData) => [...prevData, ...dataTransactionConvert]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
     } finally {
@@ -332,6 +374,8 @@ const ListTransactionPage = () => {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+
+  console.log(378, dataTransaction);
 
   return (
     <>
@@ -417,6 +461,7 @@ const ListTransactionPage = () => {
             dataSource={dataTransaction}
             columns={columns}
             rowSelection={rowSelection}
+            pagination={false}
           />
         )}
       </div>

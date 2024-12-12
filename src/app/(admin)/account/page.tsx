@@ -15,7 +15,7 @@ import {
   InputNumber,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BaseModal from "@/src/component/config/BaseModal";
 import {
   addBankAccounts,
@@ -67,13 +67,14 @@ const Account = () => {
   const [groupSystem, setGroupSystem] = useState<Array<BankAccounts>>([]);
   const [branchSystem, setBranchSystem] = useState<Array<BankAccounts>>([]);
   const [groupTeam, setGroupTeam] = useState<Array<BankAccounts>>([]);
-  const [pageIndex] = useState(1);
-  const [pageSize] = useState(50);
+  const [pageIndex, setPageIndex] = useState(1);
+  const [pageSize] = useState(20);
   const [value, setValue] = useState("");
   const [globalTerm, setGlobalTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [, setIsEditMode] = useState(false);
   const [accountGroup, setAccountGroup] = useState<Array<BankAccounts>>([]);
+  const [totalRecord, setTotalRecord] = useState(100);
 
   const [isAddAccount, setIsAddAccount] = useState<boolean>(false);
 
@@ -99,6 +100,43 @@ const Account = () => {
   //
   const defaultGroupTeamId = dataRole.groupTeamId;
   const defaultGroupTeamName = dataRole.groupTeamName;
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataAccount.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchAccounts().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     handleDataDefault();
@@ -183,7 +221,9 @@ const Account = () => {
           bankName: account.bank?.fullName,
         })) || [];
 
-      setDataAccount(formattedData);
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataAccount((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách tài khoản ngân hàng:", error);
       setDataAccount([]);
@@ -1080,7 +1120,7 @@ const Account = () => {
                   const parsedValue = Array.isArray(value)
                     ? value
                     : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      value.split(",").map((item: any) => item.trim());
+                    value.split(",").map((item: any) => item.trim());
                   setGroupAccountFilter(value);
                   if (!parsedValue.length) {
                     handleSelectChange(
@@ -1110,9 +1150,9 @@ const Account = () => {
                   defaultValue={
                     groupSystemId
                       ? {
-                          value: groupSystemId,
-                          label: groupSystemName,
-                        }
+                        value: groupSystemId,
+                        label: groupSystemName,
+                      }
                       : undefined
                   }
                   onFocus={() => handleFilterSystem()}
@@ -1152,9 +1192,9 @@ const Account = () => {
                   defaultValue={
                     groupBranchId
                       ? {
-                          value: groupBranchId,
-                          label: groupBranchName,
-                        }
+                        value: groupBranchId,
+                        label: groupBranchName,
+                      }
                       : undefined
                   }
                   onFocus={() => GetListGroupBranch()}
@@ -1198,9 +1238,9 @@ const Account = () => {
                   defaultValue={
                     groupTeamId
                       ? {
-                          value: groupTeamId,
-                          label: groupTeamName,
-                        }
+                        value: groupTeamId,
+                        label: groupTeamName,
+                      }
                       : undefined
                   }
                   onFocus={() => GetListGroupTeam()}
@@ -1287,6 +1327,7 @@ const Account = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -1336,9 +1377,9 @@ const Account = () => {
                 defaultValue={
                   form.getFieldsValue().groupSystemId?.toString().trim()
                     ? {
-                        value: form.getFieldsValue().groupSystemId,
-                        label: form.getFieldsValue().groupSystemName,
-                      }
+                      value: form.getFieldsValue().groupSystemId,
+                      label: form.getFieldsValue().groupSystemName,
+                    }
                     : undefined
                 }
                 onFocus={() => getGroupSystems()}
@@ -1394,9 +1435,9 @@ const Account = () => {
                 defaultValue={
                   form.getFieldsValue().groupBranchId?.toString().trim()
                     ? {
-                        value: form.getFieldsValue().groupBranchId,
-                        label: form.getFieldsValue().groupBranchName,
-                      }
+                      value: form.getFieldsValue().groupBranchId,
+                      label: form.getFieldsValue().groupBranchName,
+                    }
                     : undefined
                 }
                 onFocus={() => {
@@ -1458,9 +1499,9 @@ const Account = () => {
                     defaultValue={
                       form.getFieldsValue().groupTeamId?.toString().trim()
                         ? {
-                            value: form.getFieldsValue().groupTeamId,
-                            label: form.getFieldsValue().groupTeamName,
-                          }
+                          value: form.getFieldsValue().groupTeamId,
+                          label: form.getFieldsValue().groupTeamName,
+                        }
                         : undefined
                     }
                     onFocus={() => {
@@ -1500,9 +1541,9 @@ const Account = () => {
               defaultValue={
                 form.getFieldsValue().bankId?.toString().trim()
                   ? {
-                      value: form.getFieldsValue().bankId,
-                      label: form.getFieldsValue().bankName,
-                    }
+                    value: form.getFieldsValue().bankId,
+                    label: form.getFieldsValue().bankName,
+                  }
                   : undefined
               }
               onFocus={() => fetchBankData()}
@@ -1641,9 +1682,8 @@ const Account = () => {
               onClick={() => {
                 handleAddConfirm(true);
               }}
-              className={`${
-                isAddAccount && "pointer-events-none"
-              } w-full !h-10 bg-[#4B5CB8] hover:bg-[#3A4A9D]`}
+              className={`${isAddAccount && "pointer-events-none"
+                } w-full !h-10 bg-[#4B5CB8] hover:bg-[#3A4A9D]`}
               loading={isAddAccount}
             >
               {currentAccount ? "Cập nhật" : "Thêm mới"}

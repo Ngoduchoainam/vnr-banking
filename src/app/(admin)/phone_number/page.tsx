@@ -3,7 +3,7 @@
 import Header from "@/src/component/Header";
 import { Button, Form, Input, Space, Table, Skeleton } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import BaseModal from "@/src/component/config/BaseModal";
 import {
   addPhoneNumber,
@@ -37,12 +37,51 @@ const PhoneNumber: React.FC = () => {
   const [loading, setLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [globalTerm, setGlobalTerm] = useState("");
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
   const [currentTelegram, setCurrentTelegram] =
     useState<PhoneNumberModal | null>(null);
 
   const [isAddPhoneNumber, setIsAddPhoneNumber] = useState<boolean>(false);
+  const [totalRecord, setTotalRecord] = useState(100);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataPhoneNumber.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchListPhone().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
 
   const fetchListPhone = async (globalTerm?: string) => {
     const arr: FilterRole[] = [];
@@ -62,17 +101,15 @@ const PhoneNumber: React.FC = () => {
           com: x.com,
           notes: x.notes,
         })) || [];
-      setDataPhoneNumber(formattedData);
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataPhoneNumber((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error while loading phone list:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchListPhone();
-  }, [keys]);
 
   const handleAddConfirm = async (isAddPhoneNumber: boolean) => {
     try {
@@ -240,7 +277,7 @@ const PhoneNumber: React.FC = () => {
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
     fetchListPhone();
-  }, [checkFilter]);
+  }, [keys, checkFilter]);
 
   // ........................................................................//
 
@@ -380,6 +417,7 @@ const PhoneNumber: React.FC = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -434,9 +472,8 @@ const PhoneNumber: React.FC = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isAddPhoneNumber && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`${isAddPhoneNumber && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isAddPhoneNumber}
             >
               {currentPhoneNumber ? "Cập nhật" : "Thêm mới"}

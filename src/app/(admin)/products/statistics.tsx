@@ -124,9 +124,9 @@ const Statistics = () => {
         <h1 className="font-bold text-3xl">
           {dataTotalAmount !== undefined
             ? new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(dataTotalAmount)
+              style: "currency",
+              currency: "VND",
+            }).format(dataTotalAmount)
             : "0 ₫"}
         </h1>
       </div>
@@ -138,9 +138,9 @@ const Statistics = () => {
         <h1 className="font-bold text-3xl">
           {databalance !== undefined
             ? new Intl.NumberFormat("vi-VN", {
-                style: "currency",
-                currency: "VND",
-              }).format(databalance)
+              style: "currency",
+              currency: "VND",
+            }).format(databalance)
             : "0 ₫"}
         </h1>
 
@@ -161,7 +161,7 @@ const Statistics = () => {
               <div style={{ minHeight: 200 }} />
             </Spin>
           ) : (
-            <Table columns={columns} dataSource={dataDetailCurentBalance} />
+            <Table columns={columns} dataSource={dataDetailCurentBalance} pagination={false} />
           )}
         </BaseModal>
       </div>

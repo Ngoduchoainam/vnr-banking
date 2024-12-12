@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import BaseModal from "@/src/component/config/BaseModal";
 import Header from "@/src/component/Header";
@@ -35,10 +35,48 @@ const Sheet = () => {
   const [currentSheet, setCurrentSheet] = useState<DataSheetModal | null>(null);
   const [dataSheet, setDataSheet] = useState<DataSheetModal[]>([]);
   const [globalTerm, setGlobalTerm] = useState("");
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
+  const [totalRecord, setTotalRecord] = useState(100);
 
   const [isAddSheet, setIsAddSheet] = useState<boolean>(false);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataSheet.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchSheet().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchSheet = async (globalTerm?: string) => {
     const arr: FilterRole[] = [];
@@ -57,7 +95,10 @@ const Sheet = () => {
           linkUrl: x.linkUrl,
           notes: x.notes,
         })) || [];
-      setDataSheet(formattedData);
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+
+      setDataSheet((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
@@ -67,7 +108,7 @@ const Sheet = () => {
 
   useEffect(() => {
     fetchSheet(globalTerm);
-  }, [globalTerm]);
+  }, [globalTerm, keys]);
 
   const handleAddConfirm = async (isAddSheet: boolean) => {
     try {
@@ -222,10 +263,6 @@ const Sheet = () => {
     },
   ];
 
-  useEffect(() => {
-    fetchSheet();
-  }, [keys]);
-
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const rowSelection = {
     selectedRowKeys,
@@ -341,6 +378,7 @@ const Sheet = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -397,9 +435,8 @@ const Sheet = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isAddSheet && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10"`}
+              className={`${isAddSheet && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10"`}
               loading={isAddSheet}
             >
               {currentSheet ? "Cập nhật" : "Thêm mới"}

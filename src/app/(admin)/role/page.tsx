@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Header from "@/src/component/Header";
 import {
   Button,
@@ -61,10 +61,48 @@ const Role = () => {
   const [systemId, setSystemId] = useState<number>(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [parentId, setParentId] = useState<number>(0);
-  const pageIndex = 1;
+  const [pageIndex, setPageIndex] = useState(1);
+  const [totalRecord, setTotalRecord] = useState(100);
   const pageSize = 20;
   const [role, setRole] = useState(false);
   const [isAddRole, setIsAddRole] = useState<boolean>(false);
+
+  const isFetchingRef = useRef(false);
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      isFetchingRef.current = true;
+      setPageIndex((prev) => prev + 1);
+    }
+  };
+
+  useEffect(() => {
+    if (pageIndex > 1 && dataRolePage.length < totalRecord) {
+      const scrollPositionBeforeFetch = window.scrollY;
+      const previousDocumentHeight = document.documentElement.scrollHeight;
+
+      fetchListRole().finally(() => {
+        setTimeout(() => {
+          const newDocumentHeight = document.documentElement.scrollHeight;
+          const scrollDifference = newDocumentHeight - previousDocumentHeight;
+
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          isFetchingRef.current = false;
+        }, 0);
+      });
+    }
+  }, [pageIndex]);
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const fetchListRole = async (globalTerm?: string) => {
     const arrRole: FilterRole[] = [];
@@ -90,7 +128,9 @@ const Role = () => {
           groupTeamId: x.groupTeamId,
           password: x.password,
         })) || [];
-      setDataRolePage(formattedData);
+
+      setTotalRecord(response?.data?.totalRecords || 0);
+      setDataRolePage((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
@@ -100,7 +140,7 @@ const Role = () => {
 
   useEffect(() => {
     fetchListRole(globalTerm);
-  }, [globalTerm]);
+  }, [globalTerm, keys]);
 
   const getGroupSystems = async () => {
     try {
@@ -250,11 +290,6 @@ const Role = () => {
       console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
     }
   };
-
-  // fetch để gọi ra danh sách theo value search
-  useEffect(() => {
-    fetchListRole();
-  }, [keys]);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedAccountGroup, setSelectedAccountGroup] =
@@ -436,6 +471,7 @@ const Role = () => {
             columns={columns}
             rowSelection={rowSelection}
             loading={loading}
+            pagination={false}
           />
         )}
       </div>
@@ -541,9 +577,8 @@ const Role = () => {
             <Button
               type="primary"
               onClick={() => handleAddConfirm(true)}
-              className={`${
-                isAddRole && "pointer-events-none"
-              } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
+              className={`${isAddRole && "pointer-events-none"
+                } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
               loading={isAddRole}
             >
               {currentRole ? "Cập nhật" : "Thêm mới"}
