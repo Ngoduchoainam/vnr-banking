@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const isPublicRoute = ["/login", "/signup", "/api"].some((route) =>
+  const isPublicRoute = ["/dashboard", "/signup", "/api"].some((route) =>
     request.nextUrl.pathname.startsWith(route)
   );
 
