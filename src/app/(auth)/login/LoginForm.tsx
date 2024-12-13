@@ -19,19 +19,18 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    setIsLoading(true);
-    const res = await authenticatorResponse(username, password);
-    if (res.error) {
-      setIsLoading(false);
-      toast.error(res.error);
-    } else {
-      try {
+    try {
+      setIsLoading(true);
+      const res = await authenticatorResponse(username, password);
+      if (res.error) {
+        setIsLoading(false);
+        toast.error(res.error);
+      } else {
         router.push("/dashboard");
         setIsLoading(false);
-      } catch (error) {
-        console.log(32, error);
       }
-
+    } catch (error) {
+      console.log(error)
     }
   };
 
