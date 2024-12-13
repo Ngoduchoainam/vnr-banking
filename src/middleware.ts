@@ -30,7 +30,7 @@ import { auth } from "./app/api/auth/[...nextauth]/config";
 export async function middleware(req: NextRequest) {
   const session = await auth();
 
-  console.log("Middleware Session:", session);
+  console.log("Middleware Sessionnnnnnnnn:", session);
 
   if (!session?.user?.access_token) {
     const url = req.nextUrl.clone();
