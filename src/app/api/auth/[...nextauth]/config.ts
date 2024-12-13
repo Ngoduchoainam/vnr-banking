@@ -62,6 +62,7 @@ export const authOptions: NextAuthConfig = {
       },
     }),
   ],
+  secret: process.env.AUTH_SECRET,
   trustHost: true,
   pages: {
     signIn: "/login",

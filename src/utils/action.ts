@@ -12,6 +12,7 @@ export async function authenticatorResponse(
       password: password,
       redirect: false,
     });
+    console.log(15, r)
     return r;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
