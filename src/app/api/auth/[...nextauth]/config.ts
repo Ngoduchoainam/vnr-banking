@@ -30,6 +30,8 @@ declare module "next-auth" {
   }
 }
 
+console.log('AUTH_SECRET:', process.env.AUTH_SECRET);
+
 export const authOptions: NextAuthConfig = {
   providers: [
     CredentialsProvider({
