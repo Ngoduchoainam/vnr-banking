@@ -592,15 +592,15 @@ const SheetIntergration = () => {
                 height: 38,
                 marginRight: 15,
               }}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
-                setPageIndex(1);
-                setDataSheetIntegration([])
+                await setPageIndex(1);
+                await setDataSheetIntegration([])
                 handleSearch(value);
               }}
               onPressEnter={async (e) => {
-                setPageIndex(1);
-                setDataSheetIntegration([])
+                await setPageIndex(1);
+                await setDataSheetIntegration([])
                 handleSearch(e.currentTarget.value);
               }}
             />
@@ -612,10 +612,10 @@ const SheetIntergration = () => {
                 style={{ width: 245 }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setSheetIdFilter(value);
-                  setPageIndex(1);
-                  setDataSheetIntegration([])
+                  await setPageIndex(1);
+                  await setDataSheetIntegration([])
                   if (!value) {
                     handleSelectChange(
                       value,
@@ -641,11 +641,11 @@ const SheetIntergration = () => {
                 style={{ width: 245, margin: "0 10px", height: 40 }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setTransTypeFilter(value);
                   if (!value) {
-                    setPageIndex(1);
-                    setDataSheetIntegration([])
+                    await setPageIndex(1);
+                    await setDataSheetIntegration([])
                     handleSelectChange(sheetIdFilter, value, bankAccountFilter);
                     setCheckFilter(!checkFilter);
                   } else {
@@ -667,10 +667,10 @@ const SheetIntergration = () => {
                 style={{ width: 245, marginRight: "10px" }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setBankAccountFilter(value);
-                  setPageIndex(1);
-                  setDataSheetIntegration([])
+                  await setPageIndex(1);
+                  await setDataSheetIntegration([])
                   if (!value) {
                     handleSelectChange(sheetIdFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);

@@ -317,15 +317,15 @@ const Sheet = () => {
               height: 38,
               marginRight: 15,
             }}
-            onChange={(e) => {
-              setPageIndex(1);
-              setDataSheet([])
+            onChange={async (e) => {
+              await setPageIndex(1);
+              await setDataSheet([])
               const value = e.target.value;
               handleSearch(value);
             }}
             onPressEnter={async (e) => {
-              setPageIndex(1);
-              setDataSheet([])
+              await setPageIndex(1);
+              await setDataSheet([])
               handleSearch(e.currentTarget.value);
             }}
           />

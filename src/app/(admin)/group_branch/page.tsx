@@ -363,18 +363,18 @@ const GroupBranchPage = () => {
               height: 38,
               marginRight: 15,
             }}
-            onChange={(e) => {
+            onChange={async (e) => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
-                setPageIndex(1);
-                setDataBranch([])
+                await setPageIndex(1);;
+                await setDataBranch([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
-              setPageIndex(1);
-              setDataBranch([])
+              await setPageIndex(1);;
+              await setDataBranch([])
               handleSearch(e.currentTarget.value);
             }}
           />

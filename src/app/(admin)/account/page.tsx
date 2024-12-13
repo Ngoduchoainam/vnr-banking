@@ -1088,19 +1088,19 @@ const Account = () => {
           <div className="flex items-center">
             <Input
               placeholder="Số tài khoản, tên tài khoản ..."
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
                 // handleSearch(value);
                 setGlobalTerm(value);
                 if (!value) {
-                  setPageIndex(1);
-                  setDataAccount([])
+                  await setPageIndex(1);;
+                  await setDataAccount([])
                   setCheckFilter(!checkFilter);
                 }
               }}
               onPressEnter={async (e) => {
-                setPageIndex(1);
-                setDataAccount([])
+                await setPageIndex(1);;
+                await setDataAccount([])
                 handleSearch(e.currentTarget.value);
               }}
               style={{
@@ -1118,7 +1118,7 @@ const Account = () => {
                 style={{ width: 245 }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   console.log(value, "value");
 
                   const parsedValue = Array.isArray(value)
@@ -1126,8 +1126,8 @@ const Account = () => {
                     : // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     value.split(",").map((item: any) => item.trim());
 
-                  setPageIndex(1);
-                  setDataAccount([])
+                  await setPageIndex(1);;
+                  await setDataAccount([])
                   setGroupAccountFilter(value);
                   if (!parsedValue.length) {
                     handleSelectChange(

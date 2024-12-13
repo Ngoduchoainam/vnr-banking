@@ -567,18 +567,18 @@ const TelegramIntegration = () => {
                 height: 38,
                 marginRight: 15,
               }}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
                 setGlobalTerm(value);
                 if (!value) {
-                  setPageIndex(1);
-                  setDataTelegramIntegration([])
+                  await setPageIndex(1);
+                  await setDataTelegramIntegration([])
                   setCheckFilter(!checkFilter);
                 }
               }}
               onPressEnter={async (e) => {
-                setPageIndex(1);
-                setDataTelegramIntegration([])
+                await setPageIndex(1);
+                await setDataTelegramIntegration([])
                 handleSearch(e.currentTarget.value);
               }}
             />
@@ -590,10 +590,10 @@ const TelegramIntegration = () => {
                 style={{ width: 245 }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setGroupChatFilter(value);
-                  setPageIndex(1);
-                  setDataTelegramIntegration([])
+                  await setPageIndex(1);
+                  await setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(value, transTypeFilter);
                     setCheckFilter(!checkFilter);
@@ -615,10 +615,10 @@ const TelegramIntegration = () => {
                 style={{ width: 245, margin: "0 10px", height: 40 }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setTransTypeFilter(value);
-                  setPageIndex(1);
-                  setDataTelegramIntegration([])
+                  await setPageIndex(1);
+                  await setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(groupChatFilter, value);
                     setCheckFilter(!checkFilter);
@@ -641,10 +641,10 @@ const TelegramIntegration = () => {
                 style={{ width: 245, marginRight: "10px" }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                onChange={(value: any) => {
+                onChange={async (value: any) => {
                   setBankAccountFilter(value);
-                  setPageIndex(1);
-                  setDataTelegramIntegration([])
+                  await setPageIndex(1);
+                  await setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(groupChatFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);

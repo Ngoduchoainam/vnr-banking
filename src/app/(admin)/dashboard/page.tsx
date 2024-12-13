@@ -201,6 +201,8 @@ const Dashboard = () => {
     try {
       const response = await getListStatistics(pageIndex, 20, undefined, arrFilter);
 
+      console.log(204, arrFilter)
+
       const formattedData =
         response?.data?.source?.map((x: DataType) => ({
           id: x.id,
@@ -565,11 +567,11 @@ const Dashboard = () => {
               style={{ width: 245 }}
               allowClear
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 setBankIdFilterAPI(value);
                 filterBankAccount(value);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
 
                 if (!value) {
                   handleSelectChange(
@@ -600,15 +602,15 @@ const Dashboard = () => {
               style={{ width: 245 }}
               allowClear
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 const parsedValue = Array.isArray(value)
                   ? value
                   : // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   value.split(",").map((item: any) => item.trim());
 
                 setBankFilter(parsedValue);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
 
                 if (!parsedValue.length) {
                   setFilterParams((prevParams) => ({
@@ -643,14 +645,14 @@ const Dashboard = () => {
               style={{ width: 245 }}
               allowClear
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 const parsedValue = Array.isArray(value)
                   ? value
                   : // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   value.split(",").map((item: any) => item.trim());
                 setChatFilter(value);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -679,10 +681,10 @@ const Dashboard = () => {
               style={{ width: 245 }}
               allowClear
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 setTransTypeFilter(value);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -711,10 +713,10 @@ const Dashboard = () => {
               placeholder="Loại tài khoản"
               style={{ width: 245 }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 setTransTypeCompanyFilter(value);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -743,10 +745,10 @@ const Dashboard = () => {
                 end: "endInput",
               }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(value: any) => {
+              onChange={async (value: any) => {
                 setTranDateFilter(value);
-                setPageIndex(1);
-                setDataStatistics([])
+                await setPageIndex(1);
+                await setDataStatistics([])
 
                 if (!value || value.length !== 2) {
                   handleSelectChange(

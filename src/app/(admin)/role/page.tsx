@@ -410,15 +410,15 @@ const Role = () => {
               height: 38,
               marginRight: 15,
             }}
-            onChange={(e) => {
-              setPageIndex(1);
-              setDataRolePage([])
+            onChange={async (e) => {
+              await setPageIndex(1);
+              await setDataRolePage([])
               const value = e.target.value;
               handleSearch(value);
             }}
             onPressEnter={async (e) => {
-              setPageIndex(1);
-              setDataRolePage([])
+              await setPageIndex(1);
+              await setDataRolePage([])
               handleSearch(e.currentTarget.value);
             }}
           />

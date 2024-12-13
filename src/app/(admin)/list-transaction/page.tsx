@@ -335,12 +335,12 @@ const ListTransactionPage = () => {
     });
   };
 
-  const onRangeChange = (
+  const onRangeChange = async (
     dates: null | (Dayjs | null)[],
     dateStrings: string[]
   ) => {
-    setPageIndex(1);
-    setDataTransaction([])
+    await setPageIndex(1);;
+    await setDataTransaction([])
     setDataFilter((prev) => ({
       ...prev,
       startDate: dateStrings[0] ? formatDate(dateStrings[0]) : "",
@@ -391,9 +391,9 @@ const ListTransactionPage = () => {
               style={{ width: 245 }}
               allowClear
               options={listOption.typeTransaction}
-              onChange={(e) => {
-                setPageIndex(1);
-                setDataTransaction([])
+              onChange={async (e) => {
+                await setPageIndex(1);;
+                await setDataTransaction([])
                 handleChangeType(e)
               }}
             />
@@ -402,9 +402,9 @@ const ListTransactionPage = () => {
               style={{ width: 245 }}
               allowClear
               options={listOption.kindTransaction}
-              onChange={(e) => {
-                setPageIndex(1);
-                setDataTransaction([])
+              onChange={async (e) => {
+                await setPageIndex(1);;
+                await setDataTransaction([])
                 handleChangeKind(e)
               }}
             />

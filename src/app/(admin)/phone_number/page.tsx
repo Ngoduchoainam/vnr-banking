@@ -353,18 +353,18 @@ const PhoneNumber: React.FC = () => {
               height: 38,
               marginRight: 15,
             }}
-            onChange={(e) => {
+            onChange={async (e) => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
-                setPageIndex(1);
-                setDataPhoneNumber([])
+                await setPageIndex(1);
+                await setDataPhoneNumber([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
-              setPageIndex(1);
-              setDataPhoneNumber([])
+              await setPageIndex(1);
+              await setDataPhoneNumber([])
               handleSearch(e.currentTarget.value);
             }}
           />
