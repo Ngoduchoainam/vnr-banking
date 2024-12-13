@@ -6,9 +6,9 @@ import imglt from "../../../../public/img/imglt.png";
 import Image from "next/image";
 
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 
-import { authenticatorResponse } from "@/src/utils/action";
+// import { authenticatorResponse } from "@/src/utils/action";
 import { useState } from "react";
 import { Button } from "antd";
 
@@ -16,7 +16,7 @@ function LoginForm() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading] = useState(false);
 
   const handleLogin = async () => {
     // setIsLoading(true);
@@ -88,7 +88,7 @@ function LoginForm() {
           <Button
             onClick={() => handleLogin()}
             className="!bg-blue-500 !text-white rounded hover:!bg-blue-600 transition duration-200 w-full !h-12 font-bold !text-lg"
-            loading={isLoading}
+          // loading={isLoading}
           >
             Đăng nhập
           </Button>
