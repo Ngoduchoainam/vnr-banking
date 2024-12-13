@@ -19,19 +19,16 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    try {
-      setIsLoading(true);
-      const res = await authenticatorResponse(username, password);
-      if (res.error) {
-        setIsLoading(false);
-        toast.error(res.error);
-      } else {
-        router.push("/dashboard");
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.log(error)
-    }
+    // setIsLoading(true);
+    // const res = await authenticatorResponse(username, password);
+    // if (res.error) {
+    //   setIsLoading(false);
+    //   toast.error(res.error);
+    // } else {
+    //   router.push("/dashboard");
+    //   setIsLoading(false);
+    // }
+    router.push("/dashboard");
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
