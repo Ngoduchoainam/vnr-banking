@@ -2,7 +2,7 @@ import axios from "axios";
 import { getSession } from "next-auth/react";
 
 export const apiClient = axios.create({
-  baseURL: "https://localhost:53898",
+  baseURL: "https://apiweb.bankings.vnrsoftware.vn",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
