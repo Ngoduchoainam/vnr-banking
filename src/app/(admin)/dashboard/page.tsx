@@ -191,6 +191,7 @@ const Dashboard = () => {
       });
     }
 
+
     arrFilter.push({
       Name: keys!,
       Value: values,
@@ -214,8 +215,6 @@ const Dashboard = () => {
           logStatus: x.logStatus,
           bankAccountId: x.bankAccountId,
         })) || [];
-
-      console.log(218, response?.data?.totalRecords)
 
       setTotalRecord(response?.data?.totalRecords || 0);
 
@@ -569,6 +568,9 @@ const Dashboard = () => {
               onChange={(value: any) => {
                 setBankIdFilterAPI(value);
                 filterBankAccount(value);
+                setPageIndex(1);
+                setDataStatistics([])
+
                 if (!value) {
                   handleSelectChange(
                     value,
@@ -605,6 +607,8 @@ const Dashboard = () => {
                   value.split(",").map((item: any) => item.trim());
 
                 setBankFilter(parsedValue);
+                setPageIndex(1);
+                setDataStatistics([])
 
                 if (!parsedValue.length) {
                   setFilterParams((prevParams) => ({
@@ -645,6 +649,8 @@ const Dashboard = () => {
                   : // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   value.split(",").map((item: any) => item.trim());
                 setChatFilter(value);
+                setPageIndex(1);
+                setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -675,6 +681,8 @@ const Dashboard = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => {
                 setTransTypeFilter(value);
+                setPageIndex(1);
+                setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -705,6 +713,8 @@ const Dashboard = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => {
                 setTransTypeCompanyFilter(value);
+                setPageIndex(1);
+                setDataStatistics([])
                 if (!value) {
                   handleSelectChange(
                     bankIdFilterAPI,
@@ -735,6 +745,8 @@ const Dashboard = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => {
                 setTranDateFilter(value);
+                setPageIndex(1);
+                setDataStatistics([])
 
                 if (!value || value.length !== 2) {
                   handleSelectChange(

@@ -413,10 +413,14 @@ const GroupTeamPage = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataTeam([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataTeam([])
               handleSearch(e.currentTarget.value);
             }}
           />

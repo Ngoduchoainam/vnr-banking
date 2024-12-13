@@ -1093,10 +1093,14 @@ const Account = () => {
                 // handleSearch(value);
                 setGlobalTerm(value);
                 if (!value) {
+                  setPageIndex(1);
+                  setDataAccount([])
                   setCheckFilter(!checkFilter);
                 }
               }}
               onPressEnter={async (e) => {
+                setPageIndex(1);
+                setDataAccount([])
                 handleSearch(e.currentTarget.value);
               }}
               style={{
@@ -1121,6 +1125,9 @@ const Account = () => {
                     ? value
                     : // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     value.split(",").map((item: any) => item.trim());
+
+                  setPageIndex(1);
+                  setDataAccount([])
                   setGroupAccountFilter(value);
                   if (!parsedValue.length) {
                     handleSelectChange(

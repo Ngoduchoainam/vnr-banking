@@ -571,10 +571,14 @@ const TelegramIntegration = () => {
                 const value = e.target.value;
                 setGlobalTerm(value);
                 if (!value) {
+                  setPageIndex(1);
+                  setDataTelegramIntegration([])
                   setCheckFilter(!checkFilter);
                 }
               }}
               onPressEnter={async (e) => {
+                setPageIndex(1);
+                setDataTelegramIntegration([])
                 handleSearch(e.currentTarget.value);
               }}
             />
@@ -588,6 +592,8 @@ const TelegramIntegration = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(value: any) => {
                   setGroupChatFilter(value);
+                  setPageIndex(1);
+                  setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(value, transTypeFilter);
                     setCheckFilter(!checkFilter);
@@ -611,6 +617,8 @@ const TelegramIntegration = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(value: any) => {
                   setTransTypeFilter(value);
+                  setPageIndex(1);
+                  setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(groupChatFilter, value);
                     setCheckFilter(!checkFilter);
@@ -635,6 +643,8 @@ const TelegramIntegration = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(value: any) => {
                   setBankAccountFilter(value);
+                  setPageIndex(1);
+                  setDataTelegramIntegration([])
                   if (!value) {
                     handleSelectChange(groupChatFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);

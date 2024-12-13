@@ -594,9 +594,13 @@ const SheetIntergration = () => {
               }}
               onChange={(e) => {
                 const value = e.target.value;
+                setPageIndex(1);
+                setDataSheetIntegration([])
                 handleSearch(value);
               }}
               onPressEnter={async (e) => {
+                setPageIndex(1);
+                setDataSheetIntegration([])
                 handleSearch(e.currentTarget.value);
               }}
             />
@@ -610,6 +614,8 @@ const SheetIntergration = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(value: any) => {
                   setSheetIdFilter(value);
+                  setPageIndex(1);
+                  setDataSheetIntegration([])
                   if (!value) {
                     handleSelectChange(
                       value,
@@ -638,6 +644,8 @@ const SheetIntergration = () => {
                 onChange={(value: any) => {
                   setTransTypeFilter(value);
                   if (!value) {
+                    setPageIndex(1);
+                    setDataSheetIntegration([])
                     handleSelectChange(sheetIdFilter, value, bankAccountFilter);
                     setCheckFilter(!checkFilter);
                   } else {
@@ -661,6 +669,8 @@ const SheetIntergration = () => {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={(value: any) => {
                   setBankAccountFilter(value);
+                  setPageIndex(1);
+                  setDataSheetIntegration([])
                   if (!value) {
                     handleSelectChange(sheetIdFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);

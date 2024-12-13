@@ -367,10 +367,14 @@ const GroupBranchPage = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataBranch([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataBranch([])
               handleSearch(e.currentTarget.value);
             }}
           />

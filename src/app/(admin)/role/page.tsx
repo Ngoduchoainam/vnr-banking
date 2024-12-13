@@ -411,10 +411,14 @@ const Role = () => {
               marginRight: 15,
             }}
             onChange={(e) => {
+              setPageIndex(1);
+              setDataRolePage([])
               const value = e.target.value;
               handleSearch(value);
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataRolePage([])
               handleSearch(e.currentTarget.value);
             }}
           />

@@ -598,10 +598,14 @@ const Transaction = () => {
                 const value = e.target.value;
                 setGlobalTerm(value);
                 if (!value) {
+                  setPageIndex(1);
+                  setDataTransaction([])
                   setCheckFilter(!checkFilter);
                 }
               }}
               onPressEnter={async (e) => {
+                setPageIndex(1);
+                setDataTransaction([])
                 handleSearch(e.currentTarget.value);
               }}
             />
@@ -613,6 +617,8 @@ const Transaction = () => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={(value: any) => {
                 setTranDateFilter(value);
+                setPageIndex(1);
+                setDataTransaction([])
                 if (!value || value.length !== 2) {
                   handleSelectChange(purposeDescription);
                   setCheckFilter(!checkFilter);

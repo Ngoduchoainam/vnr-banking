@@ -341,10 +341,16 @@ const PhoneNumber: React.FC = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataAccountGroup([])
                 setCheckFilter(!checkFilter);
               }
             }}
-            onPressEnter={(e) => handleSearch(e.currentTarget.value)}
+            onPressEnter={(e) => {
+              setPageIndex(1);
+              setDataAccountGroup([])
+              handleSearch(e.currentTarget.value)
+            }}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

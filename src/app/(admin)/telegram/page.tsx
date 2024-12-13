@@ -335,10 +335,14 @@ const Telegram = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataTelegram([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataTelegram([])
               handleSearch(e.currentTarget.value);
             }}
           />

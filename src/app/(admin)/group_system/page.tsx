@@ -327,10 +327,14 @@ const GroupSystemPage = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataSystem([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataSystem([])
               handleSearch(e.currentTarget.value);
             }}
           />

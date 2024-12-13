@@ -357,10 +357,14 @@ const PhoneNumber: React.FC = () => {
               const value = e.target.value;
               setGlobalTerm(value);
               if (!value) {
+                setPageIndex(1);
+                setDataPhoneNumber([])
                 setCheckFilter(!checkFilter);
               }
             }}
             onPressEnter={async (e) => {
+              setPageIndex(1);
+              setDataPhoneNumber([])
               handleSearch(e.currentTarget.value);
             }}
           />

@@ -339,6 +339,8 @@ const ListTransactionPage = () => {
     dates: null | (Dayjs | null)[],
     dateStrings: string[]
   ) => {
+    setPageIndex(1);
+    setDataTransaction([])
     setDataFilter((prev) => ({
       ...prev,
       startDate: dateStrings[0] ? formatDate(dateStrings[0]) : "",
@@ -389,14 +391,22 @@ const ListTransactionPage = () => {
               style={{ width: 245 }}
               allowClear
               options={listOption.typeTransaction}
-              onChange={(e) => handleChangeType(e)}
+              onChange={(e) => {
+                setPageIndex(1);
+                setDataTransaction([])
+                handleChangeType(e)
+              }}
             />
             <Select
               placeholder="Kiểu giao dịch"
               style={{ width: 245 }}
               allowClear
               options={listOption.kindTransaction}
-              onChange={(e) => handleChangeKind(e)}
+              onChange={(e) => {
+                setPageIndex(1);
+                setDataTransaction([])
+                handleChangeKind(e)
+              }}
             />
             <RangePicker
               id={{
