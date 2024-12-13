@@ -25,7 +25,7 @@ function LoginForm() {
       setIsLoading(false);
       toast.error(res.error);
     } else {
-      router.push("/test");
+      router.push("/dashboard");
       setIsLoading(false);
     }
   };
