@@ -103,6 +103,7 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
+    console.log(106, pageIndex)
     if (pageIndex > 1 && dataStatistics.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
       const previousDocumentHeight = document.documentElement.scrollHeight;

@@ -7,4 +7,8 @@ const nextConfig = {
   // },
 };
 
+module.exports = {
+  reactStrictMode: false,  // Tắt React Strict Mode
+}
+
 export default nextConfig;
