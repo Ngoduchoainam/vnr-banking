@@ -23,6 +23,8 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
 
   const data = response.ok ? await response.json() : undefined;
 
+  console.log(26, data);
+
   return (
     <LayoutWapper>
       <RoleWpparProvidrer data={data?.data}>{children}</RoleWpparProvidrer>
