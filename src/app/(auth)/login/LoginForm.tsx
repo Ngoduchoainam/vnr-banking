@@ -22,6 +22,7 @@ function LoginForm() {
     setIsLoading(true);
     const res = await authenticatorResponse(username, password);
     if (res.error) {
+      console.log(res.error)
       setIsLoading(false);
       toast.error(res.error);
     } else {
