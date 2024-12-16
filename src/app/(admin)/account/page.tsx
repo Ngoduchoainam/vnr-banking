@@ -32,6 +32,7 @@ import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { RoleContext } from "@/src/component/RoleWapper";
+import CustomSelect from "@/src/component/CustomSelect";
 
 interface FilterGroupAccount {
   Name: string;
@@ -1070,13 +1071,11 @@ const Account = () => {
               }}
               style={{
                 width: 250,
-                borderRadius: 10,
-                height: 38,
                 marginRight: 10,
               }}
             />
             <Space direction="horizontal" size="middle">
-              <Select
+              <CustomSelect
                 mode="multiple"
                 options={accountGroupFilter}
                 placeholder="Nhóm tài khoản"

@@ -15,6 +15,7 @@ import { getListTelegram, getTransType } from "@/src/services/telegram";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
 import { RoleContext } from "@/src/component/RoleWapper";
+import CustomSelect from "@/src/component/CustomSelect";
 
 export interface ListTelegramIntegration {
   chatName?: string;
@@ -574,8 +575,6 @@ const TelegramIntegration = () => {
               placeholder="Tìm kiếm tên tài khoản ..."
               style={{
                 width: 253,
-                borderRadius: 10,
-                height: 38,
                 marginRight: 15,
               }}
               onChange={async (e) => {
@@ -594,7 +593,7 @@ const TelegramIntegration = () => {
               }}
             />
             <Space direction="horizontal" size="middle">
-              <Select
+              <CustomSelect
                 mode="multiple"
                 options={teleGroupChatFilter}
                 placeholder="Nhóm tài khoản"
@@ -623,7 +622,7 @@ const TelegramIntegration = () => {
               <Select
                 options={options}
                 placeholder="Loại giao dịch"
-                style={{ width: 245, margin: "0 10px", height: 40 }}
+                style={{ width: 245, margin: "0 10px" }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={async (value: any) => {
@@ -645,7 +644,7 @@ const TelegramIntegration = () => {
               />
             </Space>
             <Space direction="horizontal" size="middle">
-              <Select
+              <CustomSelect
                 mode="multiple"
                 options={bankFilter}
                 placeholder="Tên ngân hàng"

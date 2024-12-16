@@ -22,6 +22,7 @@ import BarChartType from "../products/BarChartType";
 import { RoleContext } from "@/src/component/RoleWapper";
 import { formatDate } from "@/src/utils/buildQueryParams";
 import { Utility } from "@/src/utils/Utility";
+import CustomSelect from "@/src/component/CustomSelect";
 
 interface DataType {
   id: number;
@@ -563,12 +564,14 @@ const Dashboard = () => {
         <div className="flex mx-[35px] mt-7">
           <Space direction="horizontal" size="middle">
             <Select
-              // mode="multiple"
               options={bankDataFilter}
               placeholder="Ngân hàng"
               style={{ width: 245 }}
               allowClear
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 setBankIdFilterAPI(value);
                 filterBankAccount(value);
@@ -597,17 +600,20 @@ const Dashboard = () => {
                 }
               }}
             />
-            <Select
+            <CustomSelect
               mode="multiple"
               options={bankAccountFilter}
               placeholder="Tài khoản ngân hàng"
               style={{ width: 245 }}
               allowClear
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const parsedValue = Array.isArray(value)
                   ? value
-                  : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  :
                   value.split(",").map((item: any) => item.trim());
 
                 setBankFilter(parsedValue);
@@ -640,13 +646,16 @@ const Dashboard = () => {
                 }
               }}
             />
-            <Select
+            <CustomSelect
               mode="multiple"
               options={groupChatFilter}
               placeholder="Nhóm chat telegram"
               style={{ width: 245 }}
               allowClear
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const parsedValue = Array.isArray(value)
                   ? value
@@ -682,7 +691,10 @@ const Dashboard = () => {
               placeholder="Loại giao dịch"
               style={{ width: 245 }}
               allowClear
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 setTransTypeFilter(value);
                 await setPageIndex(1);
@@ -714,7 +726,10 @@ const Dashboard = () => {
               options={optionCompany}
               placeholder="Loại tài khoản"
               style={{ width: 245 }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 setTransTypeCompanyFilter(value);
                 await setPageIndex(1);
@@ -746,7 +761,6 @@ const Dashboard = () => {
                 start: "startInput",
                 end: "endInput",
               }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={async (value: any) => {
                 setTranDateFilter(value);
                 await setPageIndex(1);

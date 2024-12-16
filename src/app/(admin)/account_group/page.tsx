@@ -333,8 +333,6 @@ const PhoneNumber: React.FC = () => {
             placeholder="Tìm kiếm tên nhóm tài khoản ..."
             style={{
               width: 253,
-              borderRadius: 10,
-              height: 38,
               marginRight: 15,
             }}
             onChange={async (e) => {

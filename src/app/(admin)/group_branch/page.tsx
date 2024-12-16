@@ -359,8 +359,6 @@ const GroupBranchPage = () => {
             placeholder="Tìm kiếm chi nhánh ..."
             style={{
               width: 253,
-              borderRadius: 10,
-              height: 38,
               marginRight: 15,
             }}
             onChange={async (e) => {

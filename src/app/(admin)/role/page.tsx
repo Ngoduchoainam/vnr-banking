@@ -427,8 +427,6 @@ const Role = () => {
             placeholder="Tìm kiếm email hoặc họ tên..."
             style={{
               width: 253,
-              borderRadius: 10,
-              height: 38,
               marginRight: 15,
             }}
             onPressEnter={async (e) => {

@@ -16,6 +16,7 @@ import { getListSheet } from "@/src/services/sheet";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
 import { RoleContext } from "@/src/component/RoleWapper";
+import CustomSelect from "@/src/component/CustomSelect";
 
 export interface ListSheetIntegration {
   id: number;
@@ -589,8 +590,6 @@ const SheetIntergration = () => {
               placeholder="Tìm kiếm tên tài khoản ..."
               style={{
                 width: 253,
-                borderRadius: 10,
-                height: 38,
                 marginRight: 15,
               }}
               onChange={async (e) => {
@@ -606,7 +605,7 @@ const SheetIntergration = () => {
               }}
             />
             <Space direction="horizontal" size="middle">
-              <Select
+              <CustomSelect
                 mode="multiple"
                 options={sheetFilter}
                 placeholder="Nhóm trang tính"
@@ -639,7 +638,7 @@ const SheetIntergration = () => {
               <Select
                 options={options}
                 placeholder="Loại giao dịch"
-                style={{ width: 245, margin: "0 10px", height: 40 }}
+                style={{ width: 245, margin: "0 10px" }}
                 allowClear
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={async (value: any) => {
@@ -661,7 +660,7 @@ const SheetIntergration = () => {
               />
             </Space>
             <Space direction="horizontal" size="middle">
-              <Select
+              <CustomSelect
                 mode="multiple"
                 options={bankFilter}
                 placeholder="Tên ngân hàng"
