@@ -344,6 +344,7 @@ const SheetIntergration = () => {
         setDataSheetIntegration(formattedData);
       } else {
         const data = await getListSheetIntergration(1, 20, value);
+        console.log(347, data);
         const formattedData =
           data?.data?.source?.map((x: ListSheetIntegration) => ({
             id: x.id?.toString() || Date.now().toString(), // id

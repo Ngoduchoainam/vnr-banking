@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { TransactionType } from "@/src/common/type";
+import { Utility } from "@/src/utils/Utility";
 
 ChartJS.register(
   CategoryScale,
@@ -40,6 +41,9 @@ export default function BarChartTransaction({
   const dataMonth = transaction.map((item: TransactionType) => {
     return item.month;
   });
+
+  const listField = ['totalAmountOut', 'totalAmountIn', 'balance'];
+  const maxValue = Utility.GetMaxValueOfFields(transaction, listField);
 
   const data = {
     labels: dataMonth,
@@ -80,7 +84,7 @@ export default function BarChartTransaction({
             size: 16,
           },
         },
-        onClick: () => {},
+        onClick: () => { },
       },
       title: {
         display: true,
@@ -109,6 +113,7 @@ export default function BarChartTransaction({
         barPercentage: 0.8,
       },
       y: {
+        max: Utility.calculateMax(maxValue),
         stacked: true,
         beginAtZero: true,
       },

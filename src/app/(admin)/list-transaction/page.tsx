@@ -377,8 +377,6 @@ const ListTransactionPage = () => {
     onChange: onSelectChange,
   };
 
-  console.log(378, dataTransaction);
-
   return (
     <>
       <Header />
@@ -479,7 +477,11 @@ const ListTransactionPage = () => {
       <ModalAddNew
         isAddModalOpen={isAddModalOpen}
         onCancel={handleCancel}
-        fetchData={fetchData}
+        fetchData={async () => {
+          await setPageIndex(1);
+          await setDataTransaction([]);
+          fetchData({});
+        }}
       />
 
       <ModalDetail

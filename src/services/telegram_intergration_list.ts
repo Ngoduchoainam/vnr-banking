@@ -14,6 +14,8 @@ export const getListTelegramIntergration = async (
       pageSize,
       globalTerm: globalTerm || undefined,
     });
+
+    console.log(18, params);
     const res = await apiClient.get(`/group-chat-api/map/find`, {
       params,
     });

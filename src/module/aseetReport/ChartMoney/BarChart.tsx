@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { TypeAsset } from "@/src/common/type";
+import { Utility } from "@/src/utils/Utility";
 
 ChartJS.register(
   CategoryScale,
@@ -82,6 +83,9 @@ export default function BarChartMoney({
     ],
   };
 
+  const listField = ['value'];
+  const maxValue = Utility.GetMaxValueOfFields(moneyChart, listField);
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -116,6 +120,7 @@ export default function BarChartMoney({
         barPercentage: 0.8,
       },
       y: {
+        max: Utility.calculateMax(maxValue),
         stacked: true,
         ticks: {
           beginAtZero: true,
@@ -130,6 +135,7 @@ export default function BarChartMoney({
       },
     },
   };
+
 
   return (
     <div

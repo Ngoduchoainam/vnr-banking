@@ -1,4 +1,3 @@
-// components/BarChart.js
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -12,6 +11,7 @@ import {
 import { getDataGenaral } from '@/src/services/statistics';
 import { useEffect, useState } from 'react';
 import { Spin } from 'antd';
+import { Utility } from "@/src/utils/Utility";
 
 ChartJS.register(
   CategoryScale,
@@ -25,18 +25,18 @@ ChartJS.register(
 const BarChart = () => {
   const [dataChart, setDataChart] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [maxValue, setMaxValue] = useState(0);
 
   const fetchDataGenaral = async () => {
     try {
-      const response = await getDataGenaral(1, 20);
-      // console.log(response, "data chart");
+      const response = await getDataGenaral(0, 0);
       if (response.data) {
         const {
           totalAmountOut,
           totalAmountIn,
-          // countTransactionOut,
-          // countTransactionIn,
         } = response.data;
+
+        setMaxValue(Math.max(totalAmountOut, totalAmountIn));
 
         const data = {
           labels: ['Tổng tiền ra', 'Tổng tiền vào'],
@@ -68,6 +68,7 @@ const BarChart = () => {
     }
   };
 
+
   useEffect(() => {
     fetchDataGenaral();
   }, []);
@@ -76,17 +77,15 @@ const BarChart = () => {
     scales: {
       y: {
         beginAtZero: true,
+        max: Utility.calculateMax(maxValue),
         ticks: {
           callback: function (value) {
-            return (value / 1000000) + ' triệu'; // Chuyển thành triệu và thêm đơn vị "triệu"
+            return Math.round(value / 1000000) + ' triệu'; // Chuyển thành triệu và thêm đơn vị "triệu"
           },
         },
       },
     },
   };
-
-
-
 
   return (
     <div>

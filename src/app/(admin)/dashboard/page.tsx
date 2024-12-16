@@ -97,6 +97,7 @@ const Dashboard = () => {
     const documentHeight = document.documentElement.scrollHeight;
 
     if (scrollPosition >= documentHeight && !isFetchingRef.current) {
+      console.log(100, "call here")
       isFetchingRef.current = true;
       setPageIndex((prev) => prev + 1);
     }
@@ -126,7 +127,7 @@ const Dashboard = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [pageIndex]);
 
   console.log(130, dataStatistics);
 

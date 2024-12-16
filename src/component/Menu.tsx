@@ -25,7 +25,7 @@ const items: MenuItem[] = [
   },
   {
     key: "system_configuration",
-    label: "Cấu hình hệ thống",
+    label: "Quản lý hệ thống",
     items: [
       {
         key: "group_system",
@@ -125,7 +125,7 @@ const items: MenuItem[] = [
   },
   {
     key: "settings",
-    label: "Cấu hình hệ thống",
+    label: "Cài đặt hệ thống",
     path: "/settings",
   },
 ];

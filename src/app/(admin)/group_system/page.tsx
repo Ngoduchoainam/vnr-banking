@@ -137,7 +137,7 @@ const GroupSystemPage = () => {
       toast.success(
         currentSystem ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
-      await fetchGroupSystem();
+      fetchGroupSystem();
       setLoading(false);
     } catch (error) {
       setLoading(false);

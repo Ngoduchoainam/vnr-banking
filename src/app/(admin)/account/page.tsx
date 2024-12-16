@@ -11,8 +11,7 @@ import {
   Space,
   Table,
   Radio,
-  Skeleton,
-  InputNumber,
+  Skeleton
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
@@ -39,10 +38,6 @@ interface FilterGroupAccount {
   Value: string;
 }
 
-// interface roleAccount {
-//   key: string;
-//   Value: number;
-// }
 const accountTypeOptions = [
   { value: "1", label: "Tài khoản công ty" },
   { value: "2", label: "Tài khoản marketing" },
@@ -57,7 +52,6 @@ const Account = () => {
     null
   );
   const [selectedAccountType, setSelectedAccountType] = useState("");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleAccountTypeChange = (value: any) => {
     setSelectedAccountType(value);
   };
@@ -81,7 +75,6 @@ const Account = () => {
   const { dataRole } = React.useContext(RoleContext);
   const keys = dataRole.key;
   const values = `${dataRole.value}`;
-  // console.log("dataRole", dataRole);
   //
   const groupSystemId = dataRole.groupSystemId;
   const groupSystemName = dataRole.groupSystemName;
@@ -232,10 +225,6 @@ const Account = () => {
     }
   };
 
-  // useEffect(() => {
-  //   fetchAccounts();
-  // }, [keys]);
-
   const fetchBankData = async () => {
     try {
       const bankData = await getBank(pageIndex, pageSize);
@@ -254,8 +243,7 @@ const Account = () => {
   const getListPhoneNumber = async () => {
     try {
       const phone = await getListPhone(pageIndex, pageSize);
-      console.log(phone);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const res = phone?.data?.source?.map((x: any) => ({
         value: x.id,
         label: x.number || "Không xác định",
@@ -280,10 +268,8 @@ const Account = () => {
         pageIndex,
         pageSize,
         globalTerm
-        // arrAccountGroup
       );
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = accountGroup?.data?.source?.map((x: any) => ({
         value: x.id,
         label: x.fullName || "Không xác định",
@@ -297,7 +283,6 @@ const Account = () => {
     }
   };
 
-  // const [selectedSystemIds, setSelectedSystemIds] = useState<string[]>([]);
 
   const getGroupSystems = async () => {
     const arrAccountGroup: FilterGroupAccount[] = [];
@@ -314,7 +299,7 @@ const Account = () => {
         globalTerm,
         arrAccountGroup
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const res = getSystem?.data?.source?.map((x: any) => ({
         value: x.id,
         label: x.name || "Không xác định",
@@ -327,7 +312,6 @@ const Account = () => {
   };
 
   const getBranchSystems = async (groupSystemId?: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const arr: any[] = [];
     const addedParams = new Set<string>();
     if (groupSystemId && !addedParams.has("groupSystemId")) {
@@ -349,7 +333,7 @@ const Account = () => {
         globalTerm,
         arr
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const res = getBranch?.data?.source?.map((x: any) => ({
         value: x.id,
         label: x.name || "Không xác định",
@@ -362,7 +346,6 @@ const Account = () => {
   };
 
   const getGroupTeams = async (groupBranchId?: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const arr: any[] = [];
     const addedParams = new Set<string>();
     if (groupBranchId && !addedParams.has("groupBranchId")) {
@@ -384,7 +367,6 @@ const Account = () => {
         globalTerm,
         arr
       );
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = groupTeams?.data?.source?.map((x: any) => ({
         value: x.id,
         label: x.name || "Không xác định",
@@ -411,6 +393,7 @@ const Account = () => {
     try {
       await form.validateFields();
       setIsAddAccount(isAddAccount);
+
       setLoading(true);
       const res = await addBankAccounts({
         id: formData.id,
@@ -444,7 +427,6 @@ const Account = () => {
         await fetchAccounts();
         toast.success("Thêm mới thành công!");
       }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       const axiosError = error as AxiosError;
       if (axiosError.response) {
@@ -503,10 +485,6 @@ const Account = () => {
       : defaultGroupTeamId;
     setSaveGroupTeam(initGroupTeamId ? initGroupTeamId!.toString() : "");
 
-    // console.log("1", initGroupSystemId);
-    // console.log("2", initGroupBranchId);
-    // console.log("3", initGroupTeamId);
-
     const initBankId = account.bankId?.toString();
     setSaveBank(initBankId!);
 
@@ -554,7 +532,6 @@ const Account = () => {
       }
       toast.success("Xóa thành công tài khoản ngân hàng!");
       await fetchAccounts();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
       if (error.isAxiosError && error.response) {
@@ -657,10 +634,6 @@ const Account = () => {
       console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
     }
   };
-  // fetch để gọi ra danh sách theo value search
-  // useEffect(() => {
-  //   fetchAccounts();
-  // }, []);
 
   const [accountGroupFilter, setAccountGroupFilter] = useState<
     Array<{ value: string; label: string }>
@@ -796,7 +769,6 @@ const Account = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res = fetchBankAccountAPI.data.source.map((x: any) => ({
           value: x.id,
           label: x.name || "Không xác định",
@@ -833,7 +805,6 @@ const Account = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res = fetchBankAccountAPI.data.source.map((x: any) => ({
           value: x.id,
           label: x.name || "Không xác định",
@@ -869,14 +840,12 @@ const Account = () => {
         globalTerm,
         arr //searchTerms
       );
-      // console.log("fetchBankAccountAPI", fetchBankAccountAPI);
 
       if (
         fetchBankAccountAPI &&
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res = fetchBankAccountAPI.data.source.map((x: any) => ({
           value: x.id,
           label: x.name || "Không xác định",
@@ -940,7 +909,6 @@ const Account = () => {
     fetchData();
   }, [filterParams]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleValueChange = (newValue: any) => {
     setValue(newValue);
   };
@@ -958,7 +926,6 @@ const Account = () => {
       dataIndex: "fullName",
       key: "fullName",
     },
-    // { title: "phoneId", dataIndex: "phoneId", key: "phoneId", hidden: true },
     { title: "Số điện thoại", dataIndex: "phone", key: "phone" },
     {
       title: "Nhóm tài khoản",
@@ -980,7 +947,6 @@ const Account = () => {
             icon={<EditOutlined />}
             onClick={() => {
               handleEditAccount(record);
-              // defaultModalAdd();
             }}
           >
             Chỉnh sửa
@@ -1002,7 +968,6 @@ const Account = () => {
   const [saveGroupBranch, setSaveGroupBranch] = useState("");
   const [saveGroupTeam, setSaveGroupTeam] = useState("");
   const [saveBank, setSaveBank] = useState("");
-  // const [typeAccountValue, setTypeAccountValue] = useState()
 
   useEffect(() => {
     fetchAccounts(
@@ -1117,13 +1082,12 @@ const Account = () => {
                 placeholder="Nhóm tài khoản"
                 style={{ width: 245 }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={async (value: any) => {
                   console.log(value, "value");
 
                   const parsedValue = Array.isArray(value)
                     ? value
-                    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    :
                     value.split(",").map((item: any) => item.trim());
 
                   await setPageIndex(1);;
@@ -1167,7 +1131,6 @@ const Account = () => {
                   placeholder="Hệ thống"
                   style={{ width: 245 }}
                   allowClear
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(value: any) => {
                     setGroupSystemFilter(value);
                     if (!value) {
@@ -1205,14 +1168,10 @@ const Account = () => {
                       : undefined
                   }
                   onFocus={() => GetListGroupBranch()}
-                  // onFocus={() => {
-                  //   handleFilterBranch(undefined, groupSystemFilter);
-                  // }}
                   options={branchFilter}
                   placeholder="Chi nhánh"
                   style={{ width: 245 }}
                   allowClear
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(value: any) => {
                     setGroupBranchFilter(value);
                     if (!value) {
@@ -1223,7 +1182,6 @@ const Account = () => {
                         groupTeamFilter
                       );
                       setCheckFilter(!checkFilter);
-                      // setCheckFilter((prev) => !prev);
                     } else {
                       fetchAccounts(
                         globalTerm,
@@ -1255,7 +1213,6 @@ const Account = () => {
                   placeholder="Đội nhóm"
                   style={{ width: 245 }}
                   allowClear
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   onChange={(value: any) => {
                     setGroupTeamFilter(value);
                     if (!value) {
@@ -1407,7 +1364,6 @@ const Account = () => {
                   setSaveGroupSystem(id);
                   // getBranchSystems();
                   const selectedGroup = await groupSystem.find(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (item: any) => item.value === e
                   );
                   if (selectedGroup) {
@@ -1454,7 +1410,6 @@ const Account = () => {
                 }}
                 placeholder="Chọn chi nhánh"
                 options={branchSystem}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 onChange={async (e) => {
                   if (!e) {
                     form.setFieldsValue({
@@ -1466,10 +1421,8 @@ const Account = () => {
                   }
                   const id = Number(e).toString();
                   Number(groupBranchId);
-                  // getGroupTeams();
                   setSaveGroupBranch(id);
                   const selectedGroup = await branchSystem.find(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (item: any) => item.value === e
                   );
                   if (selectedGroup) {
@@ -1580,7 +1533,7 @@ const Account = () => {
                 { required: true, message: "Vui lòng nhập số tài khoản!" },
               ]}
             >
-              <InputNumber
+              <Input
                 placeholder="Nhập số tài khoản"
                 autoComplete="off"
                 value={valueInput}
@@ -1622,10 +1575,8 @@ const Account = () => {
                     options={phoneNumber}
                     onFocus={getListPhoneNumber}
                     placeholder="Chọn số điện thoại"
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     onChange={async (value: any) => {
                       const selectedGroup = await phoneNumber.find(
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         (item: any) => item.value === value
                       );
                       if (selectedGroup) {
@@ -1655,15 +1606,12 @@ const Account = () => {
               placeholder="Chọn nhóm tài khoản"
               mode="multiple"
               onFocus={getListAccountGroup}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={async (value: any[]) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const selectedGroups = accountGroup.filter((item: any) =>
                   value.includes(item.value)
                 );
                 form.setFieldsValue({
                   selectedAccountGroups: selectedGroups.map(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (group: any) => group.selectedAccountGroups
                   ),
                 });

@@ -12,7 +12,7 @@ import {
 import { getDataGenaral } from '@/src/services/statistics';
 import { useEffect, useState } from 'react';
 import { Spin } from 'antd';
-
+import { Utility } from "@/src/utils/Utility";
 
 ChartJS.register(
     CategoryScale,
@@ -26,20 +26,18 @@ ChartJS.register(
 const BarChartType = () => {
     const [dataChart, setDataChart] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [countTransactionOut, setCountTransactionOut] = useState(0);
-    const [countTransactionIn, setCountTransactionIn] = useState(0);
+    const [maxValue, setMaxValue] = useState(0);
 
     const fetchDataGenaral = async () => {
         try {
-            const response = await getDataGenaral(1, 20);
+            const response = await getDataGenaral(0, 0);
             if (response.data) {
                 const {
                     countTransactionOut,
                     countTransactionIn
                 } = response.data;
 
-                setCountTransactionOut(countTransactionOut);
-                setCountTransactionIn(countTransactionIn);
+                setMaxValue(Math.max(countTransactionOut, countTransactionIn));
 
                 const data = {
                     labels: ['Giao dịch tiền ra', 'Giao dịch tiền vào'],
@@ -79,9 +77,8 @@ const BarChartType = () => {
         scales: {
             y: {
                 beginAtZero: true,
-                max: Math.max(countTransactionOut, countTransactionIn) + 1,
+                max: Utility.calculateMax(maxValue),
                 ticks: {
-                    stepSize: 1, // Chỉ tăng từng bước 1 (số nguyên)
                     callback: function (value) {
                         return value; // Hiển thị theo đơn vị triệu
                     },

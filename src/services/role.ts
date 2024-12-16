@@ -26,6 +26,7 @@ export const getRole = async (
 
 export const addRole = async (x: DataRole) => {
   try {
+    console.log(29, x);
     const res = await apiClient.post(`/account/add-or-update`, x);
     return res.data;
   } catch (error) {

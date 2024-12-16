@@ -174,6 +174,8 @@ const Transaction = () => {
           // transDate: item.transDate,
         })) || [];
 
+      console.log(response);
+
       setTotalRecord(response?.data?.totalRecords || 0);
       setDataTransaction((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
@@ -453,8 +455,8 @@ const Transaction = () => {
     { title: "Lý do", dataIndex: "reason", key: "reason" },
     {
       title: "Số tiền",
-      dataIndex: "balanceBeforeTrans",
-      key: "balanceBeforeTrans",
+      dataIndex: "transAmount",
+      key: "transAmount",
       render: (balance: number, record: { transType: string }) => {
         let sign = "";
         if (record.transType === "2") {

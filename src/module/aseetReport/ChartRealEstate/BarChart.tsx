@@ -12,6 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import { TypeAsset } from "@/src/common/type";
+import { Utility } from "@/src/utils/Utility";
 
 ChartJS.register(
   CategoryScale,
@@ -21,55 +22,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: true,
-      text: "Số lượng bất động sản đã giao dịch",
-      color: "#000",
-      padding: {
-        top: 20,
-        bottom: 60,
-      },
-      font: {
-        size: 24,
-        weight: "bold" as const,
-      },
-    },
-  },
-  scales: {
-    x: {
-      stacked: true,
-      ticks: {
-        padding: 10,
-      },
-      grid: {
-        display: false,
-      },
-      categoryPercentage: 0.5,
-      barPercentage: 0.8,
-    },
-    y: {
-      stacked: true,
-      ticks: {
-        beginAtZero: true,
-        stepSize: 1,
-        callback(value: number | string) {
-          if (typeof value === "number") {
-            return value >= 1e3 ? `${(value / 1e3).toFixed(1)}K` : value;
-          }
-          return value;
-        },
-      },
-    },
-  },
-};
 
 export default function BarChartRealEstate({
   realEstate,
@@ -100,6 +52,59 @@ export default function BarChartRealEstate({
         stack: "Stack 1",
       },
     ],
+  };
+
+  const listField = ['value'];
+  const maxValue = Utility.GetMaxValueOfFields(realEstate, listField);
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        text: "Số lượng bất động sản đã giao dịch",
+        color: "#000",
+        padding: {
+          top: 20,
+          bottom: 60,
+        },
+        font: {
+          size: 24,
+          weight: "bold" as const,
+        },
+      },
+    },
+    scales: {
+      x: {
+        stacked: true,
+        ticks: {
+          padding: 10,
+        },
+        grid: {
+          display: false,
+        },
+        categoryPercentage: 0.5,
+        barPercentage: 0.8,
+      },
+      y: {
+        stacked: true,
+        max: Utility.calculateMax(maxValue),
+        ticks: {
+          beginAtZero: true,
+          stepSize: 1,
+          callback(value: number | string) {
+            if (typeof value === "number") {
+              return value >= 1e3 ? `${(value / 1e3).toFixed(1)}K` : value;
+            }
+            return value;
+          },
+        },
+      },
+    },
   };
 
   return (

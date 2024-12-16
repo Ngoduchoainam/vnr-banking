@@ -26,7 +26,7 @@ const Header = () => {
         `https://apiweb.bankings.vnrsoftware.vn/account/find-by-id?id=${roleData}`
       );
       const data = await response.json();
-      setAccountData(data?.data?.userName);
+      setAccountData(data?.data?.fullName);
       // console.log("Account data:", data);
     } catch (error) {
       console.error("Error fetching account data:", error);

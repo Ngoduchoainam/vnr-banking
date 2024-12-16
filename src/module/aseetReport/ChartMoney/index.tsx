@@ -45,7 +45,7 @@ const ChartMoney = ({ active }: { active: number }) => {
 
       setTypeMoney((prev) => ({ ...prev, listType: listTypeAssetConvert }));
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getListChart = async ({
@@ -95,6 +95,7 @@ const ChartMoney = ({ active }: { active: number }) => {
       const listMoneyChart = responsive.data.data.cashChart?.filter(
         (item: TypeAsset) => item.value !== 0
       );
+
 
       setChart(listMoneyChart ?? []);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

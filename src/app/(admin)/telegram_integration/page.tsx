@@ -7,6 +7,7 @@ import { Button, Form, Input, Select, Skeleton, Space, Table } from "antd";
 import {
   deleteTelegramIntergration,
   getListTelegramIntergration,
+  addTelegramIntergration
 } from "@/src/services/telegram_intergration_list";
 import BaseModal from "@/src/component/config/BaseModal";
 import { fetchBankAccounts } from "@/src/services/bankAccount";
@@ -16,18 +17,18 @@ import { toast } from "react-toastify";
 import { RoleContext } from "@/src/component/RoleWapper";
 
 export interface ListTelegramIntegration {
-  chatName: string;
-  groupChatId: any;
-  bankAccountId: any;
-  bankId: any;
-  id: number;
-  code: string;
-  accountNumber: number;
-  fullName: string;
-  chatId: string;
-  name: string;
-  transType: string;
-  typeDescription: string;
+  chatName?: string;
+  groupChatId?: any;
+  bankAccountId?: any;
+  bankId?: any;
+  id?: number;
+  code?: string;
+  accountNumber?: number;
+  fullName?: string;
+  chatId?: string;
+  name?: string;
+  transType?: string;
+  typeDescription?: string;
 }
 
 interface FilterTeleIntergration {
@@ -140,6 +141,7 @@ const TelegramIntegration = () => {
         globalTerm,
         arrTeleAccount
       );
+
       const formattedData =
         response?.data?.source?.map((item: any) => {
           return {
@@ -231,6 +233,15 @@ const TelegramIntegration = () => {
 
     try {
       await form.validateFields();
+      const formObject = form.getFieldsValue();
+
+      const item: ListTelegramIntegration = {
+        id: formObject.id,
+        bankAccountId: formObject.bankAccountId,
+        groupChatId: formObject.groupChatId,
+        transType: formObject.transType
+      }
+      await addTelegramIntergration(item);
       setIsAddModalOpen(false);
       setLoading(true);
       setIsCreateTelegramInter(isCreateTelegramInter);

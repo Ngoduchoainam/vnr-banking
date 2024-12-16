@@ -31,6 +31,8 @@ export interface DataRole {
   password: string;
   isAdmin?: boolean;
   groupSystemId?: number;
+  groupSystemName?: string;
+  groupBranchName?: string;
   groupBranchId?: number;
   groupTeamId?: number;
 }
@@ -124,10 +126,14 @@ const Role = () => {
           fullName: x.fullName,
           isAdmin: x.isAdmin,
           groupSystemId: x.groupSystemId,
+          groupSystemName: x.groupSystemName,
           groupBranchId: x.groupBranchId,
+          groupBranchName: x.groupBranchName,
           groupTeamId: x.groupTeamId,
           password: x.password,
         })) || [];
+
+      console.log(132, response)
 
       setTotalRecord(response?.data?.totalRecords || 0);
       setDataRolePage((prevData) => [...prevData, ...formattedData]);
@@ -198,8 +204,8 @@ const Role = () => {
         fullName: formData.fullName,
         role: formData.role,
         isAdmin: formData.isAdmin,
-        groupSystemId: formData.groupSystemId,
-        groupBranchId: formData.groupBranchId,
+        groupSystemId: formData.groupSystemName,
+        groupBranchId: formData.groupBranchName,
         groupTeamId: formData.groupTeamId,
         password: formData.password,
       };
@@ -232,6 +238,7 @@ const Role = () => {
   // sửa
   const handleEdit = (record: DataRole) => {
     setCurrentRole(record);
+
     form.setFieldsValue({
       id: record.id,
       userName: record.userName,
@@ -240,7 +247,9 @@ const Role = () => {
       role: record.role,
       isAdmin: record.isAdmin,
       groupSystemId: record.groupSystemId,
+      groupSystemName: record.groupSystemName,
       groupBranchId: record.groupBranchId,
+      groupBranchName: record.groupBranchName,
       groupTeamId: record.groupTeamId,
       password: record.password,
     });
@@ -330,6 +339,18 @@ const Role = () => {
       hidden: true,
     },
     {
+      title: "Tên hệ thống",
+      dataIndex: "groupSystemName",
+      key: "groupSystemName",
+      hidden: true,
+    },
+    {
+      title: "Tên chi nhánh",
+      dataIndex: "groupBranchName",
+      key: "groupBranchName",
+      hidden: true,
+    },
+    {
       title: "Đội nhóm",
       dataIndex: "groupTeamId",
       key: "groupTeamId",
@@ -403,23 +424,19 @@ const Role = () => {
         <div className="text-[32px] font-bold py-5">Danh sách quyền</div>
         <div className="flex justify-between items-center mb-7">
           <Input
-            placeholder="Tìm kiếm tên nhóm tài khoản ..."
+            placeholder="Tìm kiếm email hoặc họ tên..."
             style={{
               width: 253,
               borderRadius: 10,
               height: 38,
               marginRight: 15,
             }}
-            onChange={async (e) => {
-              await setPageIndex(1);
-              await setDataRolePage([])
-              const value = e.target.value;
-              handleSearch(value);
-            }}
             onPressEnter={async (e) => {
+              const inputValue = (e.target as HTMLInputElement).value;
               await setPageIndex(1);
               await setDataRolePage([])
-              handleSearch(e.currentTarget.value);
+              console.log(437, e)
+              handleSearch(inputValue);
             }}
           />
           <div className="flex">
@@ -509,7 +526,7 @@ const Role = () => {
 
           {!role && (
             <>
-              <Form.Item label="Hệ thống" name="groupSystemId">
+              <Form.Item label="Hệ thống" name="groupSystemName">
                 <Select
                   allowClear
                   placeholder="Chọn hệ thống"
@@ -522,7 +539,7 @@ const Role = () => {
                   value={systemId}
                 />
               </Form.Item>
-              <Form.Item label="Chọn chi nhánh" name="groupBranchId">
+              <Form.Item label="Chọn chi nhánh" name="groupBranchName">
                 <Select
                   allowClear
                   placeholder="Chọn chi nhánh"
