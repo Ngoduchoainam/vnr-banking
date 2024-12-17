@@ -10,9 +10,8 @@ import {
   Input,
   InputNumber,
   Select,
-  Skeleton,
   Space,
-  Table,
+  Spin,
 } from "antd";
 import {
   addTransaction,
@@ -28,6 +27,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { formatDate } from "@/src/utils/buildQueryParams";
 import { RoleContext } from "@/src/component/RoleWapper";
 import { Utility } from "@/src/utils/Utility";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface TransactionModal {
   id: number;
@@ -53,8 +53,6 @@ interface FilterRole {
   Value: string;
 }
 
-type DataTypeWithKey = TransactionModal & { key: React.Key };
-
 const Transaction = () => {
   const { dataRole } = useContext(RoleContext);
   const keys = dataRole.key;
@@ -77,6 +75,7 @@ const Transaction = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isAddTransaction, setIsAddTransaction] = useState<boolean>(false);
 
@@ -95,14 +94,11 @@ const Transaction = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataTransaction.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchTransaction().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -144,6 +140,9 @@ const Transaction = () => {
     });
     addedParams.add(keys!);
     setLoading(true);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getTransaction(
         pageIndex,
@@ -182,6 +181,7 @@ const Transaction = () => {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -544,12 +544,6 @@ const Transaction = () => {
   // .........................................................................//
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataTransaction.map((item) => ({
     ...item,
@@ -587,6 +581,11 @@ const Transaction = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
@@ -665,40 +664,12 @@ const Transaction = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

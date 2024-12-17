@@ -1,7 +1,7 @@
 "use client";
 
 import Header from "@/src/component/Header";
-import { Button, Form, Input, Space, Table, Skeleton } from "antd";
+import { Button, Form, Input, Space, Spin } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import BaseModal from "@/src/component/config/BaseModal";
@@ -14,12 +14,12 @@ import {
 import { toast } from "react-toastify";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { RoleContext } from "@/src/component/RoleWapper";
+import LoadingTable from "@/src/component/LoadingTable";
 
 interface FilterGroupAccount {
   Name: string;
   Value: string;
 }
-type DataTypeWithKey = DataAccountGroup & { key: React.Key };
 
 const PhoneNumber: React.FC = () => {
   const { dataRole } = useContext(RoleContext);
@@ -36,6 +36,7 @@ const PhoneNumber: React.FC = () => {
     []
   );
   const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [, setGlobalTerm] = useState("");
   const [isCreateAccountGroup, setIsCreateAccountGroup] = useState(false);
 
@@ -58,14 +59,11 @@ const PhoneNumber: React.FC = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataAccountGroup.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchAccountGroup().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -89,6 +87,9 @@ const PhoneNumber: React.FC = () => {
     });
     addedParams.add(keys!);
     setLoading(true);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getAccountGroup(
         pageIndex,
@@ -110,6 +111,7 @@ const PhoneNumber: React.FC = () => {
       toast.error("Đã có lỗi xảy ra. Vui lòng thử lại!");
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -266,12 +268,6 @@ const PhoneNumber: React.FC = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataAccountGroup.map((item) => ({
     ...item,
@@ -329,6 +325,11 @@ const PhoneNumber: React.FC = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
@@ -378,40 +379,12 @@ const PhoneNumber: React.FC = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
-import { Button, Form, Input, Skeleton, Space, Table } from "antd";
+import { Button, Form, Input, Space, Spin } from "antd";
 import {
   addTelegram,
   deleteTelegram,
@@ -13,6 +13,7 @@ import BaseModal from "@/src/component/config/BaseModal";
 import { toast } from "react-toastify";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { RoleContext } from "@/src/component/RoleWapper";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface DataTelegramModal {
   id: number;
@@ -25,8 +26,6 @@ interface FilterRole {
   Name: string;
   Value: string;
 }
-
-type DataTypeWithKey = DataTelegramModal & { key: React.Key };
 
 const Telegram = () => {
   const { dataRole } = useContext(RoleContext);
@@ -47,6 +46,7 @@ const Telegram = () => {
   const [totalRecord, setTotalRecord] = useState(100);
 
   const isFetchingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -61,14 +61,11 @@ const Telegram = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataTelegram.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchTelegram().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -92,6 +89,9 @@ const Telegram = () => {
       Value: values,
     });
     addedParams.add(keys!);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getListTelegram(
         pageIndex,
@@ -112,6 +112,7 @@ const Telegram = () => {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -274,12 +275,6 @@ const Telegram = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataTelegram.map((item) => ({
     ...item,
@@ -323,6 +318,11 @@ const Telegram = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
@@ -372,40 +372,12 @@ const Telegram = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

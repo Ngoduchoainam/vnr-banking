@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
-import { Button, Form, Input, Skeleton, Space, Table } from "antd";
+import { Button, Form, Input, Space, Spin } from "antd";
 import BaseModal from "@/src/component/config/BaseModal";
 import { toast } from "react-toastify"; // Import toast
 import DeleteModal from "@/src/component/config/modalDelete";
@@ -13,6 +13,7 @@ import {
   getGroupSystem,
 } from "@/src/services/groupSystem";
 import { RoleContext } from "@/src/component/RoleWapper";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface DataSystemModal {
   id: number;
@@ -24,8 +25,6 @@ interface FilterRole {
   Name: string;
   Value: string;
 }
-
-type DataTypeWithKey = DataSystemModal & { key: React.Key };
 
 const GroupSystemPage = () => {
   const { dataRole } = useContext(RoleContext);
@@ -47,6 +46,7 @@ const GroupSystemPage = () => {
   const [isAddGroupSystem, setIsAddGroupSystem] = useState<boolean>(false);
 
   const isFetchingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -61,14 +61,11 @@ const GroupSystemPage = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataSystem.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchGroupSystem().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -91,6 +88,9 @@ const GroupSystemPage = () => {
       Value: values,
     });
     addedParams.add(keys!);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getGroupSystem(pageIndex, pageSize, globalTerm, arrRole);
       const formattedData =
@@ -100,8 +100,6 @@ const GroupSystemPage = () => {
           note: x.note,
         })) || [];
 
-      console.log(103, response)
-
       setTotalRecord(response?.data?.totalRecords || 0);
 
       setDataSystem((prevData) => [...prevData, ...formattedData]);
@@ -109,6 +107,7 @@ const GroupSystemPage = () => {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -271,12 +270,6 @@ const GroupSystemPage = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataSystem.map((item) => ({
     ...item,
@@ -319,6 +312,11 @@ const GroupSystemPage = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách hệ thống</div>
@@ -366,41 +364,12 @@ const GroupSystemPage = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                // key: `key${index}`,
-                key: `loading-${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

@@ -3,9 +3,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { EditOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
-import { Button, Form, Input, Skeleton, Space, Table } from "antd";
+import { Button, Form, Input, Space, Spin } from "antd";
 import { editSettings, getSettings } from "@/src/services/settings";
 import BaseModal from "@/src/component/config/BaseModal";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface SettingsModal {
   id: number;
@@ -13,8 +14,6 @@ export interface SettingsModal {
   stringValue: string;
   description: string;
 }
-
-type DataTypeWithKey = SettingsModal & { key: React.Key };
 
 const Settings = () => {
   const [form] = Form.useForm();
@@ -27,6 +26,7 @@ const Settings = () => {
   );
   const [pageIndex, setPageIndex] = useState(1);
   const [totalRecord, setTotalRecord] = useState(100);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isFetchingRef = useRef(false);
 
@@ -43,14 +43,11 @@ const Settings = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataSettings.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       genSettings().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -66,6 +63,9 @@ const Settings = () => {
   }, []);
 
   const genSettings = async () => {
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getSettings();
       const formattedData =
@@ -82,6 +82,7 @@ const Settings = () => {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -141,38 +142,22 @@ const Settings = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Danh sách cấu hình trang tính
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(15)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table dataSource={dataSettings} columns={columns} pagination={false} />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSettings}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

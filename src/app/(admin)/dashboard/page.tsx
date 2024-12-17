@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { DatePicker, Select, Skeleton, Space, Spin, Table } from "antd";
+import { DatePicker, Select, Space, Spin } from "antd";
 import type { TableProps } from "antd/es/table";
 import Header from "@/src/component/Header";
 import BarChart from "../products/BarChartMoney";
@@ -23,6 +23,7 @@ import { RoleContext } from "@/src/component/RoleWapper";
 import { formatDate } from "@/src/utils/buildQueryParams";
 import { Utility } from "@/src/utils/Utility";
 import CustomSelect from "@/src/component/CustomSelect";
+import LoadingTable from "@/src/component/LoadingTable";
 
 interface DataType {
   id: number;
@@ -70,11 +71,8 @@ interface TransactionData {
 
 interface FilterProducts {
   Name: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Value: any;
 }
-
-type DataTypeWithKey = DataType & { key: React.Key };
 
 const Dashboard = () => {
   const { dataRole } = useContext(RoleContext);
@@ -98,26 +96,21 @@ const Dashboard = () => {
     const documentHeight = document.documentElement.scrollHeight;
 
     if (scrollPosition >= documentHeight && !isFetchingRef.current) {
-      console.log(100, "call here")
       isFetchingRef.current = true;
       setPageIndex((prev) => prev + 1);
     }
   };
 
   useEffect(() => {
-    console.log(106, pageIndex)
     if (pageIndex > 1 && dataStatistics.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchListStatistics().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
-        }, 0);
+        }, 100);
       });
     }
   }, [pageIndex]);
@@ -130,7 +123,6 @@ const Dashboard = () => {
     };
   }, [pageIndex]);
 
-  console.log(130, dataStatistics);
 
   const fetchListStatistics = async (
     bank?: number,
@@ -200,11 +192,13 @@ const Dashboard = () => {
       Value: values,
     });
     addedParams.add(keys!);
+
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     setLoading(true);
     try {
       const response = await getListStatistics(pageIndex, 20, undefined, arrFilter);
-
-      console.log(204, arrFilter)
 
       const formattedData =
         response?.data?.source?.map((x: DataType) => ({
@@ -228,6 +222,7 @@ const Dashboard = () => {
       console.error("Error fetching statistics:", error);
     } finally {
       setLoading(false); // Set loading to false after fetching
+      setIsLoading(false)
     }
   };
 
@@ -805,33 +800,12 @@ const Dashboard = () => {
           </Space>
         </div>
         <div className="mt-5 mx-[35px]">
-          {loading ? (
-            <Table
-              rowKey="key"
-              pagination={false}
-              loading={loading}
-              dataSource={
-                [...Array(10)].map((_, index) => ({
-                  key: `key${index}`,
-                })) as DataTypeWithKey[]
-              }
-              columns={columns.map((column) => ({
-                ...column,
-                render: function renderPlaceholder() {
-                  return (
-                    <Skeleton
-                      key={column.key as React.Key}
-                      title
-                      active={false}
-                      paragraph={false}
-                    />
-                  );
-                },
-              }))}
-            />
-          ) : (
-            <Table dataSource={dataStatistics} columns={columns} pagination={false} />
-          )}
+          <LoadingTable
+            loading={loading}
+            pageIndex={pageIndex}
+            dataSource={dataStatistics}
+            columns={columns}
+          />
         </div>
       </div>
       <BaseModal

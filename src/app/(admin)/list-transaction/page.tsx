@@ -5,8 +5,7 @@ import {
   DatePicker,
   Form,
   Select,
-  Skeleton,
-  Table,
+  Spin,
   Tooltip,
 } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
@@ -23,8 +22,7 @@ import { RoleContext } from "@/src/component/RoleWapper";
 import ModalDetail from "@/src/module/listTransaction/ModalDetail";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
-
-type DataTypeWithKey = DataTransactionType & { key: React.Key };
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface TransactionFilter {
   label: string;
@@ -66,8 +64,9 @@ const ListTransactionPage = () => {
   const [dataDetail, setDataDetail] = useState<DataDetail>();
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [listItemDelete, setListItemDelete] = useState<number[]>([]);
-  const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const [selectedRowKeys] = useState<React.Key[]>([]);
   const [isDeleteOneItem, setIsDeleteOneItem] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getListTypeTransaction = async () => {
     const responsive = await apiClient.get("/allcode-api/find", {
@@ -216,14 +215,11 @@ const ListTransactionPage = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataTransaction.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchData({}).finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -289,6 +285,10 @@ const ListTransactionPage = () => {
       pageSize: 20,
     });
 
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
+
     try {
       setLoading(true);
       const responsive = await apiClient.get("/asset-api/find", { params });
@@ -305,6 +305,7 @@ const ListTransactionPage = () => {
     } catch (error) {
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -371,16 +372,13 @@ const ListTransactionPage = () => {
     }
   };
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách giao dịch</div>
@@ -449,39 +447,12 @@ const ListTransactionPage = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataTransaction}
-            columns={columns}
-            rowSelection={rowSelection}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataTransaction}
+          columns={columns}
+        />
       </div>
 
       <ModalAddNew

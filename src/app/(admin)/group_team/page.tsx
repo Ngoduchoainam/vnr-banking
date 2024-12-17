@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Header from "@/src/component/Header";
-import { Button, Form, Input, Select, Skeleton, Space, Table } from "antd";
+import { Button, Form, Input, Select, Space, Spin } from "antd";
 import BaseModal from "@/src/component/config/BaseModal";
 import { toast } from "react-toastify"; // Import toast
 import DeleteModal from "@/src/component/config/modalDelete";
@@ -15,6 +15,7 @@ import {
 } from "@/src/services/groupTeam";
 import { getBranchSystem } from "@/src/services/branchSystem";
 import { RoleContext } from "@/src/component/RoleWapper";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface DataTeamModal {
   id: number;
@@ -43,8 +44,6 @@ interface OptionBranch {
   value?: number;
 }
 
-type DataTypeWithKey = DataTeamModal & { key: React.Key };
-
 const GroupTeamPage = () => {
   const { dataRole } = useContext(RoleContext);
   const keys = dataRole.key;
@@ -66,6 +65,7 @@ const GroupTeamPage = () => {
   const [isAddGroupTeam, setIsAddGroupTeam] = useState<boolean>(false);
 
   const isFetchingRef = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -80,14 +80,11 @@ const GroupTeamPage = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataTeam.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchGroupSystem().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -110,6 +107,9 @@ const GroupTeamPage = () => {
       Value: values,
     });
     addedParams.add(keys!);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await getGroupTeam(
         pageIndex,
@@ -134,6 +134,7 @@ const GroupTeamPage = () => {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -367,12 +368,6 @@ const GroupTeamPage = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataTeam.map((item) => ({
     ...item,
@@ -415,6 +410,11 @@ const GroupTeamPage = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách đội nhóm</div>
@@ -462,40 +462,12 @@ const GroupTeamPage = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

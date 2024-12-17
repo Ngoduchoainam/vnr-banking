@@ -8,9 +8,8 @@ import {
   Form,
   Input,
   Select,
-  Skeleton,
   Space,
-  Table,
+  Spin,
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import BaseModal from "@/src/component/config/BaseModal";
@@ -21,6 +20,7 @@ import { getGroupTeam } from "@/src/services/groupTeam";
 import { toast } from "react-toastify";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { RoleContext } from "@/src/component/RoleWapper";
+import LoadingTable from "@/src/component/LoadingTable";
 
 export interface DataRole {
   id: number;
@@ -41,8 +41,6 @@ interface FilterRole {
   Name: string;
   Value: string;
 }
-
-type DataTypeWithKey = DataRole & { key: React.Key };
 
 const Role = () => {
   const { dataRole } = useContext(RoleContext);
@@ -68,6 +66,7 @@ const Role = () => {
   const pageSize = 20;
   const [role, setRole] = useState(false);
   const [isAddRole, setIsAddRole] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isFetchingRef = useRef(false);
 
@@ -84,14 +83,11 @@ const Role = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataRolePage.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchListRole().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -114,7 +110,10 @@ const Role = () => {
       Value: values,
     });
     addedParams.add(keys!);
-    // setLoading(true);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
+
     try {
       const response = await getRole(pageIndex, pageSize, globalTerm, arrRole);
       const formattedData =
@@ -133,14 +132,13 @@ const Role = () => {
           password: x.password,
         })) || [];
 
-      console.log(132, response)
-
       setTotalRecord(response?.data?.totalRecords || 0);
       setDataRolePage((prevData) => [...prevData, ...formattedData]);
     } catch (error) {
       console.error("Error fetching:", error);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -382,12 +380,6 @@ const Role = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataRolePage.map((item) => ({
     ...item,
@@ -425,6 +417,11 @@ const Role = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách quyền</div>
@@ -465,40 +462,12 @@ const Role = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}

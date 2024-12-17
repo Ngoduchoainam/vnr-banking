@@ -9,9 +9,8 @@ import {
   Input,
   Select,
   Space,
-  Table,
   Radio,
-  Skeleton
+  Spin
 } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +32,7 @@ import { AxiosError } from "axios";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { RoleContext } from "@/src/component/RoleWapper";
 import CustomSelect from "@/src/component/CustomSelect";
+import LoadingTable from "@/src/component/LoadingTable";
 
 interface FilterGroupAccount {
   Name: string;
@@ -67,8 +67,6 @@ interface OptionAccountGroup {
   value?: number;
 }
 
-type DataTypeWithKey = BankAccounts & { key: React.Key };
-
 const Account = () => {
   const [form] = Form.useForm();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -93,6 +91,7 @@ const Account = () => {
   const [, setIsEditMode] = useState(false);
   const [accountGroup, setAccountGroup] = useState<Array<OptionAccountGroup>>([]);
   const [totalRecord, setTotalRecord] = useState(100);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isAddAccount, setIsAddAccount] = useState<boolean>(false);
 
@@ -133,14 +132,11 @@ const Account = () => {
   useEffect(() => {
     if (pageIndex > 1 && dataAccount.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
-      const previousDocumentHeight = document.documentElement.scrollHeight;
 
       fetchAccounts().finally(() => {
         setTimeout(() => {
-          const newDocumentHeight = document.documentElement.scrollHeight;
-          const scrollDifference = newDocumentHeight - previousDocumentHeight;
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollDifference);
+          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
           isFetchingRef.current = false;
         }, 0);
       });
@@ -203,6 +199,9 @@ const Account = () => {
     });
     addedParams.add(keys!);
     setLoading(true);
+    if (pageIndex > 1) {
+      setIsLoading(true)
+    }
     try {
       const response = await fetchBankAccounts(
         pageIndex,
@@ -246,6 +245,7 @@ const Account = () => {
       setDataAccount([]);
     } finally {
       setLoading(false);
+      setIsLoading(false)
     }
   };
 
@@ -1008,12 +1008,6 @@ const Account = () => {
   }, [checkFilter]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
-      setSelectedRowKeys(newSelectedRowKeys);
-    },
-  };
 
   const dataSource = dataAccount.map((item) => ({
     ...item,
@@ -1076,6 +1070,11 @@ const Account = () => {
 
   return (
     <>
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
+          <Spin size="large" />
+        </div>
+      )}
       <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách tài khoản</div>
@@ -1291,40 +1290,12 @@ const Account = () => {
             </Button>
           </div>
         </div>
-        {loading ? (
-          <Table
-            rowKey="key"
-            pagination={false}
-            loading={loading}
-            dataSource={
-              [...Array(13)].map((_, index) => ({
-                key: `key${index}`,
-              })) as DataTypeWithKey[]
-            }
-            columns={columns.map((column) => ({
-              ...column,
-              render: function renderPlaceholder() {
-                return (
-                  <Skeleton
-                    key={column.key as React.Key}
-                    title
-                    active={false}
-                    paragraph={false}
-                  />
-                );
-              },
-            }))}
-          />
-        ) : (
-          <Table
-            rowKey="key"
-            dataSource={dataSource}
-            columns={columns}
-            rowSelection={rowSelection}
-            loading={loading}
-            pagination={false}
-          />
-        )}
+        <LoadingTable
+          loading={loading}
+          pageIndex={pageIndex}
+          dataSource={dataSource}
+          columns={columns}
+        />
       </div>
       <BaseModal
         open={isAddModalOpen}
