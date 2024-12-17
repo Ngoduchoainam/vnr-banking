@@ -137,6 +137,10 @@ const GroupSystemPage = () => {
       toast.success(
         currentSystem ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
+
+      await setPageIndex(1);;
+      await setDataSystem([])
+
       fetchGroupSystem();
       setLoading(false);
     } catch (error) {
@@ -177,7 +181,9 @@ const GroupSystemPage = () => {
       setIsAddModalOpen(false);
       await deleteGroupSystem([x.id]);
       toast.success("Xóa nhóm hệ thống thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataSystem([])
+      fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -285,7 +291,9 @@ const GroupSystemPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupSystem(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataSystem([])
+      fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);

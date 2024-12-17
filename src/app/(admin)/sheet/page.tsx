@@ -137,7 +137,9 @@ const Sheet = () => {
       }
       form.resetFields();
       setCurrentSheet(null);
-      await fetchSheet();
+      await setPageIndex(1);
+      await setDataSheet([])
+      fetchSheet();
     } catch (error) {
       console.error("Lỗi:", error);
       toast.error("Có lỗi xảy ra, vui lòng thử lại!");
@@ -167,7 +169,9 @@ const Sheet = () => {
     try {
       setIsAddModalOpen(false);
       await deleteSheet([x.id]);
-      await fetchSheet();
+      await setPageIndex(1);
+      await setDataSheet([])
+      fetchSheet();
       toast.success("Xóa thành công!");
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -284,7 +288,9 @@ const Sheet = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteSheet(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchSheet();
+      await setPageIndex(1);
+      await setDataSheet([])
+      fetchSheet();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);

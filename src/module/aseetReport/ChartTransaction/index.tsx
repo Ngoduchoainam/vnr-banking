@@ -10,12 +10,17 @@ import {
 } from "@/src/utils/buildQueryParams";
 import type { DatePickerProps } from "antd";
 
+interface Option {
+  label?: string;
+  value?: string
+}
+
 export interface ListOptionsTransactionType {
-  account: [];
-  system: [];
-  team: [];
-  branch: [];
-  team_acount: [];
+  account: Option[];
+  system: Option[];
+  team: Option[];
+  branch: Option[];
+  team_acount: Option[];
 }
 
 const ChartTransaction = () => {
@@ -360,6 +365,8 @@ const ChartTransaction = () => {
     return sum + item.balance;
   }, 0);
 
+  console.log(363, listOptions.account);
+
   return (
     <>
       <div className="flex items-center gap-4 mb-10">
@@ -368,6 +375,10 @@ const ChartTransaction = () => {
           placeholder="Loại tài khoản"
           style={{ width: 245 }}
           allowClear
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           onChange={(e) => handleChangeAccount(e)}
         />
         <Select
@@ -375,6 +386,10 @@ const ChartTransaction = () => {
           placeholder="Hệ thống"
           style={{ width: 245 }}
           allowClear
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           onChange={(e) => handleChangeSystem(e)}
         />
         <Select
@@ -382,6 +397,10 @@ const ChartTransaction = () => {
           placeholder="Chi nhánh"
           style={{ width: 245 }}
           allowClear
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           disabled={
             dataFilterTransaction.dataSystem === "" ||
             listOptions.branch.length === 0
@@ -394,6 +413,10 @@ const ChartTransaction = () => {
           placeholder="Đội nhóm"
           style={{ width: 245 }}
           allowClear
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           disabled={
             dataFilterTransaction.dataBranch === undefined ||
             listOptions.team.length === 0
@@ -407,6 +430,10 @@ const ChartTransaction = () => {
           placeholder="Nhóm tài khoản"
           style={{ width: 245 }}
           allowClear
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           onChange={(e) => handleChangeTeamAccount(e)}
         />
         <DatePicker

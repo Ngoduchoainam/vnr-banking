@@ -120,6 +120,8 @@ const ListTransactionPage = () => {
       const responsive = await apiClient.post("/asset-api/delete", id);
       if (responsive.data.success) {
         toast.success(responsive.data.message || "Xóa bản ghi thành công");
+        await setPageIndex(1);;
+        await setDataTransaction([])
         fetchData({});
       } else {
         toast.error(responsive.data.message || "Xảy ra lỗi");
@@ -389,6 +391,10 @@ const ListTransactionPage = () => {
               style={{ width: 245 }}
               allowClear
               options={listOption.typeTransaction}
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (e) => {
                 await setPageIndex(1);;
                 await setDataTransaction([])
@@ -400,6 +406,10 @@ const ListTransactionPage = () => {
               style={{ width: 245 }}
               allowClear
               options={listOption.kindTransaction}
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (e) => {
                 await setPageIndex(1);;
                 await setDataTransaction([])

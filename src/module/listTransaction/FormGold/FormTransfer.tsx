@@ -56,7 +56,7 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
 
       setListType(listTypeAssetConvert);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getListTransType = async () => {
@@ -73,7 +73,7 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
 
       setListTransType(listTypeAssetConvert);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const getListFaceValue = async () => {
@@ -98,7 +98,7 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
       setFaceValueList(faceValueTotalConvert);
       setListFaceValue(listFaceConvert);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {}
+    } catch (error) { }
   };
 
   useEffect(() => {
@@ -229,6 +229,10 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
               <Select
                 options={listType}
                 placeholder="Chọn loại vàng"
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={() => {
                   setListFaceValue([]);
                   setFaceValueChoose([]);
@@ -259,6 +263,10 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
                   options={listFaceValue}
                   value={selectedValues}
                   className={`${dataForm.type ? "" : "pointer-events-none"}`}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Space>
             </Form.Item>
@@ -343,10 +351,10 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
                               formatter={(value) =>
                                 value
                                   ? `${new Intl.NumberFormat("vi-VN", {
-                                      style: "currency",
-                                      currency: "VND",
-                                      maximumFractionDigits: 0,
-                                    }).format(Number(value))}`
+                                    style: "currency",
+                                    currency: "VND",
+                                    maximumFractionDigits: 0,
+                                  }).format(Number(value))}`
                                   : ""
                               }
                               parser={(value) =>
@@ -357,10 +365,9 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
                           <div className="flex gap-4">
                             <Button
                               onClick={() => handleClickDesc(index)}
-                              className={`${
-                                itemFaceValue.quantity === 1 &&
+                              className={`${itemFaceValue.quantity === 1 &&
                                 "pointer-events-none"
-                              } !h-10 w-10`}
+                                } !h-10 w-10`}
                             >
                               -
                             </Button>
@@ -397,6 +404,10 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
               <Select
                 options={listTransType}
                 placeholder="Chọn loại giao dịch"
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
               />
             </Form.Item>
 
@@ -457,9 +468,8 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
                   onClick={() => {
                     handleSubmit(true);
                   }}
-                  className={`${
-                    isCreateGoldTransfer && "pointer-events-none"
-                  } w-[189px] !h-10 bg-[#4B5CB8] hover:bg-[#3A4A9D]`}
+                  className={`${isCreateGoldTransfer && "pointer-events-none"
+                    } w-[189px] !h-10 bg-[#4B5CB8] hover:bg-[#3A4A9D]`}
                   loading={isCreateGoldTransfer}
                 >
                   Tiếp tục
@@ -470,9 +480,8 @@ export const FormTransfer = ({ onCancel, fetchData }: FormMoneyType) => {
         </Row>
       </Form>
       <Spin
-        className={`${
-          isPending ? "!absolute top-[50%] left-[50%]" : "!hidden"
-        }`}
+        className={`${isPending ? "!absolute top-[50%] left-[50%]" : "!hidden"
+          }`}
       />
     </div>
   );

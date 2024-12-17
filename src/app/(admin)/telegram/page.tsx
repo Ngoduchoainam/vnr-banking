@@ -139,7 +139,9 @@ const Telegram = () => {
         currentTelegram ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
       setIsAddModalOpen(false);
-      await fetchTelegram();
+      await setPageIndex(1);
+      await setDataTelegram([])
+      fetchTelegram();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -179,7 +181,9 @@ const Telegram = () => {
       setIsAddModalOpen(false);
       await deleteTelegram([x.id]);
       toast.success("Xóa nhóm telegram thành công!");
-      await fetchTelegram();
+      await setPageIndex(1);
+      await setDataTelegram([])
+      fetchTelegram();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -290,7 +294,9 @@ const Telegram = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteTelegram(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchTelegram();
+      await setPageIndex(1);
+      await setDataTelegram([])
+      fetchTelegram();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);

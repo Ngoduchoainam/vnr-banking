@@ -72,8 +72,8 @@ const Transaction = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [currentTransaction, setCurrentTransaction] =
     useState<TransactionModal | null>(null);
-  const [banks, setBanks] = useState<Array<TransactionModal>>([]);
-  const [bankAccount, setBankAccount] = useState<Array<TransactionModal>>([]);
+  const [banks, setBanks] = useState([]);
+  const [bankAccount, setBankAccount] = useState([]);
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
@@ -266,6 +266,8 @@ const Transaction = () => {
         setIsAddModalOpen(false); // Chỉ đóng modal khi thành công
         form.resetFields();
         setCurrentTransaction(null);
+        await setPageIndex(1);
+        await setDataTransaction([])
         fetchTransaction();
         setSelectBankId(0);
       }
@@ -296,7 +298,9 @@ const Transaction = () => {
         toast.error(response.message || "Xóa giao dịch thất bại.");
       } else {
         toast.success("Xóa giao dịch thành công!");
-        await fetchTransaction(); // Hoặc cập nhật state trực tiếp để tránh fetch lại toàn bộ.
+        await setPageIndex(1);
+        await setDataTransaction([])
+        fetchTransaction(); // Hoặc cập nhật state trực tiếp để tránh fetch lại toàn bộ.
       }
 
       setIsAddModalOpen(false); // Đặt trong try để chắc chắn chỉ đóng khi thành công.
@@ -560,7 +564,9 @@ const Transaction = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteTransaction(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchTransaction();
+      await setPageIndex(1);
+      await setDataTransaction([])
+      fetchTransaction();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -727,6 +733,10 @@ const Transaction = () => {
                 placeholder="Chọn ngân hàng"
                 onFocus={fetchBankData}
                 options={banks}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={(value: string | null) => {
                   if (!value) {
                     form.setFieldsValue({
@@ -769,7 +779,10 @@ const Transaction = () => {
                   genBankAccountData(formData.bankId);
                 }}
                 options={bankAccount}
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   const selectedGroup = await bankAccount.find(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -802,6 +815,10 @@ const Transaction = () => {
                   { value: "2", label: "Tiền ra" },
                   { value: "3", label: "Tiền vào" },
                 ]}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 placeholder="Chọn loại giao dịch"
                 onChange={(value) => {
                   console.log(value);

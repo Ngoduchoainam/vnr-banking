@@ -105,7 +105,9 @@ const Settings = () => {
 
       setIsAddModalOpen(false);
       setLoading(false);
-      await genSettings();
+      await setPageIndex(1);
+      await setDataSettings([])
+      genSettings();
     } catch (error) {
       console.error("Lỗi:", error);
       setLoading(false);

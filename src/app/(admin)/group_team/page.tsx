@@ -31,6 +31,18 @@ interface FilterRole {
   Value: string;
 }
 
+interface Option {
+  groupSystemId?: number;
+  label?: string;
+  value?: number;
+}
+
+interface OptionBranch {
+  groupBranchId?: number;
+  label?: string;
+  value?: number;
+}
+
 type DataTypeWithKey = DataTeamModal & { key: React.Key };
 
 const GroupTeamPage = () => {
@@ -47,9 +59,9 @@ const GroupTeamPage = () => {
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
 
-  const [groupSystem, setGroupSystem] = useState<Array<DataTeamModal>>([]);
+  const [groupSystem, setGroupSystem] = useState<Array<Option>>([]);
   // const [systemId, setSystemId] = useState<number>(0);
-  const [branchSystem, setBranchSystem] = useState<Array<DataTeamModal>>([]);
+  const [branchSystem, setBranchSystem] = useState<Array<OptionBranch>>([]);
   // const [parentId, setParentId] = useState<number>(0);
   const [isAddGroupTeam, setIsAddGroupTeam] = useState<boolean>(false);
 
@@ -151,7 +163,9 @@ const GroupTeamPage = () => {
       toast.success(
         currentTeam ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataTeam([])
+      fetchGroupSystem();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -195,7 +209,9 @@ const GroupTeamPage = () => {
       setAddModalOpen(false);
       await deleteGroupTeam([x.id]);
       toast.success("Xóa nhóm chi nhánh thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataTeam([])
+      fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -371,7 +387,9 @@ const GroupTeamPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupTeam(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataTeam([])
+      fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -512,12 +530,10 @@ const GroupTeamPage = () => {
               placeholder="Chọn hệ thống"
               onFocus={getGroupSystems}
               options={groupSystem}
-              // onChange={(value) => {
-              //   getBranchSystems(value);
-              //   setSystemId(value);
-              //   // getBranchSystems();
-              // }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 if (!value) {
                   form.setFieldsValue({
@@ -560,7 +576,10 @@ const GroupTeamPage = () => {
               }}
               options={branchSystem}
               allowClear
-              // value={parentId}
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value) => {
                 const selectedGroup = await branchSystem.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any

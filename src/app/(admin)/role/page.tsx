@@ -221,7 +221,9 @@ const Role = () => {
 
       form.resetFields();
       setCurrentRole(null);
-      await fetchListRole();
+      await setPageIndex(1);
+      await setDataRolePage([])
+      fetchListRole();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error && typeof error === "object" && "message" in error) {
@@ -261,7 +263,9 @@ const Role = () => {
     try {
       setIsAddModalOpen(false);
       await deleteRole([role.id]);
-      await fetchListRole();
+      await setPageIndex(1);
+      await setDataRolePage([])
+      fetchListRole();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
     } finally {
@@ -398,7 +402,9 @@ const Role = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteRole(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchListRole();
+      await setPageIndex(1);
+      await setDataRolePage([])
+      fetchListRole();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -530,6 +536,10 @@ const Role = () => {
                   placeholder="Chọn hệ thống"
                   onFocus={getGroupSystems}
                   options={groupSystem}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                   onChange={(value) => {
                     setSystemId(value);
                     getBranchSystems();
@@ -543,6 +553,10 @@ const Role = () => {
                   placeholder="Chọn chi nhánh"
                   onFocus={getBranchSystems}
                   options={branchSystem}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                   onChange={(value) => {
                     setParentId(value);
                     getGroupTeams();
@@ -556,6 +570,10 @@ const Role = () => {
                   placeholder="Chọn đội nhóm"
                   onFocus={getGroupTeams}
                   options={groupTeam}
+                  showSearch
+                  filterOption={(input, option) =>
+                    option.label.toLowerCase().includes(input.toLowerCase())
+                  }
                 />
               </Form.Item>
             </>

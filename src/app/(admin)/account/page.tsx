@@ -44,6 +44,29 @@ const accountTypeOptions = [
   { value: "2", label: "Tài khoản marketing" },
 ];
 
+interface OptionTeam {
+  label?: string;
+  value?: number;
+}
+
+interface Option {
+  groupSystemId?: number;
+  label?: string;
+  value?: number;
+}
+
+interface OptionBranch {
+  groupBranchId?: number;
+  label?: string;
+  value?: number;
+}
+
+interface OptionAccountGroup {
+  selectedAccountGroups?: number;
+  label?: string;
+  value?: number;
+}
+
 type DataTypeWithKey = BankAccounts & { key: React.Key };
 
 const Account = () => {
@@ -59,16 +82,16 @@ const Account = () => {
   const [dataAccount, setDataAccount] = useState<BankAccounts[]>([]);
   const [banks, setBanks] = useState([]);
   const [phoneNumber, setPhoneNumber] = useState<Array<BankAccounts>>([]);
-  const [groupSystem, setGroupSystem] = useState<Array<BankAccounts>>([]);
-  const [branchSystem, setBranchSystem] = useState<Array<BankAccounts>>([]);
-  const [groupTeam, setGroupTeam] = useState<Array<BankAccounts>>([]);
+  const [groupSystem, setGroupSystem] = useState<Array<Option>>([]);
+  const [branchSystem, setBranchSystem] = useState<Array<OptionBranch>>([]);
+  const [groupTeam, setGroupTeam] = useState<Array<OptionTeam>>([]);
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
   const [value, setValue] = useState("");
   const [globalTerm, setGlobalTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [, setIsEditMode] = useState(false);
-  const [accountGroup, setAccountGroup] = useState<Array<BankAccounts>>([]);
+  const [accountGroup, setAccountGroup] = useState<Array<OptionAccountGroup>>([]);
   const [totalRecord, setTotalRecord] = useState(100);
 
   const [isAddAccount, setIsAddAccount] = useState<boolean>(false);
@@ -425,7 +448,9 @@ const Account = () => {
         setIsAddModalOpen(false);
         form.resetFields();
         setCurrentAccount(null);
-        await fetchAccounts();
+        await setPageIndex(1);;
+        await setDataAccount([])
+        fetchAccounts();
         toast.success("Thêm mới thành công!");
       }
     } catch (error: any) {
@@ -532,7 +557,9 @@ const Account = () => {
         return;
       }
       toast.success("Xóa thành công tài khoản ngân hàng!");
-      await fetchAccounts();
+      await setPageIndex(1);;
+      await setDataAccount([])
+      fetchAccounts();
     } catch (error: any) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
       if (error.isAxiosError && error.response) {
@@ -1005,7 +1032,9 @@ const Account = () => {
         return;
       }
       toast.success("Xóa các mục thành công!");
-      await fetchAccounts();
+      await setPageIndex(1);;
+      await setDataAccount([])
+      fetchAccounts();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -1081,9 +1110,12 @@ const Account = () => {
                 placeholder="Nhóm tài khoản"
                 style={{ width: 245 }}
                 allowClear
-                onChange={async (value: any) => {
-                  console.log(value, "value");
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
 
+                onChange={async (value: any) => {
                   const parsedValue = Array.isArray(value)
                     ? value
                     :
@@ -1321,6 +1353,10 @@ const Account = () => {
             <Select
               options={accountTypeOptions}
               placeholder="Chọn loại tài khoản"
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={(e) => {
                 // console.log(e);
                 handleAccountTypeChange(e);
@@ -1348,6 +1384,10 @@ const Account = () => {
                 onFocus={() => getGroupSystems()}
                 placeholder="Chọn hệ thống"
                 options={groupSystem}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (e) => {
                   if (!e) {
                     form.setFieldsValue({
@@ -1394,6 +1434,10 @@ const Account = () => {
               <Select
                 allowClear
                 disabled={defaultGroupBranchId ? true : false}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 defaultValue={
                   form.getFieldsValue().groupBranchId?.toString().trim()
                     ? {
@@ -1455,6 +1499,10 @@ const Account = () => {
                   <Select
                     allowClear
                     disabled={defaultGroupTeamId ? true : false}
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.label.toLowerCase().includes(input.toLowerCase())
+                    }
                     defaultValue={
                       form.getFieldsValue().groupTeamId?.toString().trim()
                         ? {
@@ -1505,11 +1553,14 @@ const Account = () => {
                   }
                   : undefined
               }
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onFocus={() => fetchBankData()}
               placeholder="Chọn ngân hàng"
               options={banks}
               onChange={async (e) => {
-                console.log(e);
                 const id = Number(e).toString();
                 setSaveBank(id);
               }}
@@ -1605,6 +1656,10 @@ const Account = () => {
               placeholder="Chọn nhóm tài khoản"
               mode="multiple"
               onFocus={getListAccountGroup}
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any[]) => {
                 const selectedGroups = accountGroup.filter((item: any) =>
                   value.includes(item.value)

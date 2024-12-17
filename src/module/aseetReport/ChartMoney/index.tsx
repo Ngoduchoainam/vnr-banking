@@ -222,6 +222,10 @@ const ChartMoney = ({ active }: { active: number }) => {
           options={typeMoney.listType}
           allowClear
           placeholder="Loại tiền"
+          showSearch
+          filterOption={(input, option) =>
+            option.label.toLowerCase().includes(input.toLowerCase())
+          }
           onChange={(e) => {
             handleChangeTypeMoney(e);
           }}

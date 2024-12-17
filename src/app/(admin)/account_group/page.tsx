@@ -157,7 +157,9 @@ const PhoneNumber: React.FC = () => {
         currentAccount ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
       setIsAddModalOpen(false);
-      await fetchAccountGroup();
+      await setPageIndex(1);;
+      await setDataAccountGroup([])
+      fetchAccountGroup();
       form.resetFields();
       setCurrentAccount(null);
     } catch (error) {
@@ -193,7 +195,9 @@ const PhoneNumber: React.FC = () => {
         return;
       }
       toast.success("Xóa thành công!");
-      await fetchAccountGroup();
+      await setPageIndex(1);;
+      await setDataAccountGroup([])
+      fetchAccountGroup();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Lỗi khi xóa nhóm tài khoản:", error);
@@ -287,7 +291,9 @@ const PhoneNumber: React.FC = () => {
       }
 
       toast.success("Xóa các mục thành công!");
-      await fetchAccountGroup();
+      await setPageIndex(1);;
+      await setDataAccountGroup([])
+      fetchAccountGroup();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

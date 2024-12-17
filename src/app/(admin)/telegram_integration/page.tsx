@@ -37,6 +37,18 @@ interface FilterTeleIntergration {
   Value: string;
 }
 
+interface OptionBank {
+  bankAccountId?: number,
+  label?: string,
+  value?: number,
+}
+
+interface OptionTelegram {
+  groupChatId?: number,
+  label?: string,
+  value?: number,
+}
+
 type DataTypeWithKey = ListTelegramIntegration & { key: React.Key };
 
 const TelegramIntegration = () => {
@@ -51,8 +63,8 @@ const TelegramIntegration = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [currentTelegram, setCurrentTelegram] =
     useState<ListTelegramIntegration | null>(null);
-  const [banks, setBanks] = useState<Array<ListTelegramIntegration>>([]);
-  const [telegram, setTelegram] = useState<Array<ListTelegramIntegration>>([]);
+  const [banks, setBanks] = useState<Array<OptionBank>>([]);
+  const [telegram, setTelegram] = useState<Array<OptionTelegram>>([]);
   const [loading, setLoading] = useState(true);
   const [globalTerm, setGlobalTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
@@ -205,9 +217,7 @@ const TelegramIntegration = () => {
     }
   };
 
-  const [transType, setTransType] = useState<Array<ListTelegramIntegration>>(
-    []
-  );
+  const [transType, setTransType] = useState([]);
 
   const genTransTypes = async (
     bankAccountId: number,
@@ -250,6 +260,8 @@ const TelegramIntegration = () => {
       setIsAddModalOpen(false);
       form.resetFields();
       setCurrentTelegram(null);
+      await setPageIndex(1);
+      await setDataTelegramIntegration([])
       fetchListTelegramIntegration();
 
     } catch (error) {
@@ -281,8 +293,9 @@ const TelegramIntegration = () => {
     try {
       setIsAddModalOpen(false);
       await deleteTelegramIntergration([x.id]);
-      await fetchListTelegramIntegration();
-      console.log(311, "call handleDelete")
+      await setPageIndex(1);
+      await setDataTelegramIntegration([])
+      fetchListTelegramIntegration();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
     } finally {
@@ -542,8 +555,9 @@ const TelegramIntegration = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteTelegramIntergration(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchListTelegramIntegration();
-      console.log(573, "call handleDeletes")
+      await setPageIndex(1);
+      await setDataTelegramIntegration([])
+      fetchListTelegramIntegration();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -599,7 +613,10 @@ const TelegramIntegration = () => {
                 placeholder="Nhóm tài khoản"
                 style={{ width: 245 }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setGroupChatFilter(value);
                   await setPageIndex(1);
@@ -624,7 +641,10 @@ const TelegramIntegration = () => {
                 placeholder="Loại giao dịch"
                 style={{ width: 245, margin: "0 10px" }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setTransTypeFilter(value);
                   await setPageIndex(1);
@@ -650,7 +670,10 @@ const TelegramIntegration = () => {
                 placeholder="Tên ngân hàng"
                 style={{ width: 245, marginRight: "10px" }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setBankAccountFilter(value);
                   await setPageIndex(1);
@@ -773,6 +796,10 @@ const TelegramIntegration = () => {
                 placeholder="Chọn ngân hàng"
                 onFocus={genBankData}
                 options={banks}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value) => {
                   const selectedGroup = await banks.find(
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -798,7 +825,10 @@ const TelegramIntegration = () => {
               placeholder="Chọn nhóm telegram"
               onFocus={genTelegramData}
               options={telegram}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const selectedGroup = await telegram.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -845,10 +875,12 @@ const TelegramIntegration = () => {
                 );
               }}
               options={transType}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const selectedGroup = await transType.find(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (item: any) => item.value === value
                 );
                 if (selectedGroup) {

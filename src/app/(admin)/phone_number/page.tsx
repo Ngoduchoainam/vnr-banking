@@ -134,7 +134,9 @@ const PhoneNumber: React.FC = () => {
         currentTelegram ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
       setIsAddModalOpen(false);
-      await fetchListPhone();
+      await setPageIndex(1);
+      await setDataPhoneNumber([])
+      fetchListPhone();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       if (error?.response?.data?.message) {
@@ -170,7 +172,9 @@ const PhoneNumber: React.FC = () => {
         return;
       }
       toast.success("Xóa số điện thoại thành công!");
-      await fetchListPhone();
+      await setPageIndex(1);
+      await setDataPhoneNumber([])
+      fetchListPhone();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error deleting phone number:", error);
@@ -306,7 +310,9 @@ const PhoneNumber: React.FC = () => {
         return;
       }
       toast.success("Xóa các mục thành công!");
-      await fetchListPhone();
+      await setPageIndex(1);
+      await setDataPhoneNumber([])
+      fetchListPhone();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {

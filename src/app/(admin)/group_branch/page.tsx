@@ -28,6 +28,12 @@ interface FilterRole {
   Value: string;
 }
 
+interface Option {
+  groupSystemId?: number;
+  label?: string;
+  value?: number;
+}
+
 type DataTypeWithKey = DataBranchModal & { key: React.Key };
 
 const GroupBranchPage = () => {
@@ -46,7 +52,7 @@ const GroupBranchPage = () => {
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
 
-  const [groupSystem, setGroupSystem] = useState<Array<DataBranchModal>>([]);
+  const [groupSystem, setGroupSystem] = useState<Array<Option>>([]);
   // const [systemId, setSystemId] = useState<number>(0);
   const [isAddGroupBranch, setIsAddGroupBranch] = useState<boolean>(false);
 
@@ -145,7 +151,9 @@ const GroupBranchPage = () => {
       toast.success(
         currentBranch ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataBranch([])
+      fetchGroupSystem();
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -187,7 +195,9 @@ const GroupBranchPage = () => {
       setIsAddModalOpen(false);
       await deleteGroupBranch([x.id]);
       toast.success("Xóa nhóm chi nhánh thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataBranch([])
+      fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -325,7 +335,9 @@ const GroupBranchPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupBranch(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchGroupSystem();
+      await setPageIndex(1);;
+      await setDataBranch([])
+      fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -466,15 +478,13 @@ const GroupBranchPage = () => {
           >
             <Select
               placeholder="Chọn hệ thống"
-              onFocus={getGroupSystems}
               options={groupSystem}
-              // value={systemId}
+              onFocus={() => getGroupSystems()}
               allowClear
-              // onChange={(value) => {
-              //   setSystemId(value);
-              //   // getBranchSystems();
-              // }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const selectedGroup = await groupSystem.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any

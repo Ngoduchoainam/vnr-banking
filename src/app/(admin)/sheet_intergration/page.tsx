@@ -55,8 +55,8 @@ const SheetIntergration = () => {
   const [currentSheet, setCurrentSheet] = useState<ListSheetIntegration | null>(
     null
   );
-  const [banks, setBanks] = useState<Array<ListSheetIntegration>>([]);
-  const [sheet, setSheet] = useState<Array<ListSheetIntegration>>([]);
+  const [banks, setBanks] = useState([]);
+  const [sheet, setSheet] = useState([]);
   const [isAddSheetInter, setIsAddSheetInter] = useState<boolean>(false);
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
@@ -200,7 +200,7 @@ const SheetIntergration = () => {
     }
   };
 
-  const [transType, setTransType] = useState<Array<ListSheetIntegration>>([]);
+  const [transType, setTransType] = useState([]);
 
   const genTransTypes = async (
     bankAccountId: number,
@@ -263,6 +263,8 @@ const SheetIntergration = () => {
       setIsAddModalOpen(false);
       form.resetFields();
       setCurrentSheet(null);
+      await setPageIndex(1);
+      await setDataSheetIntegration([])
       fetchSheetIntegration();
     } catch (error) {
       console.error("Lỗi:", error);
@@ -296,7 +298,9 @@ const SheetIntergration = () => {
     try {
       setIsAddModalOpen(false);
       await deleteSheetIntergration([x.id]);
-      await fetchSheetIntegration();
+      await setPageIndex(1);
+      await setDataSheetIntegration([])
+      fetchSheetIntegration();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
     } finally {
@@ -558,7 +562,9 @@ const SheetIntergration = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteSheetIntergration(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await fetchSheetIntegration();
+      await setPageIndex(1);
+      await setDataSheetIntegration([])
+      fetchSheetIntegration();
       setSelectedRowKeys([]);
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -611,7 +617,10 @@ const SheetIntergration = () => {
                 placeholder="Nhóm trang tính"
                 style={{ width: 245 }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setSheetIdFilter(value);
                   await setPageIndex(1);
@@ -640,7 +649,10 @@ const SheetIntergration = () => {
                 placeholder="Loại giao dịch"
                 style={{ width: 245, margin: "0 10px" }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setTransTypeFilter(value);
                   if (!value) {
@@ -666,7 +678,10 @@ const SheetIntergration = () => {
                 placeholder="Tên ngân hàng"
                 style={{ width: 245, marginRight: "10px" }}
                 allowClear
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value: any) => {
                   setBankAccountFilter(value);
                   await setPageIndex(1);
@@ -793,6 +808,10 @@ const SheetIntergration = () => {
                 placeholder="Chọn ngân hàng"
                 onFocus={genBankData}
                 options={banks}
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
                 onChange={async (value) => {
                   setBankAccountIdSelect(value);
                   const selectedGroup = await banks.find(
@@ -820,7 +839,10 @@ const SheetIntergration = () => {
               placeholder="Chọn nhóm trang tính"
               onFocus={genSheetData}
               options={sheet}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const selectedGroup = await sheet.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -860,7 +882,10 @@ const SheetIntergration = () => {
                 );
               }}
               options={transType}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
               onChange={async (value: any) => {
                 const selectedGroup = await transType.find(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
