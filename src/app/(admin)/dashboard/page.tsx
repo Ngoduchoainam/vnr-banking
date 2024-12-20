@@ -866,7 +866,7 @@ const Dashboard = () => {
                       className="pt-3 border-b border-solid border-gray-300"
                     >
                       <div>{x?.chatName}</div>
-                      <div className="bg-[#04a616] w-24 rounded-xl flex justify-center text-white my-1">
+                      <div className="bg-[#ef4444] w-24 rounded-xl flex justify-center text-white my-1">
                         {x?.logMessageDescription}
                       </div>
                       <div className="pb-3">

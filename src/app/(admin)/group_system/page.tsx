@@ -192,6 +192,7 @@ const GroupSystemPage = () => {
   };
 
   const handleSearch = async (value: string) => {
+    console.log(195, value)
     setGlobalTerm(value);
     try {
       if (value.trim() === "") {
@@ -337,9 +338,10 @@ const GroupSystemPage = () => {
               }
             }}
             onPressEnter={async (e) => {
-              await setPageIndex(1);;
-              await setDataSystem([])
-              handleSearch(e.currentTarget.value);
+              await setPageIndex(1);
+              await setDataSystem([]);
+
+              handleSearch((e.target as HTMLInputElement).value);
             }}
           />
           <div className="flex">

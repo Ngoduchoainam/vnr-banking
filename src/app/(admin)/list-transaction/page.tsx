@@ -10,7 +10,6 @@ import {
 } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
-import { DeleteOutlined } from "@ant-design/icons";
 
 import Header from "@/src/component/Header";
 import ModalAddNew from "@/src/module/listTransaction/modalAddNew";
@@ -137,12 +136,6 @@ const ListTransactionPage = () => {
     getDataDetail(id);
   };
 
-  const handleDelete = (id: number) => {
-    setIsShowModalDelete(true);
-    setIsDeleteOneItem(true);
-    setListItemDelete((prev) => [...prev, id]);
-  };
-
   const columns = [
     { title: "id", dataIndex: "id", key: "id", hidden: true },
     {
@@ -184,13 +177,6 @@ const ListTransactionPage = () => {
                 />
               </span>
             </Tooltip>
-            <Button
-              icon={<DeleteOutlined />}
-              danger
-              onClick={() => handleDelete(recode.id)}
-            >
-              Xóa
-            </Button>
           </div>
         );
       },

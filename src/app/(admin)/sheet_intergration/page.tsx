@@ -592,6 +592,35 @@ const SheetIntergration = () => {
         </div>
         <div className="flex justify-between items-center mb-7">
           <div>
+            <Space direction="horizontal" size="middle">
+              <CustomSelect
+                mode="multiple"
+                options={bankFilter}
+                placeholder="Tên ngân hàng"
+                style={{ width: 245, marginRight: "10px" }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+                  setBankAccountFilter(value);
+                  await setPageIndex(1);
+                  await setDataSheetIntegration([])
+                  if (!value) {
+                    handleSelectChange(sheetIdFilter, transTypeFilter, value);
+                    setCheckFilter(!checkFilter);
+                  } else {
+                    fetchSheetIntegration(
+                      globalTerm,
+                      sheetIdFilter,
+                      transTypeFilter,
+                      value
+                    );
+                  }
+                }}
+              />
+            </Space>
             <Input
               placeholder="Tìm kiếm tên tài khoản ..."
               style={{
@@ -666,35 +695,6 @@ const SheetIntergration = () => {
                       sheetIdFilter,
                       value,
                       bankAccountFilter
-                    );
-                  }
-                }}
-              />
-            </Space>
-            <Space direction="horizontal" size="middle">
-              <CustomSelect
-                mode="multiple"
-                options={bankFilter}
-                placeholder="Tên ngân hàng"
-                style={{ width: 245, marginRight: "10px" }}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  option.label.toLowerCase().includes(input.toLowerCase())
-                }
-                onChange={async (value: any) => {
-                  setBankAccountFilter(value);
-                  await setPageIndex(1);
-                  await setDataSheetIntegration([])
-                  if (!value) {
-                    handleSelectChange(sheetIdFilter, transTypeFilter, value);
-                    setCheckFilter(!checkFilter);
-                  } else {
-                    fetchSheetIntegration(
-                      globalTerm,
-                      sheetIdFilter,
-                      transTypeFilter,
-                      value
                     );
                   }
                 }}

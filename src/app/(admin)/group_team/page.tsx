@@ -437,7 +437,7 @@ const GroupTeamPage = () => {
             onPressEnter={async (e) => {
               await setPageIndex(1);;
               await setDataTeam([])
-              handleSearch(e.currentTarget.value);
+              handleSearch((e.target as HTMLInputElement).value);
             }}
           />
           <div className="flex">

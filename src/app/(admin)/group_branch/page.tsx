@@ -385,7 +385,7 @@ const GroupBranchPage = () => {
             onPressEnter={async (e) => {
               await setPageIndex(1);;
               await setDataBranch([])
-              handleSearch(e.currentTarget.value);
+              handleSearch((e.target as HTMLInputElement).value);
             }}
           />
           <div className="flex">

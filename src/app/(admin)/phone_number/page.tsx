@@ -369,7 +369,7 @@ const PhoneNumber: React.FC = () => {
             onPressEnter={async (e) => {
               await setPageIndex(1);
               await setDataPhoneNumber([])
-              handleSearch(e.currentTarget.value);
+              handleSearch((e.target as HTMLInputElement).value);
             }}
           />
           <div className="flex">

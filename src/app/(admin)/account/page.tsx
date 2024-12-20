@@ -1095,7 +1095,7 @@ const Account = () => {
               onPressEnter={async (e) => {
                 await setPageIndex(1);;
                 await setDataAccount([])
-                handleSearch(e.currentTarget.value);
+                handleSearch((e.target as HTMLInputElement).value);
               }}
               style={{
                 width: 250,

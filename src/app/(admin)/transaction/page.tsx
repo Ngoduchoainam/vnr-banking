@@ -28,6 +28,7 @@ import { formatDate } from "@/src/utils/buildQueryParams";
 import { RoleContext } from "@/src/component/RoleWapper";
 import { Utility } from "@/src/utils/Utility";
 import LoadingTable from "@/src/component/LoadingTable";
+import CustomSelect from "@/src/component/CustomSelect";
 
 export interface TransactionModal {
   id: number;
@@ -51,6 +52,11 @@ export interface TransactionModal {
 interface FilterRole {
   Name: string;
   Value: string;
+}
+
+interface FilterProducts {
+  Name: string;
+  Value: any;
 }
 
 const Transaction = () => {
@@ -80,6 +86,8 @@ const Transaction = () => {
   const [isAddTransaction, setIsAddTransaction] = useState<boolean>(false);
 
   const isFetchingRef = useRef(false);
+  const [bankId, setBankId] = useState();
+  const [bankAccountId, setBankAccountId] = useState();
 
   const handleScroll = () => {
     const scrollPosition = window.scrollY + window.innerHeight;
@@ -113,10 +121,14 @@ const Transaction = () => {
     };
   }, []);
 
+  const [startDate, setStartDate] = useState();
+  const [endDate, setEndDate] = useState();
+
   const fetchTransaction = async (
-    globalTerm?: string,
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    selectedBankId?: string,
+    bankAccountId?: string
   ) => {
     const arrRole: FilterRole[] = [];
     const addedParams = new Set<string>();
@@ -134,6 +146,21 @@ const Transaction = () => {
         Value: formatDate(dateEndFormat.endOfDay || new Date),
       });
     }
+
+    if (selectedBankId) {
+      arrRole.push({
+        Name: "bankId",
+        Value: selectedBankId,
+      });
+    }
+
+    if (Array.isArray(bankAccountId) && bankAccountId.length > 0) {
+      arrRole.push({
+        Name: "bankAccountId",
+        Value: bankAccountId,
+      });
+    }
+
     arrRole.push({
       Name: keys!,
       Value: values,
@@ -172,8 +199,6 @@ const Transaction = () => {
             : null,
           // transDate: item.transDate,
         })) || [];
-
-      console.log(response);
 
       setTotalRecord(response?.data?.totalRecords || 0);
       setDataTransaction((prevData) => [...prevData, ...formattedData]);
@@ -316,63 +341,6 @@ const Transaction = () => {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSearch = async (value: string) => {
-    setGlobalTerm(value);
-    try {
-      if (value.trim() === "") {
-        const data = await getTransaction(pageIndex, pageSize);
-        const formattedData =
-          data?.data?.source?.map((item: TransactionModal) => ({
-            id: item.id, // id
-            bankName: item.bankName, // Mã ngân hàng
-            bankAccount: item.bankAccount, // stk
-            fullName: item.fullName, // tên chủ tk
-            transDateString: item.transDateString || new Date(), // Ngày giao dịch
-            transType: item.transType, // Giao dịch
-            purposeDescription: item.purposeDescription, // Mục đích
-            reason: item.reason, // lý do
-            balanceBeforeTrans: item.balanceBeforeTrans, // Số dư trc giao dịch
-            currentBalance: item.currentBalance, // số dư hiện tại
-            notes: item.notes, // ghi chú
-            bankAccountId: item.bankAccountId, // thêm trường id tài khoản
-            feeIncurred: item.feeIncurred,
-            transAmount: item.transAmount,
-            transDate: item.transDate
-              ? dayjs(item.transDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-              : null,
-          })) || [];
-
-        setDataTransaction(formattedData);
-      } else {
-        const data = await getTransaction(pageIndex, pageSize, value);
-        const formattedData =
-          data?.data?.source?.map((item: TransactionModal) => ({
-            id: item.id, // id
-            bankName: item.bankName, // Mã ngân hàng
-            bankAccount: item.bankAccount, // stk
-            fullName: item.fullName, // tên chủ tk
-            transDateString: item.transDateString || new Date(), // Ngày giao dịch
-            transType: item.transType, // Giao dịch
-            purposeDescription: item.purposeDescription, // Mục đích
-            reason: item.reason, // lý do
-            balanceBeforeTrans: item.balanceBeforeTrans, // Số dư trc giao dịch
-            currentBalance: item.currentBalance, // số dư hiện tại
-            notes: item.notes, // ghi chú
-            bankAccountId: item.bankAccountId, // thêm trường id tài khoản
-            feeIncurred: item.feeIncurred,
-            transAmount: item.transAmount,
-            transDate: item.transDate
-              ? dayjs(item.transDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ")
-              : null,
-          })) || [];
-
-        setDataTransaction(formattedData);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
     }
   };
 
@@ -579,6 +547,92 @@ const Transaction = () => {
     setIsModalVisible(true);
   };
 
+  const [bankDataFilter, setBankDataFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+
+  const filterBankAPI = async () => {
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+
+      if (
+        fetchBankDataAPI &&
+        fetchBankDataAPI.data &&
+        fetchBankDataAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankDataAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.code || "Không xác định",
+        }));
+        console.log("fetchBankDataAPI", fetchBankDataAPI);
+
+        setBankDataFilter(res);
+      } else {
+        setBankDataFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
+  const [bankAccountFilter, setBankAccountFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+
+  const filterBankAccount = async (bankId?: string) => {
+    // console.log(352, bankId)
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: "bankId",
+      Value: bankId || "0",
+    });
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankAccountAPI = await fetchBankAccounts(
+        pageIndex,
+        pageSize,
+        undefined,
+        arr
+      );
+
+      if (
+        fetchBankAccountAPI &&
+        fetchBankAccountAPI.data &&
+        fetchBankAccountAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.fullName + "-" + x.accountNumber || "Không xác định",
+        }));
+
+        setBankAccountFilter(res);
+      } else {
+        setBankAccountFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
+  useEffect(() => {
+    filterBankAPI();
+    filterBankAccount();
+  }, []);
+
   return (
     <>
       {isLoading && (
@@ -592,28 +646,52 @@ const Transaction = () => {
           Danh sách giao dịch thủ công
         </div>
         <div className="flex justify-between items-center mb-7">
-          <div>
-            <Input
-              placeholder="Tìm kiếm số tài khoản ..."
-              style={{
-                width: 253,
-                marginRight: 15,
-              }}
-              onChange={async (e) => {
-                const value = e.target.value;
-                setGlobalTerm(value);
-                if (!value) {
-                  await setPageIndex(1);
-                  await setDataTransaction([])
-                  setCheckFilter(!checkFilter);
-                }
-              }}
-              onPressEnter={async (e) => {
+          <Space direction="horizontal" size="middle">
+            <Select
+              options={bankDataFilter}
+              placeholder="Ngân hàng"
+              style={{ width: 245 }}
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={async (value: any) => {
                 await setPageIndex(1);
                 await setDataTransaction([])
-                handleSearch(e.currentTarget.value);
+
+                await setBankId(value);
+                filterBankAccount(value);
+
+                fetchTransaction(startDate, endDate, value, bankAccountId);
               }}
             />
+
+            <CustomSelect
+              mode="multiple"
+              options={bankAccountFilter}
+              placeholder="Tài khoản ngân hàng"
+              style={{ width: 245 }}
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={async (value: any) => {
+
+                const parsedValue = Array.isArray(value)
+                  ? value
+                  :
+                  value.split(",").map((item: any) => item.trim());
+
+                await setPageIndex(1);
+                await setDataTransaction([])
+                await setBankAccountId(parsedValue);
+
+                fetchTransaction(startDate, endDate, bankId, parsedValue);
+              }}
+            />
+
             <RangePicker
               id={{
                 start: "startInput",
@@ -630,10 +708,12 @@ const Transaction = () => {
                 } else {
                   const [startDate, endDate] = value;
                   handleSelectChange(startDate, endDate);
+                  setStartDate(startDate);
+                  setEndDate(endDate);
                   fetchTransaction(
-                    globalTerm,
                     startDate,
-                    endDate
+                    endDate,
+                    bankId
                   );
                 }
               }}
@@ -641,7 +721,7 @@ const Transaction = () => {
                 current && current > dayjs().endOf("day")
               }
             />
-          </div>
+          </Space>
           <div className="flex">
             {selectedRowKeys.length > 0 && (
               <Button

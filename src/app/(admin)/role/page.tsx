@@ -436,7 +436,6 @@ const Role = () => {
               const inputValue = (e.target as HTMLInputElement).value;
               await setPageIndex(1);
               await setDataRolePage([])
-              console.log(437, e)
               handleSearch(inputValue);
             }}
           />

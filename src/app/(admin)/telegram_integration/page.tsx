@@ -326,7 +326,7 @@ const TelegramIntegration = () => {
 
         setDataTelegramIntegration(formattedData);
       } else {
-        // Nếu có giá trị tìm kiếm, gọi API với giá trị đó
+        console.log(329, value);
         const data = await getListTelegram(1, 20, value);
         const formattedData =
           data?.data?.source?.map((x: ListTelegramIntegration) => ({
@@ -342,6 +342,8 @@ const TelegramIntegration = () => {
             chatId: "",
             name: "",
           })) || [];
+
+        console.log(data);
 
         setDataTelegramIntegration(formattedData);
       }
@@ -585,6 +587,35 @@ const TelegramIntegration = () => {
         </div>
         <div className="flex justify-between items-center mb-7">
           <div>
+            <Space direction="horizontal" size="middle">
+              <CustomSelect
+                mode="multiple"
+                options={bankFilter}
+                placeholder="Tên ngân hàng"
+                style={{ width: 245, marginRight: "10px" }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+                  setBankAccountFilter(value);
+                  await setPageIndex(1);
+                  await setDataTelegramIntegration([])
+                  if (!value) {
+                    handleSelectChange(groupChatFilter, transTypeFilter, value);
+                    setCheckFilter(!checkFilter);
+                  } else {
+                    fetchListTelegramIntegration(
+                      globalTerm,
+                      groupChatFilter,
+                      transTypeFilter,
+                      value
+                    );
+                  }
+                }}
+              />
+            </Space>
             <Input
               placeholder="Tìm kiếm tên tài khoản ..."
               style={{
@@ -603,7 +634,7 @@ const TelegramIntegration = () => {
               onPressEnter={async (e) => {
                 await setPageIndex(1);
                 await setDataTelegramIntegration([])
-                handleSearch(e.currentTarget.value);
+                handleSearch((e.target as HTMLInputElement).value);
               }}
             />
             <Space direction="horizontal" size="middle">
@@ -658,35 +689,6 @@ const TelegramIntegration = () => {
                       groupChatFilter,
                       value,
                       bankAccountFilter
-                    );
-                  }
-                }}
-              />
-            </Space>
-            <Space direction="horizontal" size="middle">
-              <CustomSelect
-                mode="multiple"
-                options={bankFilter}
-                placeholder="Tên ngân hàng"
-                style={{ width: 245, marginRight: "10px" }}
-                allowClear
-                showSearch
-                filterOption={(input, option) =>
-                  option.label.toLowerCase().includes(input.toLowerCase())
-                }
-                onChange={async (value: any) => {
-                  setBankAccountFilter(value);
-                  await setPageIndex(1);
-                  await setDataTelegramIntegration([])
-                  if (!value) {
-                    handleSelectChange(groupChatFilter, transTypeFilter, value);
-                    setCheckFilter(!checkFilter);
-                  } else {
-                    fetchListTelegramIntegration(
-                      globalTerm,
-                      groupChatFilter,
-                      transTypeFilter,
-                      value
                     );
                   }
                 }}
