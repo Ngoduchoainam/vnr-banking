@@ -62,7 +62,7 @@ const ListTransactionPage = () => {
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [dataDetail, setDataDetail] = useState<DataDetail>();
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
-  const [listItemDelete, setListItemDelete] = useState<number[]>([]);
+  const [listItemDelete] = useState<number[]>([]);
   const [selectedRowKeys] = useState<React.Key[]>([]);
   const [isDeleteOneItem, setIsDeleteOneItem] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
