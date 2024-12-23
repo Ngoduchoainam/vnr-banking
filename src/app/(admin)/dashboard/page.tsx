@@ -140,7 +140,8 @@ const Dashboard = () => {
     typeAccount?: string,
     // transDate?: string | Date[]
     startDate?: string,
-    endDate?: string
+    endDate?: string,
+    pageIndexFilter?: number
   ) => {
     const arrFilter: FilterProducts[] = [];
     const addedParams = new Set<string>();
@@ -205,8 +206,9 @@ const Dashboard = () => {
       setIsLoading(true)
     }
     setLoading(true);
+
     try {
-      const response = await getListStatistics(pageIndex, 20, undefined, arrFilter);
+      const response = await getListStatistics(pageIndexFilter || pageIndex, 20, undefined, arrFilter);
 
       const formattedData =
         response?.data?.source?.map((x: DataType) => ({
@@ -332,6 +334,7 @@ const Dashboard = () => {
     setIsModalOpen(false);
   };
   const handleCancel = () => {
+    setDataTransaction(null);
     setIsModalOpen(false);
   };
 
@@ -601,7 +604,9 @@ const Dashboard = () => {
                     chatFilter,
                     transTypeFilter,
                     value,
-                    startDateFilter
+                    startDateFilter,
+                    endDateFilter,
+                    1
                   );
                 }
               }}
@@ -638,7 +643,9 @@ const Dashboard = () => {
                     chatFilter,
                     transTypeFilter,
                     transTypeCompanyFilter,
-                    startDateFilter
+                    startDateFilter,
+                    endDateFilter,
+                    1
                   );
                 }
               }}
@@ -684,7 +691,9 @@ const Dashboard = () => {
                     chatFilter,
                     transTypeFilter,
                     transTypeCompanyFilter,
-                    startDateFilter
+                    startDateFilter,
+                    endDateFilter,
+                    1
                   );
                 }
               }}
@@ -719,7 +728,9 @@ const Dashboard = () => {
                     chatFilter,
                     value,
                     transTypeCompanyFilter,
-                    startDateFilter
+                    startDateFilter,
+                    endDateFilter,
+                    1
                   );
                 }
               }}
@@ -759,7 +770,9 @@ const Dashboard = () => {
                     parsedValue,
                     transTypeFilter,
                     transTypeCompanyFilter,
-                    startDateFilter
+                    startDateFilter,
+                    endDateFilter,
+                    1
                   );
                 }
               }}
@@ -803,7 +816,8 @@ const Dashboard = () => {
                     transTypeFilter,
                     transTypeCompanyFilter,
                     startDate,
-                    endDate
+                    endDate,
+                    1
                   );
                 }
               }}

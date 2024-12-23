@@ -78,7 +78,7 @@ const PhoneNumber: React.FC = () => {
     };
   }, []);
 
-  const fetchAccountGroup = async (globalTerm?: string) => {
+  const fetchAccountGroup = async (globalTerm?: string, pageIndexFilter?: number) => {
     const arr: FilterGroupAccount[] = [];
     const addedParams = new Set<string>();
     arr.push({
@@ -92,7 +92,7 @@ const PhoneNumber: React.FC = () => {
     }
     try {
       const response = await getAccountGroup(
-        pageIndex,
+        pageIndexFilter || pageIndex,
         pageSize,
         globalTerm,
         arr
@@ -237,7 +237,7 @@ const PhoneNumber: React.FC = () => {
 
   const handleSearch = async (value: string) => {
     setGlobalTerm(value);
-    await fetchAccountGroup(value);
+    await fetchAccountGroup(value, 1);
   };
 
   const columns = [

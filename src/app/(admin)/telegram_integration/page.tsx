@@ -11,7 +11,7 @@ import {
 } from "@/src/services/telegram_intergration_list";
 import BaseModal from "@/src/component/config/BaseModal";
 import { fetchBankAccounts, getBank } from "@/src/services/bankAccount";
-import { getListTelegram, getTransType } from "@/src/services/telegram";
+import { getListTelegram } from "@/src/services/telegram";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
 import { RoleContext } from "@/src/component/RoleWapper";
@@ -123,8 +123,11 @@ const TelegramIntegration = () => {
     groupChat?: string,
     transType?: string,
     bank?: number,
-    bankAccount?: string
+    bankAccount?: string,
+    pageIndexFilter?: number
   ) => {
+
+    console.log(globalTerm, groupChat, transType, bank, bankAccount)
     const arrTeleAccount: FilterTeleIntergration[] = [];
     const addedParams = new Set<string>();
 
@@ -168,7 +171,7 @@ const TelegramIntegration = () => {
     }
     try {
       const response = await getListTelegramIntergration(
-        pageIndex,
+        pageIndexFilter || pageIndex,
         pageSize,
         globalTerm,
         arrTeleAccount
@@ -232,28 +235,6 @@ const TelegramIntegration = () => {
           groupChatId: tele.id,
         })) || [];
       setTelegram(formattedTelegram);
-    } catch (error) {
-      console.error("Error fetching:", error);
-    }
-  };
-
-  const [transType, setTransType] = useState([]);
-
-  const genTransTypes = async (
-    bankAccountId: number,
-    groupChatId: number,
-    id?: number
-  ) => {
-    try {
-      const dataTransType = await getTransType(bankAccountId, groupChatId, id);
-      const res =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (await dataTransType?.data?.map((tele: any) => ({
-          value: tele.value,
-          label: tele.text,
-          transType: tele.value,
-        }))) || [];
-      setTransType(res);
     } catch (error) {
       console.error("Error fetching:", error);
     }
@@ -545,7 +526,11 @@ const TelegramIntegration = () => {
   const [checkFilter, setCheckFilter] = useState(false);
 
   useEffect(() => {
-    fetchListTelegramIntegration(groupChatFilter);
+    fetchListTelegramIntegration(globalTerm,
+      groupChatFilter,
+      transTypeFilter,
+      bankId,
+      bankAccountId);
   }, [checkFilter]);
 
 
@@ -623,7 +608,8 @@ const TelegramIntegration = () => {
                       groupChatFilter,
                       transTypeFilter,
                       value,
-                      bankAccountId
+                      bankAccountId,
+                      1
                     );
                   }
                 }}
@@ -655,7 +641,8 @@ const TelegramIntegration = () => {
                     groupChatFilter,
                     transTypeFilter,
                     bankId,
-                    value
+                    value,
+                    1
                   );
                 }}
               />
@@ -681,7 +668,9 @@ const TelegramIntegration = () => {
                       globalTerm,
                       value,
                       transTypeFilter,
-                      bankId
+                      bankId,
+                      bankAccountId,
+                      1
                     );
                   }
                 }}
@@ -707,7 +696,9 @@ const TelegramIntegration = () => {
                       globalTerm,
                       groupChatFilter,
                       value,
-                      bankId
+                      bankId,
+                      bankAccountId,
+                      1
                     );
                   }
                 }}
@@ -859,27 +850,15 @@ const TelegramIntegration = () => {
           >
             <Select
               placeholder="Chọn loại giao dịch"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onFocus={() => {
-                const formData = form.getFieldsValue();
-                genTransTypes(
-                  formData.bankAccountId,
-                  formData.groupChatId,
-                  formData.id
-                );
-              }}
-              options={transType}
+              options={options}
               showSearch
               filterOption={(input, option) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
               onChange={async (value: any) => {
-                const selectedGroup = await transType.find(
-                  (item: any) => item.value === value
-                );
-                if (selectedGroup) {
+                if (value) {
                   form.setFieldsValue({
-                    transType: selectedGroup.transType,
+                    transType: value,
                   });
                 }
               }}

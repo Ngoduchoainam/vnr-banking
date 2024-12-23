@@ -162,8 +162,8 @@ const Account = () => {
   const fetchAccounts = async (
     selectedBankId?: string,
     bankAccountId?: string,
-    searchTerms?: string
-
+    searchTerms?: string,
+    pageIndexFilter?: number
   ) => {
     const arrBankAccount: FilterGroupAccount[] = [];
     const addedParams = new Set();
@@ -204,7 +204,7 @@ const Account = () => {
     }
     try {
       const response = await fetchBankAccounts(
-        pageIndex,
+        pageIndexFilter || pageIndex,
         pageSize,
         globalTerm,
         arrBankAccount
@@ -414,6 +414,7 @@ const Account = () => {
 
   const handleAddConfirm = async (isAddAccount: boolean) => {
     const formData = await form.validateFields();
+
     try {
       await form.validateFields();
       setIsAddAccount(isAddAccount);
@@ -1041,7 +1042,7 @@ const Account = () => {
                   await setBankId(value);
                   filterBankAccount(value);
 
-                  fetchAccounts(value, bankAccountId, groupAccountFilter);
+                  fetchAccounts(value, bankAccountId, groupAccountFilter, 1);
                 }}
               />
 
@@ -1066,7 +1067,7 @@ const Account = () => {
                   await setDataAccount([])
                   await setBankAccountId(parsedValue);
 
-                  fetchAccounts(bankId, parsedValue, groupAccountFilter);
+                  fetchAccounts(bankId, parsedValue, groupAccountFilter, 1);
                 }}
               />
 
@@ -1102,7 +1103,8 @@ const Account = () => {
                     fetchAccounts(
                       bankId,
                       bankAccountId,
-                      parsedValue
+                      parsedValue,
+                      1
                     );
                   }
                 }}
@@ -1476,7 +1478,7 @@ const Account = () => {
               }
               onChange={async (value: any[]) => {
                 const selectedGroups = accountGroup.filter((item: any) =>
-                  value.includes(item.value)
+                  value.includes(item.value) || value.includes(item.label)
                 );
                 form.setFieldsValue({
                   selectedAccountGroups: selectedGroups.map(

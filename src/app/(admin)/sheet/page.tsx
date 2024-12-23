@@ -321,12 +321,6 @@ const Sheet = () => {
               width: 253,
               marginRight: 15,
             }}
-            onChange={async (e) => {
-              await setPageIndex(1);
-              await setDataSheet([])
-              const value = e.target.value;
-              handleSearch(value);
-            }}
             onPressEnter={async (e) => {
               await setPageIndex(1);
               await setDataSheet([])

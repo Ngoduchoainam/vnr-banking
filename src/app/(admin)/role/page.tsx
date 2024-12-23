@@ -188,10 +188,25 @@ const Role = () => {
     }
   };
 
+  const ValidateUser = (userName?: string) => {
+    if (!userName.includes("@vinara.net")) {
+      toast.error("Sai định dạng Email. Email bắt buộc phải có đuôi @vinara.net");
+
+      return false;
+    }
+    return true;
+  }
+
   const handleAddConfirm = async (isAddRole: boolean) => {
     // const formData = form.getFieldsValue();
     try {
       await form.validateFields();
+
+      const userName = form.getFieldsValue().userName;
+      if (!ValidateUser(userName)) {
+        return;
+      }
+
       setIsAddRole(isAddRole);
 
       const formData = form.getFieldsValue();
@@ -568,7 +583,7 @@ const Role = () => {
             name="password"
             rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
           >
-            <Input.Password placeholder="Mật khẩu" />
+            <Input.Password placeholder="Mật khẩu" autoComplete="new-password" />
           </Form.Item>
 
           <div className="flex justify-end">

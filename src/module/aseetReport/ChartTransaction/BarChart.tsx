@@ -84,7 +84,6 @@ export default function BarChartTransaction({
             size: 16,
           },
         },
-        onClick: () => { },
       },
       title: {
         display: true,

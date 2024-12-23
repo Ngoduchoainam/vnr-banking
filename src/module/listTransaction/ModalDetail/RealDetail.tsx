@@ -3,6 +3,7 @@ import React from "react";
 import CardDetail from "./CardDetail";
 import { DataDetail } from "@/src/common/type";
 import dayjs from "dayjs";
+import { formatCurrencyVN } from "@/src/utils/buildQueryParams";
 
 const RealDetail = ({
   dataDetail,
@@ -65,7 +66,8 @@ const RealDetail = ({
             </li>
             <li className="inline-flex justify-between w-full">
               <p className="font-extrabold text-sm">Số tiền:</p>
-              <p>{dataDetail?.totalAmount}</p>
+              <p>{formatCurrencyVN(`${dataDetail?.totalAmount}`)}</p>
+
             </li>
           </CardDetail>
         </Col>

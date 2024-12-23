@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -23,11 +23,11 @@ ChartJS.register(
   Legend
 );
 
-
-
 export default function BarChartGold({
   goldChart,
 }: Readonly<{ goldChart: TypeAsset[] }>) {
+  const [hiddenBars, setHiddenBars] = useState<{ [key: string]: boolean }>({});
+
   const listLabelConvert = goldChart?.map((item2) => {
     return item2.key;
   });
@@ -63,6 +63,23 @@ export default function BarChartGold({
     plugins: {
       legend: {
         display: false,
+        onClick: (e: any, legendItem: any) => {
+          const { index } = legendItem;
+          const label = data.labels[index];
+
+          // Toggle visibility of the clicked legend item
+          setHiddenBars((prev) => ({
+            ...prev,
+            [label]: !prev[label],
+          }));
+        },
+        labels: {
+          usePointStyle: false,  // Không dùng kiểu điểm, giữ dạng hình chữ nhật
+          padding: 40,
+          font: {
+            size: 16,
+          },
+        },
       },
       title: {
         display: true,
@@ -107,12 +124,25 @@ export default function BarChartGold({
     },
   };
 
+  // Cập nhật lại data với hiddenBars
+  const filteredData = {
+    labels: data.labels,
+    datasets: [
+      {
+        data: data.datasets[0].data.filter((_, index) => !hiddenBars[data.labels[index]]),
+        backgroundColor: data.datasets[0].backgroundColor.filter((_, index) => !hiddenBars[data.labels[index]]),
+        barThickness: 25,
+        stack: "Stack 1",
+      },
+    ],
+  };
+
   return (
     <div
       style={{ width: "80%", height: "550px", margin: "0" }}
       className="custom-chart"
     >
-      <Bar data={data} options={options} />
+      <Bar data={filteredData} options={options} />
     </div>
   );
 }

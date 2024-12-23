@@ -159,6 +159,11 @@ const ListTransactionPage = () => {
       key: "descriptionTransType",
     },
     {
+      title: "Loại tài sản",
+      dataIndex: "",
+      key: "",
+    },
+    {
       title: "Bộ phận quản lý",
       dataIndex: "departmentManager",
       key: "departmentManager",
@@ -284,6 +289,8 @@ const ListTransactionPage = () => {
           return { ...item, key: item.id };
         }
       );
+
+      console.log(293, dataTransactionConvert)
 
       setTotalRecord(responsive?.data?.data.totalRecords || 0);
       setDataTransaction((prevData) => [...prevData, ...dataTransactionConvert]);

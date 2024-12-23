@@ -128,7 +128,8 @@ const Transaction = () => {
     startDate?: string,
     endDate?: string,
     selectedBankId?: string,
-    bankAccountId?: string
+    bankAccountId?: string,
+    pageIndexFilter?: number
   ) => {
     const arrRole: FilterRole[] = [];
     const addedParams = new Set<string>();
@@ -170,9 +171,10 @@ const Transaction = () => {
     if (pageIndex > 1) {
       setIsLoading(true)
     }
+
     try {
       const response = await getTransaction(
-        pageIndex,
+        pageIndexFilter || pageIndex,
         pageSize,
         globalTerm,
         arrRole
@@ -663,7 +665,7 @@ const Transaction = () => {
                 await setBankId(value);
                 filterBankAccount(value);
 
-                fetchTransaction(startDate, endDate, value, bankAccountId);
+                fetchTransaction(startDate, endDate, value, bankAccountId, 1);
               }}
             />
 
@@ -688,7 +690,7 @@ const Transaction = () => {
                 await setDataTransaction([])
                 await setBankAccountId(parsedValue);
 
-                fetchTransaction(startDate, endDate, bankId, parsedValue);
+                fetchTransaction(startDate, endDate, bankId, parsedValue, 1);
               }}
             />
 
@@ -713,7 +715,9 @@ const Transaction = () => {
                   fetchTransaction(
                     startDate,
                     endDate,
-                    bankId
+                    bankId,
+                    bankAccountId,
+                    1
                   );
                 }
               }}

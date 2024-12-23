@@ -1,13 +1,13 @@
 import LayoutWapper from "@/src/component/LayoutWapper";
 import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
 import React from "react";
-import { auth } from "../api/auth/[...nextauth]/config";
 import { redirect } from "next/navigation";
+import { SetSession } from "@/src/component/CustomHook/useSession";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
-  const session = await auth();
+  const session = await SetSession();
 
-  console.log("session 10:", session)
+  console.log(11, session)
 
   if (!session?.user?.access_token) {
     redirect("/login");

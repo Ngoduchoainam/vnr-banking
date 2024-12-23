@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -30,6 +30,9 @@ export default function BarChartMoney({
   let listLabelConvert: string[] = [];
   let listDataCovert: number[] = [];
   let listBackground: (string | undefined)[] = [];
+  const [hiddenBars, setHiddenBars] = useState<{ [key: string]: boolean }>({});
+
+  // Xử lý trường hợp moneyType === "1"
   if (moneyType === "1") {
     listLabelConvert = moneyChart?.map((item2) => {
       return `${item2.key.split(".")[0]}k`;
@@ -49,8 +52,11 @@ export default function BarChartMoney({
       if (item2.key === "100.000") return "#07C751";
       if (item2.key === "200.000") return "#FF0000";
       if (item2.key === "500.000") return "#44BED3";
+      return "#000000";  // Thêm màu mặc định
     });
   }
+
+  // Xử lý trường hợp moneyType === "2"
   if (moneyType === "2") {
     listLabelConvert = moneyChart?.map((item2) => {
       return `${item2.key}`;
@@ -68,15 +74,21 @@ export default function BarChartMoney({
       if (item2.key === "$20") return "#4393FF";
       if (item2.key === "$50") return "#FF5DA0";
       if (item2.key === "$100") return "#07C751";
+      return "#000000";  // Thêm màu mặc định
     });
   }
+
+  console.log(81, listDataCovert)
 
   const data = {
     labels: listLabelConvert,
     datasets: [
       {
-        data: listDataCovert,
-        backgroundColor: listBackground,
+        label: "Số lượng tờ tiền",  // Thêm label cho dataset
+        data: listDataCovert.map((value, index) =>
+          hiddenBars[listLabelConvert[index]] ? 0 : value
+        ),
+        backgroundColor: listBackground,  // Cung cấp màu cho mỗi cột
         barThickness: 25,
         stack: "Stack 1",
       },
@@ -91,7 +103,35 @@ export default function BarChartMoney({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: true,
+        onClick: (e: any, legendItem: any) => {
+          const { index } = legendItem;
+
+
+          const label = data.labels[index];
+          setHiddenBars((prev) => {
+            const newHiddenBars = { ...prev };
+            newHiddenBars[label] = !newHiddenBars[label]; // Toggle trạng thái ẩn/hiện
+            return newHiddenBars;
+          });
+        },
+        labels: {
+          padding: 40,
+          font: {
+            size: 16,
+          },
+          generateLabels: (chart) => {
+            // Tạo label cho mỗi màu của cột
+            return chart.data.labels.map((label, index) => ({
+              text: label,
+              fillStyle: listBackground[index] || "#000000", // Màu sắc cột cho legend
+              strokeStyle: listBackground[index] || "#000000",
+              lineWidth: 2,
+              hidden: hiddenBars[label] || false,
+              index,
+            }));
+          },
+        },
       },
       title: {
         display: true,
@@ -135,7 +175,6 @@ export default function BarChartMoney({
       },
     },
   };
-
 
   return (
     <div

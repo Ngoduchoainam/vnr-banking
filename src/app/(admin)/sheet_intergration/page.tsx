@@ -8,7 +8,6 @@ import {
   addSheetIntergration,
   deleteSheetIntergration,
   getListSheetIntergration,
-  getTransTypeSheet,
 } from "@/src/services/sheet_intergration";
 import BaseModal from "@/src/component/config/BaseModal";
 import { fetchBankAccounts, getBank } from "@/src/services/bankAccount";
@@ -111,7 +110,8 @@ const SheetIntergration = () => {
     sheetId?: string,
     transType?: string,
     bankAccount?: string,
-    bank?: string
+    bank?: string,
+    pageIndexFilter?: number
   ) => {
     const arrSheet: FilterSheetIntergration[] = [];
     const addedParams = new Set<string>();
@@ -157,7 +157,7 @@ const SheetIntergration = () => {
     }
     try {
       const response = await getListSheetIntergration(
-        pageIndex,
+        pageIndexFilter || pageIndex,
         pageSize,
         globalTerm,
         arrSheet
@@ -215,29 +215,6 @@ const SheetIntergration = () => {
           sheetId: sheet.id,
         })) || [];
       setSheet(formattedTelegram);
-    } catch (error) {
-      console.error("Error fetching:", error);
-    }
-  };
-
-  const [transType, setTransType] = useState([]);
-
-  const genTransTypes = async (
-    bankAccountId: number,
-    sheetId: number,
-    id?: number
-  ) => {
-    try {
-      const dataTransType = await getTransTypeSheet(bankAccountId, sheetId, id);
-      const res =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (await dataTransType?.data?.map((tele: any) => ({
-          value: tele.value,
-          label: tele.text,
-          transType: tele.value,
-        }))) || [];
-
-      setTransType(res);
     } catch (error) {
       console.error("Error fetching:", error);
     }
@@ -637,7 +614,8 @@ const SheetIntergration = () => {
                       sheetIdFilter,
                       transTypeFilter,
                       bankAccountId,
-                      value
+                      value,
+                      1
                     );
                   }
                 }}
@@ -671,7 +649,8 @@ const SheetIntergration = () => {
                     sheetIdFilter,
                     transTypeFilter,
                     parsedValue,
-                    bankId
+                    bankId,
+                    1
                   );
                 }}
               />
@@ -702,7 +681,8 @@ const SheetIntergration = () => {
                       value,
                       transTypeFilter,
                       bankAccountId,
-                      bankId
+                      bankId,
+                      1
                     );
                   }
                 }}
@@ -731,7 +711,8 @@ const SheetIntergration = () => {
                       sheetIdFilter,
                       value,
                       bankAccountId,
-                      bankId
+                      bankId,
+                      1
                     );
                   }
                 }}
@@ -881,28 +862,15 @@ const SheetIntergration = () => {
             <Select
               allowClear
               placeholder="Chọn loại giao dịch"
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onFocus={() => {
-                const formData = form.getFieldsValue();
-                genTransTypes(
-                  formData.bankAccountId,
-                  formData.sheetId,
-                  formData.id
-                );
-              }}
-              options={transType}
+              options={options}
               showSearch
               filterOption={(input, option) =>
                 option.label.toLowerCase().includes(input.toLowerCase())
               }
               onChange={async (value: any) => {
-                const selectedGroup = await transType.find(
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (item: any) => item.value === value
-                );
-                if (selectedGroup) {
+                if (value) {
                   form.setFieldsValue({
-                    transType: selectedGroup.transType,
+                    transType: value,
                   });
                 }
               }}
