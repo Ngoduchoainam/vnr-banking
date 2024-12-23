@@ -202,7 +202,7 @@ const ListTransactionPage = () => {
     if (pageIndex > 1 && dataTransaction.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchData({}).finally(() => {
+      fetchData(dataFilter).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

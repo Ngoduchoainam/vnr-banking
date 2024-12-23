@@ -67,6 +67,7 @@ interface TransactionData {
   logChatSqlRes: LogEntry[];
   logSheetSqlRes: LogEntry[];
   transaction: Transaction;
+  logStatus?: string
 }
 
 interface FilterProducts {
@@ -105,13 +106,20 @@ const Dashboard = () => {
     if (pageIndex > 1 && dataStatistics.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchListStatistics().finally(() => {
-        setTimeout(() => {
+      fetchListStatistics(
+        bankIdFilterAPI,
+        bankFilter,
+        chatFilter,
+        transTypeFilter,
+        transTypeCompanyFilter,
+        startDateFilter,
+        endDateFilter).finally(() => {
+          setTimeout(() => {
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
-          isFetchingRef.current = false;
-        }, 100);
-      });
+            window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
+            isFetchingRef.current = false;
+          }, 100);
+        });
     }
   }, [pageIndex]);
 
@@ -226,10 +234,14 @@ const Dashboard = () => {
     }
   };
 
-  const fetchStatisticsById = async (id: number) => {
+  const fetchStatisticsById = async (id: number, status?: string) => {
     try {
       const response = await getTransactionById(id);
-      setDataTransaction(response?.data);
+
+      setDataTransaction(() => ({
+        ...response?.data,
+        logStatus: status === "1" ? "Thành công" : "Giao dịch lỗi",
+      }));
     } catch (error) {
       console.error("Error fetching transaction by id:", error);
     }
@@ -302,7 +314,7 @@ const Dashboard = () => {
           className={`text-white flex items-center justify-center rounded-md font-bold w-[93px] h-[27px] cursor-pointer ${status === "1" ? "bg-green-500" : "bg-red-500"
             }`}
           onClick={() => {
-            fetchStatisticsById(record.id);
+            fetchStatisticsById(record.id, status);
             showModal();
           }}
         >
@@ -329,6 +341,7 @@ const Dashboard = () => {
   const [transTypeFilter, setTransTypeFilter] = useState();
   const [transTypeCompanyFilter, setTransTypeCompanyFilter] = useState();
   const [startDateFilter, setTranDateFilter] = useState();
+  const [endDateFilter, setEndDateFilter] = useState();
 
   // const [bankIdFilter, setBankIdFilter] = useState<
   //   Array<{ value: string; label: string }>
@@ -556,8 +569,43 @@ const Dashboard = () => {
             <Statistics />
           </div>
         </div>
-        <div className="flex mx-[35px] mt-7">
+        <div className="flex mx-[35px] mt-7 ant-space-container-dashboard">
           <Space direction="horizontal" size="middle">
+            <Select
+              allowClear
+              options={optionCompany}
+              placeholder="Loại tài khoản"
+              style={{ width: 245 }}
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={async (value: any) => {
+                setTransTypeCompanyFilter(value);
+                await setPageIndex(1);
+                await setDataStatistics([])
+                if (!value) {
+                  handleSelectChange(
+                    bankIdFilterAPI,
+                    bankFilter,
+                    chatFilter,
+                    transTypeFilter,
+                    value,
+                    startDateFilter
+                  );
+                  setCheckFilter(!checkFilter);
+                } else {
+                  fetchListStatistics(
+                    bankIdFilterAPI,
+                    bankFilter,
+                    chatFilter,
+                    transTypeFilter,
+                    value,
+                    startDateFilter
+                  );
+                }
+              }}
+            />
             <Select
               options={bankDataFilter}
               placeholder="Ngân hàng"
@@ -641,6 +689,41 @@ const Dashboard = () => {
                 }
               }}
             />
+            <Select
+              options={options}
+              placeholder="Loại giao dịch"
+              style={{ width: 245 }}
+              allowClear
+              showSearch
+              filterOption={(input, option) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              onChange={async (value: any) => {
+                setTransTypeFilter(value);
+                await setPageIndex(1);
+                await setDataStatistics([])
+                if (!value) {
+                  handleSelectChange(
+                    bankIdFilterAPI,
+                    bankFilter,
+                    chatFilter,
+                    value,
+                    transTypeCompanyFilter,
+                    startDateFilter
+                  );
+                  setCheckFilter(!checkFilter);
+                } else {
+                  fetchListStatistics(
+                    bankIdFilterAPI,
+                    bankFilter,
+                    chatFilter,
+                    value,
+                    transTypeCompanyFilter,
+                    startDateFilter
+                  );
+                }
+              }}
+            />
             <CustomSelect
               mode="multiple"
               options={groupChatFilter}
@@ -681,76 +764,6 @@ const Dashboard = () => {
                 }
               }}
             />
-            <Select
-              options={options}
-              placeholder="Loại giao dịch"
-              style={{ width: 245 }}
-              allowClear
-              showSearch
-              filterOption={(input, option) =>
-                option.label.toLowerCase().includes(input.toLowerCase())
-              }
-              onChange={async (value: any) => {
-                setTransTypeFilter(value);
-                await setPageIndex(1);
-                await setDataStatistics([])
-                if (!value) {
-                  handleSelectChange(
-                    bankIdFilterAPI,
-                    bankFilter,
-                    chatFilter,
-                    value,
-                    transTypeCompanyFilter,
-                    startDateFilter
-                  );
-                  setCheckFilter(!checkFilter);
-                } else {
-                  fetchListStatistics(
-                    bankIdFilterAPI,
-                    bankFilter,
-                    chatFilter,
-                    value,
-                    transTypeCompanyFilter,
-                    startDateFilter
-                  );
-                }
-              }}
-            />
-            <Select
-              allowClear
-              options={optionCompany}
-              placeholder="Loại tài khoản"
-              style={{ width: 245 }}
-              showSearch
-              filterOption={(input, option) =>
-                option.label.toLowerCase().includes(input.toLowerCase())
-              }
-              onChange={async (value: any) => {
-                setTransTypeCompanyFilter(value);
-                await setPageIndex(1);
-                await setDataStatistics([])
-                if (!value) {
-                  handleSelectChange(
-                    bankIdFilterAPI,
-                    bankFilter,
-                    chatFilter,
-                    transTypeFilter,
-                    value,
-                    startDateFilter
-                  );
-                  setCheckFilter(!checkFilter);
-                } else {
-                  fetchListStatistics(
-                    bankIdFilterAPI,
-                    bankFilter,
-                    chatFilter,
-                    transTypeFilter,
-                    value,
-                    startDateFilter
-                  );
-                }
-              }}
-            />
             <RangePicker
               id={{
                 start: "startInput",
@@ -773,6 +786,7 @@ const Dashboard = () => {
                   setCheckFilter(!checkFilter);
                 } else {
                   const [startDate, endDate] = value;
+                  setEndDateFilter(endDate)
                   handleSelectChange(
                     bankIdFilterAPI,
                     bankFilter,
@@ -845,7 +859,7 @@ const Dashboard = () => {
           <div className="font-bold flex py-1">
             Trạng thái:
             <div className="pl-2 font-normal">
-              {dataTransaction?.transaction?.logMessageDescription}
+              {dataTransaction?.logStatus}
             </div>
           </div>
           <div className="font-bold flex py-1 pb-3">
@@ -860,29 +874,36 @@ const Dashboard = () => {
               <div>
                 {dataTransaction?.logChatSqlRes?.map(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                  (x: any, index: number) => (
-                    <div
-                      key={index}
-                      className="pt-3 border-b border-solid border-gray-300"
-                    >
-                      <div>{x?.chatName}</div>
-                      <div className="bg-[#ef4444] w-24 rounded-xl flex justify-center text-white my-1">
-                        {x?.logMessageDescription}
+                  (x: any, index: number) => {
+                    console.log(864, x)
+                    return (
+                      <div
+                        key={index}
+                        className="pt-3 border-b border-solid border-gray-300"
+                      >
+                        <div>{x?.chatName}</div>
+                        {x?.logMessage === "2" ?
+                          <div className="bg-[#ff0000] w-24 rounded-xl flex justify-center text-white my-1">
+                            {x?.logMessageDescription}
+                          </div> :
+                          <div className="bg-[#04a616] w-24 rounded-xl flex justify-center text-white my-1">
+                            {x?.logMessageDescription}
+                          </div>}
+                        <div className="pb-3">
+                          {x?.createdDate &&
+                            new Date(x?.createdDate).toLocaleString("en-GB", {
+                              month: "2-digit",
+                              day: "2-digit",
+                              year: "numeric",
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                              hour12: false,
+                            })}
+                        </div>
                       </div>
-                      <div className="pb-3">
-                        {x?.modifiedDate &&
-                          new Date(x?.modifiedDate).toLocaleString("en-US", {
-                            month: "2-digit",
-                            day: "2-digit",
-                            year: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            second: "2-digit",
-                            hour12: true,
-                          })}
-                      </div>
-                    </div>
-                  )
+                    )
+                  }
                 )}
               </div>
             </div>
@@ -920,15 +941,15 @@ const Dashboard = () => {
                         )}
                       </div>
                       <div className="pb-3">
-                        {x?.modifiedDate &&
-                          new Date(x?.modifiedDate).toLocaleString("en-US", {
+                        {x?.createdDate &&
+                          new Date(x?.createdDate).toLocaleString("en-GB", {
                             month: "2-digit",
                             day: "2-digit",
                             year: "numeric",
                             hour: "2-digit",
                             minute: "2-digit",
                             second: "2-digit",
-                            hour12: true,
+                            hour12: false,
                           })}
                       </div>
                     </div>

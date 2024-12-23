@@ -53,7 +53,7 @@ const GroupTeamPage = () => {
   const [loading, setLoading] = useState(true);
   const [currentTeam, setCurrentTeam] = useState<DataTeamModal | null>(null);
   const [dataTeam, setDataTeam] = useState<DataTeamModal[]>([]);
-  const [, setGlobalTerm] = useState("");
+  const [globalTeam, setGlobalTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
@@ -81,7 +81,7 @@ const GroupTeamPage = () => {
     if (pageIndex > 1 && dataTeam.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchGroupSystem().finally(() => {
+      fetchGroupSystem(globalTeam).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

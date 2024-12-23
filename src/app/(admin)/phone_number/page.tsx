@@ -61,7 +61,7 @@ const PhoneNumber: React.FC = () => {
     if (pageIndex > 1 && dataPhoneNumber.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchListPhone().finally(() => {
+      fetchListPhone(globalTerm).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
@@ -112,9 +112,24 @@ const PhoneNumber: React.FC = () => {
     }
   };
 
+  const ValidateAddPhone = (phone?: string) => {
+    if (!phone.startsWith('0') || phone.length !== 10) {
+      toast.error("Số điện thoại không đúng định dạng.");
+
+      return false;
+    }
+    return true;
+  }
+
   const handleAddConfirm = async (isAddPhoneNumber: boolean) => {
     try {
       await form.validateFields();
+
+      const phone = form.getFieldsValue().number;
+      if (!ValidateAddPhone(phone)) {
+        return;
+      }
+
       setIsAddPhoneNumber(isAddPhoneNumber);
       const formData = form.getFieldsValue();
       setLoading(true);

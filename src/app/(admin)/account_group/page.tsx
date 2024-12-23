@@ -37,7 +37,7 @@ const PhoneNumber: React.FC = () => {
   );
   const [loading, setLoading] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [, setGlobalTerm] = useState("");
+  const [globalTeam, setGlobalTerm] = useState("");
   const [isCreateAccountGroup, setIsCreateAccountGroup] = useState(false);
 
   const [pageIndex, setPageIndex] = useState(1);
@@ -60,7 +60,7 @@ const PhoneNumber: React.FC = () => {
     if (pageIndex > 1 && dataAccountGroup.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchAccountGroup().finally(() => {
+      fetchAccountGroup(globalTeam).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

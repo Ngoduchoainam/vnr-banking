@@ -103,7 +103,7 @@ const Transaction = () => {
     if (pageIndex > 1 && dataTransaction.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchTransaction().finally(() => {
+      fetchTransaction(startDate, endDate, bankId, bankAccountId).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

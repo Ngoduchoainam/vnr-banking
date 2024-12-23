@@ -10,7 +10,7 @@ import {
   addTelegramIntergration
 } from "@/src/services/telegram_intergration_list";
 import BaseModal from "@/src/component/config/BaseModal";
-import { fetchBankAccounts } from "@/src/services/bankAccount";
+import { fetchBankAccounts, getBank } from "@/src/services/bankAccount";
 import { getListTelegram, getTransType } from "@/src/services/telegram";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
@@ -50,6 +50,11 @@ interface OptionTelegram {
   value?: number,
 }
 
+interface FilterProducts {
+  Name: string;
+  Value: any;
+}
+
 const TelegramIntegration = () => {
   const { dataRole } = useContext(RoleContext);
   const keys = dataRole.key;
@@ -65,12 +70,13 @@ const TelegramIntegration = () => {
   const [banks, setBanks] = useState<Array<OptionBank>>([]);
   const [telegram, setTelegram] = useState<Array<OptionTelegram>>([]);
   const [loading, setLoading] = useState(true);
-  const [globalTerm, setGlobalTerm] = useState("");
+  const [globalTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
   const [isCreateTelegramInter, setIsCreateTelegramInter] = useState(false);
   const [totalRecord, setTotalRecord] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
+  const [bankAccountId, setBankAccountId] = useState();
 
   const isFetchingRef = useRef(false);
 
@@ -88,13 +94,18 @@ const TelegramIntegration = () => {
     if (pageIndex > 1 && dataTelegramIntegration.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchListTelegramIntegration().finally(() => {
-        setTimeout(() => {
+      fetchListTelegramIntegration(
+        globalTerm,
+        groupChatFilter,
+        transTypeFilter,
+        bankId,
+        bankAccountId).finally(() => {
+          setTimeout(() => {
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
-          isFetchingRef.current = false;
-        }, 0);
-      });
+            window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
+            isFetchingRef.current = false;
+          }, 0);
+        });
     }
   }, [pageIndex]);
 
@@ -111,6 +122,7 @@ const TelegramIntegration = () => {
     globalTerm?: string,
     groupChat?: string,
     transType?: string,
+    bank?: number,
     bankAccount?: string
   ) => {
     const arrTeleAccount: FilterTeleIntergration[] = [];
@@ -130,7 +142,14 @@ const TelegramIntegration = () => {
       });
       addedParams.add("transType");
     }
-    if (bankAccount && !addedParams.has("bankAccount")) {
+    if (bank && !addedParams.has("bankId")) {
+      arrTeleAccount.push({
+        Name: "bankId",
+        Value: bank.toString(),
+      });
+      addedParams.add("bankId");
+    }
+    if (bankAccount && !addedParams.has("bankAccountId")) {
       arrTeleAccount.push({
         Name: "bankAccountId",
         Value: bankAccount,
@@ -304,54 +323,6 @@ const TelegramIntegration = () => {
     }
   };
 
-  const handleSearch = async (value: string) => {
-    setGlobalTerm(value);
-    try {
-      if (value.trim() === "") {
-        const data = await getListTelegram(1, 20);
-        const formattedData =
-          data?.data?.source?.map((x: ListTelegramIntegration) => ({
-            bankAccountId: x.accountNumber,
-            id: x.id, // id của bản ghi
-            groupChatId: x.groupChatId, // id nhóm chat trên Telegram
-            transType: x.transType,
-            accountNumber: x.accountNumber,
-            chatName: "",
-            bankId: undefined,
-            code: "",
-            fullName: "",
-            chatId: "",
-            name: "",
-          })) || [];
-
-        setDataTelegramIntegration(formattedData);
-      } else {
-        console.log(329, value);
-        const data = await getListTelegram(1, 20, value);
-        const formattedData =
-          data?.data?.source?.map((x: ListTelegramIntegration) => ({
-            bankAccountId: x.accountNumber,
-            id: x.id, // id của bản ghi
-            groupChatId: x.groupChatId, // id nhóm chat trên Telegram
-            transType: x.transType,
-            accountNumber: x.accountNumber,
-            chatName: "",
-            bankId: undefined,
-            code: "",
-            fullName: "",
-            chatId: "",
-            name: "",
-          })) || [];
-
-        console.log(data);
-
-        setDataTelegramIntegration(formattedData);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
-    }
-  };
-
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", hidden: true },
     { title: "Ngân hàng", dataIndex: "code", key: "code" },
@@ -431,8 +402,10 @@ const TelegramIntegration = () => {
   >([]);
   const [groupChatFilter, setGroupChatFilter] = useState();
   const [transTypeFilter, setTransTypeFilter] = useState();
-  const [bankAccountFilter, setBankAccountFilter] = useState();
-
+  const [bankId, setBankId] = useState();
+  const [bankAccountFilter, setBankAccountFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
   const [filterParams, setFilterParams] = useState<{
     groupChatId?: string;
   }>({});
@@ -487,34 +460,73 @@ const TelegramIntegration = () => {
     }
   };
 
-  const bankAccountFilterAPI = async (bankAccount?: string) => {
-    const arr: FilterTeleIntergration[] = [];
-    const bankAccountFilter: FilterTeleIntergration = {
-      Name: "bankAccountId",
-      Value: bankAccount!,
-    };
-    const obj: FilterTeleIntergration = {
+  const bankAccountFilterAPI = async () => {
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
       Name: keys!,
-      Value: values!,
-    };
-    arr.push(obj, bankAccountFilter);
+      Value: values,
+    });
+    addedParams.add(keys!);
     try {
-      const fetchBankAccountAPI = await fetchBankAccounts(pageIndex, pageSize);
+      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+
+      if (
+        fetchBankDataAPI &&
+        fetchBankDataAPI.data &&
+        fetchBankDataAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankDataAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.code || "Không xác định",
+        }));
+        console.log("fetchBankDataAPI", fetchBankDataAPI);
+
+        setBankFilter(res);
+      } else {
+        setBankFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
+  const filterBankAccount = async (bankId?: string) => {
+    // console.log(352, bankId)
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: "bankId",
+      Value: bankId || "0",
+    });
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankAccountAPI = await fetchBankAccounts(
+        pageIndex,
+        pageSize,
+        undefined,
+        arr
+      );
+
       if (
         fetchBankAccountAPI &&
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        const res =
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          fetchBankAccountAPI?.data?.source?.map((bank: any) => ({
-            value: bank.id,
-            label: bank.bank.code,
-            bankAccountId: bank.id,
-          })) || [];
-        setBankFilter(res);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.fullName + "-" + x.accountNumber || "Không xác định",
+        }));
+
+        setBankAccountFilter(res);
       } else {
-        setBankFilter([]);
+        setBankAccountFilter([]);
       }
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
@@ -589,7 +601,6 @@ const TelegramIntegration = () => {
           <div>
             <Space direction="horizontal" size="middle">
               <CustomSelect
-                mode="multiple"
                 options={bankFilter}
                 placeholder="Tên ngân hàng"
                 style={{ width: 245, marginRight: "10px" }}
@@ -599,9 +610,10 @@ const TelegramIntegration = () => {
                   option.label.toLowerCase().includes(input.toLowerCase())
                 }
                 onChange={async (value: any) => {
-                  setBankAccountFilter(value);
+                  setBankId(value);
                   await setPageIndex(1);
-                  await setDataTelegramIntegration([])
+                  await setDataTelegramIntegration([]);
+                  filterBankAccount(value);
                   if (!value) {
                     handleSelectChange(groupChatFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);
@@ -610,34 +622,43 @@ const TelegramIntegration = () => {
                       globalTerm,
                       groupChatFilter,
                       transTypeFilter,
-                      value
+                      value,
+                      bankAccountId
                     );
                   }
                 }}
               />
-            </Space>
-            <Input
-              placeholder="Tìm kiếm tên tài khoản ..."
-              style={{
-                width: 253,
-                marginRight: 15,
-              }}
-              onChange={async (e) => {
-                const value = e.target.value;
-                setGlobalTerm(value);
-                if (!value) {
+              <CustomSelect
+                mode="multiple"
+                options={bankAccountFilter}
+                placeholder="Tài khoản ngân hàng"
+                style={{ width: 245 }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+
+                  const parsedValue = Array.isArray(value)
+                    ? value
+                    :
+                    value.split(",").map((item: any) => item.trim());
+
                   await setPageIndex(1);
                   await setDataTelegramIntegration([])
-                  setCheckFilter(!checkFilter);
-                }
-              }}
-              onPressEnter={async (e) => {
-                await setPageIndex(1);
-                await setDataTelegramIntegration([])
-                handleSearch((e.target as HTMLInputElement).value);
-              }}
-            />
-            <Space direction="horizontal" size="middle">
+                  await setBankAccountId(parsedValue);
+
+
+                  fetchListTelegramIntegration(
+                    globalTerm,
+                    groupChatFilter,
+                    transTypeFilter,
+                    bankId,
+                    value
+                  );
+                }}
+              />
               <CustomSelect
                 mode="multiple"
                 options={teleGroupChatFilter}
@@ -660,13 +681,11 @@ const TelegramIntegration = () => {
                       globalTerm,
                       value,
                       transTypeFilter,
-                      bankAccountFilter
+                      bankId
                     );
                   }
                 }}
               />
-            </Space>
-            <Space direction="horizontal" size="middle">
               <Select
                 options={options}
                 placeholder="Loại giao dịch"
@@ -688,12 +707,13 @@ const TelegramIntegration = () => {
                       globalTerm,
                       groupChatFilter,
                       value,
-                      bankAccountFilter
+                      bankId
                     );
                   }
                 }}
               />
             </Space>
+
           </div>
           <div className="flex">
             {selectedRowKeys.length > 0 && (

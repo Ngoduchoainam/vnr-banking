@@ -11,7 +11,7 @@ import {
   getTransTypeSheet,
 } from "@/src/services/sheet_intergration";
 import BaseModal from "@/src/component/config/BaseModal";
-import { fetchBankAccounts } from "@/src/services/bankAccount";
+import { fetchBankAccounts, getBank } from "@/src/services/bankAccount";
 import { getListSheet } from "@/src/services/sheet";
 import DeleteModal from "@/src/component/config/modalDelete";
 import { toast } from "react-toastify";
@@ -38,6 +38,11 @@ interface FilterSheetIntergration {
   Value: string;
 }
 
+interface FilterProducts {
+  Name: string;
+  Value: any;
+}
+
 const SheetIntergration = () => {
   const { dataRole } = useContext(RoleContext);
   const keys = dataRole.key;
@@ -61,6 +66,7 @@ const SheetIntergration = () => {
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
+  const [bankAccountId, setBankAccountId] = useState();
 
   const isFetchingRef = useRef(false);
 
@@ -78,13 +84,17 @@ const SheetIntergration = () => {
     if (pageIndex > 1 && dataSheetIntegration.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchSheetIntegration().finally(() => {
-        setTimeout(() => {
+      fetchSheetIntegration(globalTerm,
+        sheetIdFilter,
+        transTypeFilter,
+        bankAccountId,
+        bankId).finally(() => {
+          setTimeout(() => {
 
-          window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
-          isFetchingRef.current = false;
-        }, 0);
-      });
+            window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
+            isFetchingRef.current = false;
+          }, 0);
+        });
     }
   }, [pageIndex]);
 
@@ -100,7 +110,8 @@ const SheetIntergration = () => {
     globalTerm?: string,
     sheetId?: string,
     transType?: string,
-    bankAccount?: string
+    bankAccount?: string,
+    bank?: string
   ) => {
     const arrSheet: FilterSheetIntergration[] = [];
     const addedParams = new Set<string>();
@@ -125,6 +136,14 @@ const SheetIntergration = () => {
         Value: bankAccount,
       });
       addedParams.add("bankAccountId");
+    }
+
+    if (bank && !addedParams.has("bankId")) {
+      arrSheet.push({
+        Name: "bankId",
+        Value: bank,
+      });
+      addedParams.add("bankId");
     }
 
     arrSheet.push({
@@ -330,46 +349,6 @@ const SheetIntergration = () => {
     }
   };
 
-  const handleSearch = async (value: string) => {
-    setGlobalTerm(value);
-    try {
-      if (value.trim() === "") {
-        const data = await getListSheetIntergration(1, 20);
-        const formattedData =
-          data?.data?.source?.map((x: ListSheetIntegration) => ({
-            id: x.id?.toString() || Date.now().toString(), // id
-            code: x.code, // Mã ngân hàng
-            accountNumber: x.accountNumber, // stk
-            fullName: x.fullName, // tên chủ tk
-            linkUrl: x.linkUrl, // link url
-            transType: x.transType, // status loại giao dịch
-            bankAccountId: x.bankAccountId,
-            sheetId: x.sheetId, // id của sheet
-          })) || [];
-
-        setDataSheetIntegration(formattedData);
-      } else {
-        const data = await getListSheetIntergration(1, 20, value);
-        console.log(347, data);
-        const formattedData =
-          data?.data?.source?.map((x: ListSheetIntegration) => ({
-            id: x.id?.toString() || Date.now().toString(), // id
-            code: x.code, // Mã ngân hàng
-            accountNumber: x.accountNumber, // stk
-            fullName: x.fullName, // tên chủ tk
-            linkUrl: x.linkUrl, // link url
-            transType: x.transType, // status loại giao dịch
-            bankAccountId: x.bankAccountId,
-            sheetId: x.sheetId, // id của sheet
-          })) || [];
-
-        setDataSheetIntegration(formattedData);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
-    }
-  };
-
   const columns = [
     { title: "ID", dataIndex: "id", key: "id", hidden: true },
     {
@@ -440,7 +419,10 @@ const SheetIntergration = () => {
 
   const [sheetIdFilter, setSheetIdFilter] = useState();
   const [transTypeFilter, setTransTypeFilter] = useState();
-  const [bankAccountFilter, setBankAccountFilter] = useState();
+  const [bankId, setBankId] = useState();
+  const [bankAccountFilter, setBankAccountFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
 
   const [filterParams, setFilterParams] = useState<{
     groupChatId?: string;
@@ -490,31 +472,29 @@ const SheetIntergration = () => {
     }
   };
 
-  const bankAccountFilterAPI = async (bankAccount?: string) => {
-    const arr: FilterSheetIntergration[] = [];
-    const bankAccountFilter: FilterSheetIntergration = {
-      Name: "bankAccountId",
-      Value: bankAccount!,
-    };
-    const obj: FilterSheetIntergration = {
+  const filterBankAPI = async () => {
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
       Name: keys!,
-      Value: values!,
-    };
-    arr.push(obj, bankAccountFilter);
+      Value: values,
+    });
+    addedParams.add(keys!);
     try {
-      const fetchBankAccountAPI = await fetchBankAccounts(pageIndex, pageSize);
+      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+
       if (
-        fetchBankAccountAPI &&
-        fetchBankAccountAPI.data &&
-        fetchBankAccountAPI.data.source
+        fetchBankDataAPI &&
+        fetchBankDataAPI.data &&
+        fetchBankDataAPI.data.source
       ) {
-        const res =
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          fetchBankAccountAPI?.data?.source?.map((bank: any) => ({
-            value: bank.id,
-            label: bank.bank.code,
-            bankAccountId: bank.id,
-          })) || [];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankDataAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.code || "Không xác định",
+        }));
+        console.log("fetchBankDataAPI", fetchBankDataAPI);
+
         setBankFilter(res);
       } else {
         setBankFilter([]);
@@ -527,7 +507,7 @@ const SheetIntergration = () => {
   useEffect(() => {
     const fetchData = async () => {
       await handleFilterSheet();
-      await bankAccountFilterAPI();
+      await filterBankAPI();
     };
 
     fetchData();
@@ -578,6 +558,47 @@ const SheetIntergration = () => {
     setIsModalVisible(true);
   };
 
+  const filterBankAccount = async (bankId?: string) => {
+    // console.log(352, bankId)
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: "bankId",
+      Value: bankId || "0",
+    });
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankAccountAPI = await fetchBankAccounts(
+        pageIndex,
+        pageSize,
+        undefined,
+        arr
+      );
+
+      if (
+        fetchBankAccountAPI &&
+        fetchBankAccountAPI.data &&
+        fetchBankAccountAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.fullName + "-" + x.accountNumber || "Không xác định",
+        }));
+
+        setBankAccountFilter(res);
+      } else {
+        setBankAccountFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
   return (
     <>
       {isLoading && (
@@ -594,7 +615,6 @@ const SheetIntergration = () => {
           <div>
             <Space direction="horizontal" size="middle">
               <CustomSelect
-                mode="multiple"
                 options={bankFilter}
                 placeholder="Tên ngân hàng"
                 style={{ width: 245, marginRight: "10px" }}
@@ -604,9 +624,10 @@ const SheetIntergration = () => {
                   option.label.toLowerCase().includes(input.toLowerCase())
                 }
                 onChange={async (value: any) => {
-                  setBankAccountFilter(value);
+                  setBankId(value);
                   await setPageIndex(1);
                   await setDataSheetIntegration([])
+                  filterBankAccount(value);
                   if (!value) {
                     handleSelectChange(sheetIdFilter, transTypeFilter, value);
                     setCheckFilter(!checkFilter);
@@ -615,31 +636,45 @@ const SheetIntergration = () => {
                       globalTerm,
                       sheetIdFilter,
                       transTypeFilter,
+                      bankAccountId,
                       value
                     );
                   }
                 }}
               />
-            </Space>
-            <Input
-              placeholder="Tìm kiếm tên tài khoản ..."
-              style={{
-                width: 253,
-                marginRight: 15,
-              }}
-              onChange={async (e) => {
-                const value = e.target.value;
-                await setPageIndex(1);
-                await setDataSheetIntegration([])
-                handleSearch(value);
-              }}
-              onPressEnter={async (e) => {
-                await setPageIndex(1);
-                await setDataSheetIntegration([])
-                handleSearch(e.currentTarget.value);
-              }}
-            />
-            <Space direction="horizontal" size="middle">
+
+              <CustomSelect
+                mode="multiple"
+                options={bankAccountFilter}
+                placeholder="Tài khoản ngân hàng"
+                style={{ width: 245 }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+
+                  const parsedValue = Array.isArray(value)
+                    ? value
+                    :
+                    value.split(",").map((item: any) => item.trim());
+
+                  setBankAccountId(parsedValue);
+
+                  await setPageIndex(1);
+                  await setDataSheetIntegration([])
+                  await setBankAccountId(parsedValue);
+
+                  fetchSheetIntegration(
+                    globalTerm,
+                    sheetIdFilter,
+                    transTypeFilter,
+                    parsedValue,
+                    bankId
+                  );
+                }}
+              />
               <CustomSelect
                 mode="multiple"
                 options={sheetFilter}
@@ -658,7 +693,7 @@ const SheetIntergration = () => {
                     handleSelectChange(
                       value,
                       transTypeFilter,
-                      bankAccountFilter
+                      bankAccountId
                     );
                     setCheckFilter(!checkFilter);
                   } else {
@@ -666,13 +701,12 @@ const SheetIntergration = () => {
                       globalTerm,
                       value,
                       transTypeFilter,
-                      bankAccountFilter
+                      bankAccountId,
+                      bankId
                     );
                   }
                 }}
               />
-            </Space>
-            <Space direction="horizontal" size="middle">
               <Select
                 options={options}
                 placeholder="Loại giao dịch"
@@ -684,17 +718,20 @@ const SheetIntergration = () => {
                 }
                 onChange={async (value: any) => {
                   setTransTypeFilter(value);
+                  await setPageIndex(1);
+                  await setDataSheetIntegration([])
                   if (!value) {
                     await setPageIndex(1);
                     await setDataSheetIntegration([])
-                    handleSelectChange(sheetIdFilter, value, bankAccountFilter);
+                    handleSelectChange(sheetIdFilter, value, bankAccountId);
                     setCheckFilter(!checkFilter);
                   } else {
                     fetchSheetIntegration(
                       globalTerm,
                       sheetIdFilter,
                       value,
-                      bankAccountFilter
+                      bankAccountId,
+                      bankId
                     );
                   }
                 }}

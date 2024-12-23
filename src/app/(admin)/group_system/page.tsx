@@ -38,7 +38,7 @@ const GroupSystemPage = () => {
     null
   );
   const [dataSystem, setDataSystem] = useState<DataSystemModal[]>([]);
-  const [, setGlobalTerm] = useState("");
+  const [globalTerm, setGlobalTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
   const [totalRecord, setTotalRecord] = useState(100);
@@ -62,7 +62,7 @@ const GroupSystemPage = () => {
     if (pageIndex > 1 && dataSystem.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchGroupSystem().finally(() => {
+      fetchGroupSystem(globalTerm).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

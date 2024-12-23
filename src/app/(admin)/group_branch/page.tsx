@@ -46,7 +46,7 @@ const GroupBranchPage = () => {
     null
   );
   const [dataBranch, setDataBranch] = useState<DataBranchModal[]>([]);
-  const [, setGlobalTerm] = useState("");
+  const [globalTeam, setGlobalTerm] = useState("");
   const [pageIndex, setPageIndex] = useState(1);
   const pageSize = 20;
   const [totalRecord, setTotalRecord] = useState(100);
@@ -72,7 +72,7 @@ const GroupBranchPage = () => {
     if (pageIndex > 1 && dataBranch.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchGroupSystem().finally(() => {
+      fetchGroupSystem(globalTeam).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

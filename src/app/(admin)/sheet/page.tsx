@@ -57,7 +57,7 @@ const Sheet = () => {
     if (pageIndex > 1 && dataSheet.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchSheet().finally(() => {
+      fetchSheet(globalTerm).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);

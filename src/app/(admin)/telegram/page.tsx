@@ -38,7 +38,7 @@ const Telegram = () => {
   const [currentTelegram, setCurrentTelegram] =
     useState<DataTelegramModal | null>(null);
   const [dataTelegram, setDataTelegram] = useState<DataTelegramModal[]>([]);
-  const [, setGlobalTerm] = useState("");
+  const [globalTeam, setGlobalTerm] = useState("");
   const [pageSize] = useState(20);
 
   const [isAddTelegram, setIsAddTelegram] = useState<boolean>(false);
@@ -62,7 +62,7 @@ const Telegram = () => {
     if (pageIndex > 1 && dataTelegram.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchTelegram().finally(() => {
+      fetchTelegram(globalTeam).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
@@ -128,6 +128,7 @@ const Telegram = () => {
         chatId: formData.chatId,
         notes: formData.notes,
       });
+
       if (response && response.success === false) {
         toast.error(response.message || "Có lỗi xảy ra, vui lòng thử lại!");
         setLoading(false);

@@ -67,6 +67,11 @@ interface OptionAccountGroup {
   value?: number;
 }
 
+interface FilterProducts {
+  Name: string;
+  Value: any;
+}
+
 const Account = () => {
   const [form] = Form.useForm();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -86,7 +91,7 @@ const Account = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
   const [value, setValue] = useState("");
-  const [globalTerm, setGlobalTerm] = useState("");
+  const [globalTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [, setIsEditMode] = useState(false);
   const [accountGroup, setAccountGroup] = useState<Array<OptionAccountGroup>>([]);
@@ -95,18 +100,16 @@ const Account = () => {
 
   const [isAddAccount, setIsAddAccount] = useState<boolean>(false);
 
+  const [bankId, setBankId] = useState();
+  const [bankAccountId, setBankAccountId] = useState();
+
   const { dataRole } = React.useContext(RoleContext);
   const keys = dataRole.key;
   const values = `${dataRole.value}`;
   //
   const groupSystemId = dataRole.groupSystemId;
-  const groupSystemName = dataRole.groupSystemName;
   //
   const groupBranchId = dataRole.groupBranchId;
-  const groupBranchName = dataRole.groupBranchName;
-  //
-  const groupTeamId = dataRole.groupTeamId;
-  const groupTeamName = dataRole.groupTeamName;
   //................................................//
   const defaultGroupSystemId = dataRole.groupSystemId;
   const defaultGroupSystemName = dataRole.groupSystemName;
@@ -133,7 +136,7 @@ const Account = () => {
     if (pageIndex > 1 && dataAccount.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchAccounts().finally(() => {
+      fetchAccounts(bankId, bankAccountId, groupAccountFilter).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
@@ -157,11 +160,10 @@ const Account = () => {
 
   // API để lấy ra dsach tài khoản
   const fetchAccounts = async (
-    globalTerm?: string,
-    searchTerms?: string,
-    system?: string,
-    branch?: string,
-    team?: string
+    selectedBankId?: string,
+    bankAccountId?: string,
+    searchTerms?: string
+
   ) => {
     const arrBankAccount: FilterGroupAccount[] = [];
     const addedParams = new Set();
@@ -170,29 +172,27 @@ const Account = () => {
         Name: "groupAccountId",
         Value: searchTerms,
       });
+      addedParams.add("groupAccountId");
+    }
+
+    if (selectedBankId && !addedParams.has("bankId")) {
+      arrBankAccount.push({
+        Name: "bankId",
+        Value: selectedBankId,
+      });
+
+      addedParams.add("bankId");
+    }
+
+    if (Array.isArray(bankAccountId) && bankAccountId.length > 0 && !addedParams.has("bankAccountId")) {
+      arrBankAccount.push({
+        Name: "bankAccountId",
+        Value: bankAccountId,
+      });
+
       addedParams.add("bankAccountId");
     }
-    if (system && !addedParams.has("groupSystemId")) {
-      arrBankAccount.push({
-        Name: "groupSystemId",
-        Value: system,
-      });
-      addedParams.add("groupSystemId");
-    }
-    if (branch && !addedParams.has("groupBranchId")) {
-      arrBankAccount.push({
-        Name: "groupBranchId",
-        Value: branch,
-      });
-      addedParams.add("groupBranchId");
-    }
-    if (team && !addedParams.has("groupTeamId")) {
-      arrBankAccount.push({
-        Name: "groupTeamId",
-        Value: team,
-      });
-      addedParams.add("groupTeamId");
-    }
+
     arrBankAccount.push({
       Name: keys!,
       Value: values,
@@ -594,85 +594,7 @@ const Account = () => {
     }
   };
 
-  const handleSearch = async (value: string) => {
-    setGlobalTerm(value);
-    try {
-      if (value.trim() === "") {
-        const data = await fetchBankAccounts(pageIndex, pageSize);
-        const formattedData =
-          data?.data?.source?.map((account: BankAccounts) => ({
-            id: account.id,
-            bank: account.bank?.code,
-            accountNumber: account.accountNumber,
-            fullName: account.fullName,
-            phone: account.phone?.number,
-            phoneId: account.phoneId,
-            selectedAccountGroups: account.typeGroupAccount,
-            typeAccount: account.typeAccount,
-            notes: account.notes,
-            bankId: account.bankId,
-            groupSystemId: account.groupSystemId,
-            groupBranchId: account.groupBranchId,
-            groupTeamId: account.groupTeamId,
-            transactionSource: account.transactionSource,
-            groupSystem: account.groupSystem,
-            groupBranch: account.groupBranch,
-            groupTeam: account.groupTeam,
-            typeAccountDescription: account.typeAccountDescription,
-            typeGroupAccountString: account.typeGroupAccountString,
-            groupSystemName: account.groupSystem?.name,
-            groupBranchName: account.groupBranch?.name,
-            groupTeamName: account.groupTeam?.name,
-            bankName: account.bank?.fullName,
-          })) || [];
-
-        setDataAccount(formattedData);
-      } else {
-        const data = await fetchBankAccounts(pageIndex, pageSize, value);
-        const formattedData =
-          data?.data?.source?.map((account: BankAccounts) => ({
-            id: account.id,
-            bank: account.bank?.code,
-            accountNumber: account.accountNumber,
-            fullName: account.fullName,
-            phone: account.phone?.number,
-            phoneId: account.phoneId,
-            selectedAccountGroups: account.typeGroupAccount,
-            typeAccount: account.typeAccount,
-            notes: account.notes,
-            bankId: account.bankId,
-            groupSystemId: account.groupSystemId,
-            groupBranchId: account.groupBranchId,
-            groupTeamId: account.groupTeamId,
-            transactionSource: account.transactionSource,
-            groupSystem: account.groupSystem,
-            groupBranch: account.groupBranch,
-            groupTeam: account.groupTeam,
-            typeAccountDescription: account.typeAccountDescription,
-            typeGroupAccountString: account.typeGroupAccountString,
-            groupSystemName: account.groupSystem?.name,
-            groupBranchName: account.groupBranch?.name,
-            groupTeamName: account.groupTeam?.name,
-            bankName: account.bank?.fullName,
-          })) || [];
-
-        setDataAccount(formattedData);
-      }
-    } catch (error) {
-      console.error("Lỗi khi tìm kiếm tài khoản ngân hàng:", error);
-    }
-  };
-
   const [accountGroupFilter, setAccountGroupFilter] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
-  const [systemFilter, setSystemFilter] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
-  const [branchFilter, setBranchFilter] = useState<
-    Array<{ value: string; label: string }>
-  >([]);
-  const [TeamFilter, setTeamFilter] = useState<
     Array<{ value: string; label: string }>
   >([]);
 
@@ -684,9 +606,9 @@ const Account = () => {
   }>({});
 
   const [groupAccountFilter, setGroupAccountFilter] = useState();
-  const [groupSystemFilter, setGroupSystemFilter] = useState();
-  const [groupBranchFilter, setGroupBranchFilter] = useState();
-  const [groupTeamFilter, setGroupTeamFilter] = useState();
+  const [groupSystemFilter] = useState();
+  const [groupBranchFilter] = useState();
+  const [groupTeamFilter] = useState();
 
   // call api lấy dsach filter nhóm tài khoản
   const handleFilter = async (searchTerms?: string) => {
@@ -769,10 +691,6 @@ const Account = () => {
       label: localStorage.getItem("groupTeamName")!,
       value: localStorage.getItem("groupTeamId")!,
     });
-
-    setSystemFilter(arrData);
-    setBranchFilter(arrDataBranch);
-    setTeamFilter(arrDataTeam);
   };
 
   const handleFilterSystem = async (groupSystemId?: string) => {
@@ -797,13 +715,7 @@ const Account = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
-          value: x.id,
-          label: x.name || "Không xác định",
-        }));
-        setSystemFilter(res);
       } else {
-        setSystemFilter([]);
       }
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
@@ -833,13 +745,7 @@ const Account = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
-          value: x.id,
-          label: x.name || "Không xác định",
-        }));
-        setBranchFilter(res);
       } else {
-        setBranchFilter([]);
       }
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
@@ -874,56 +780,10 @@ const Account = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
-          value: x.id,
-          label: x.name || "Không xác định",
-        }));
-        setTeamFilter(res);
       } else {
-        setTeamFilter([]);
       }
     } catch (error) {
       console.error("Error fetching bank accounts:", error);
-    }
-  };
-
-  const GetListGroupBranch = async () => {
-    try {
-      const arr: FilterGroupAccount[] = [];
-      arr.push({
-        Name: "groupSystemId",
-        Value: groupSystemFilter || "0",
-      });
-
-      const res = await getBranchSystem(pageIndex, pageSize, globalTerm, arr);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = res.data.source.map((x: any) => ({
-        value: x.id,
-        label: x.name || "Không xác định",
-      }));
-      setBranchFilter(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const GetListGroupTeam = async () => {
-    try {
-      const arr: FilterGroupAccount[] = [];
-      arr.push({
-        Name: "groupBranchId",
-        Value: groupBranchFilter || "0",
-      });
-
-      const res = await getGroupTeam(pageIndex, pageSize, globalTerm, arr);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = res.data.source.map((x: any) => ({
-        value: x.id,
-        label: x.name || "Không xác định",
-      }));
-      setTeamFilter(response);
-    } catch (error) {
-      console.log(error);
     }
   };
 
@@ -999,11 +859,9 @@ const Account = () => {
 
   useEffect(() => {
     fetchAccounts(
-      globalTerm,
-      groupAccountFilter,
-      groupSystemFilter,
-      groupBranchFilter,
-      groupTeamFilter
+      bankId,
+      bankAccountId,
+      groupAccountFilter
     );
   }, [checkFilter]);
 
@@ -1068,6 +926,92 @@ const Account = () => {
     setValueInput(sanitizedValue);
   };
 
+  const [bankDataFilter, setBankDataFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+
+  const filterBankAPI = async () => {
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+
+      if (
+        fetchBankDataAPI &&
+        fetchBankDataAPI.data &&
+        fetchBankDataAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankDataAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.code || "Không xác định",
+        }));
+        console.log("fetchBankDataAPI", fetchBankDataAPI);
+
+        setBankDataFilter(res);
+      } else {
+        setBankDataFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
+  const [bankAccountFilter, setBankAccountFilter] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+
+  const filterBankAccount = async (bankId?: string) => {
+    // console.log(352, bankId)
+    const arr: FilterProducts[] = [];
+    const addedParams = new Set<string>();
+    arr.push({
+      Name: "bankId",
+      Value: bankId || "0",
+    });
+    arr.push({
+      Name: keys!,
+      Value: values,
+    });
+    addedParams.add(keys!);
+    try {
+      const fetchBankAccountAPI = await fetchBankAccounts(
+        pageIndex,
+        pageSize,
+        undefined,
+        arr
+      );
+
+      if (
+        fetchBankAccountAPI &&
+        fetchBankAccountAPI.data &&
+        fetchBankAccountAPI.data.source
+      ) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const res = fetchBankAccountAPI.data.source.map((x: any) => ({
+          value: x.id,
+          label: x.fullName + "-" + x.accountNumber || "Không xác định",
+        }));
+
+        setBankAccountFilter(res);
+      } else {
+        setBankAccountFilter([]);
+      }
+    } catch (error) {
+      console.error("Error fetching bank accounts:", error);
+    }
+  };
+
+  useEffect(() => {
+    filterBankAPI();
+    filterBankAccount();
+  }, []);
+
   return (
     <>
       {isLoading && (
@@ -1080,29 +1024,52 @@ const Account = () => {
         <div className="text-[32px] font-bold py-5">Danh sách tài khoản</div>
         <div className="flex justify-between items-center mb-7">
           <div className="flex items-center">
-            <Input
-              placeholder="Số tài khoản, tên tài khoản ..."
-              onChange={async (e) => {
-                const value = e.target.value;
-                // handleSearch(value);
-                setGlobalTerm(value);
-                if (!value) {
-                  await setPageIndex(1);;
-                  await setDataAccount([])
-                  setCheckFilter(!checkFilter);
-                }
-              }}
-              onPressEnter={async (e) => {
-                await setPageIndex(1);;
-                await setDataAccount([])
-                handleSearch((e.target as HTMLInputElement).value);
-              }}
-              style={{
-                width: 250,
-                marginRight: 10,
-              }}
-            />
             <Space direction="horizontal" size="middle">
+              <Select
+                options={bankDataFilter}
+                placeholder="Ngân hàng"
+                style={{ width: 245 }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+                  await setPageIndex(1);
+                  await setDataAccount([])
+
+                  await setBankId(value);
+                  filterBankAccount(value);
+
+                  fetchAccounts(value, bankAccountId, groupAccountFilter);
+                }}
+              />
+
+              <CustomSelect
+                mode="multiple"
+                options={bankAccountFilter}
+                placeholder="Tài khoản ngân hàng"
+                style={{ width: 245 }}
+                allowClear
+                showSearch
+                filterOption={(input, option) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                onChange={async (value: any) => {
+
+                  const parsedValue = Array.isArray(value)
+                    ? value
+                    :
+                    value.split(",").map((item: any) => item.trim());
+
+                  await setPageIndex(1);
+                  await setDataAccount([])
+                  await setBankAccountId(parsedValue);
+
+                  fetchAccounts(bankId, parsedValue, groupAccountFilter);
+                }}
+              />
+
               <CustomSelect
                 mode="multiple"
                 options={accountGroupFilter}
@@ -1133,139 +1100,15 @@ const Account = () => {
                     setCheckFilter(!checkFilter);
                   } else {
                     fetchAccounts(
-                      globalTerm,
-                      parsedValue,
-                      groupSystemFilter,
-                      groupBranchFilter,
-                      groupTeamFilter
+                      bankId,
+                      bankAccountId,
+                      parsedValue
                     );
                   }
                 }}
               />
             </Space>
-            <div className="w-2" />
-            <Space direction="horizontal" size="middle">
-              {groupSystemName && (
-                <Select
-                  disabled={defaultGroupSystemId ? true : false}
-                  defaultValue={
-                    groupSystemId
-                      ? {
-                        value: groupSystemId,
-                        label: groupSystemName,
-                      }
-                      : undefined
-                  }
-                  onFocus={() => handleFilterSystem()}
-                  options={systemFilter}
-                  placeholder="Hệ thống"
-                  style={{ width: 245 }}
-                  allowClear
-                  onChange={(value: any) => {
-                    setGroupSystemFilter(value);
-                    if (!value) {
-                      handleSelectChange(
-                        groupAccountFilter,
-                        value,
-                        groupBranchFilter,
-                        groupTeamFilter
-                      );
-                      setCheckFilter(!checkFilter);
-                    } else {
-                      fetchAccounts(
-                        globalTerm,
-                        groupAccountFilter,
-                        value,
-                        groupBranchFilter,
-                        groupTeamFilter
-                      );
-                    }
-                  }}
-                />
-              )}
-            </Space>
-            <div className="w-2" />
-            <Space direction="horizontal" size="middle">
-              {groupBranchName && (
-                <Select
-                  disabled={defaultGroupBranchId ? true : false}
-                  defaultValue={
-                    groupBranchId
-                      ? {
-                        value: groupBranchId,
-                        label: groupBranchName,
-                      }
-                      : undefined
-                  }
-                  onFocus={() => GetListGroupBranch()}
-                  options={branchFilter}
-                  placeholder="Chi nhánh"
-                  style={{ width: 245 }}
-                  allowClear
-                  onChange={(value: any) => {
-                    setGroupBranchFilter(value);
-                    if (!value) {
-                      handleSelectChange(
-                        groupAccountFilter,
-                        groupSystemFilter,
-                        value,
-                        groupTeamFilter
-                      );
-                      setCheckFilter(!checkFilter);
-                    } else {
-                      fetchAccounts(
-                        globalTerm,
-                        groupAccountFilter,
-                        groupSystemFilter,
-                        value,
-                        groupTeamFilter
-                      );
-                    }
-                  }}
-                />
-              )}
-            </Space>
-            <div className="w-2" />
-            <Space direction="horizontal" size="middle">
-              {groupTeamName && (
-                <Select
-                  disabled={defaultGroupTeamId ? true : false}
-                  defaultValue={
-                    groupTeamId
-                      ? {
-                        value: groupTeamId,
-                        label: groupTeamName,
-                      }
-                      : undefined
-                  }
-                  onFocus={() => GetListGroupTeam()}
-                  options={TeamFilter}
-                  placeholder="Đội nhóm"
-                  style={{ width: 245 }}
-                  allowClear
-                  onChange={(value: any) => {
-                    setGroupTeamFilter(value);
-                    if (!value) {
-                      handleSelectChange(
-                        groupAccountFilter,
-                        groupSystemFilter,
-                        groupBranchFilter,
-                        value
-                      );
-                      setCheckFilter(!checkFilter);
-                    } else {
-                      fetchAccounts(
-                        globalTerm,
-                        groupAccountFilter,
-                        groupSystemFilter,
-                        groupBranchFilter,
-                        value
-                      );
-                    }
-                  }}
-                />
-              )}
-            </Space>
+
           </div>
           <div className="flex">
             {selectedRowKeys.length > 0 && (

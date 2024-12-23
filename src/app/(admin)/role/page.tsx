@@ -84,7 +84,7 @@ const Role = () => {
     if (pageIndex > 1 && dataRolePage.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchListRole().finally(() => {
+      fetchListRole(globalTerm).finally(() => {
         setTimeout(() => {
 
           window.scrollTo(0, scrollPositionBeforeFetch + scrollPositionBeforeFetch / 10);
