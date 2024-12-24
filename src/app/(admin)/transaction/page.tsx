@@ -121,6 +121,8 @@ const Transaction = () => {
     };
   }, []);
 
+
+  const [fullDate, setFullDate] = useState();
   const [startDate, setStartDate] = useState();
   const [endDate, setEndDate] = useState();
 
@@ -252,6 +254,12 @@ const Transaction = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setBankId(undefined);
+    setBankAccountId(undefined);
+    setFullDate(undefined);
+  }
+
   const handleAddConfirm = async (isAddTransaction: boolean) => {
     const formData = await form.validateFields();
     setLoading(true);
@@ -294,7 +302,9 @@ const Transaction = () => {
         form.resetFields();
         setCurrentTransaction(null);
         await setPageIndex(1);
-        await setDataTransaction([])
+        await setDataTransaction([]);
+        ClearFilter();
+
         fetchTransaction();
         setSelectBankId(0);
       }
@@ -326,7 +336,9 @@ const Transaction = () => {
       } else {
         toast.success("Xóa giao dịch thành công!");
         await setPageIndex(1);
-        await setDataTransaction([])
+        await setDataTransaction([]);
+        ClearFilter();
+
         fetchTransaction(); // Hoặc cập nhật state trực tiếp để tránh fetch lại toàn bộ.
       }
 
@@ -528,7 +540,9 @@ const Transaction = () => {
       await deleteTransaction(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataTransaction([])
+      await setDataTransaction([]);
+      ClearFilter();
+
       fetchTransaction();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -666,6 +680,7 @@ const Transaction = () => {
 
                 fetchTransaction(startDate, endDate, value, bankAccountId, 1);
               }}
+              value={bankId}
             />
 
             <CustomSelect
@@ -691,6 +706,7 @@ const Transaction = () => {
 
                 fetchTransaction(startDate, endDate, bankId, parsedValue, 1);
               }}
+              value={bankAccountId}
             />
 
             <RangePicker
@@ -708,6 +724,7 @@ const Transaction = () => {
                 } else {
                   const [startDate, endDate] = value;
                   handleSelectChange(startDate, endDate);
+                  setFullDate(value);
                   setStartDate(startDate);
                   setEndDate(endDate);
                   fetchTransaction(
@@ -722,6 +739,7 @@ const Transaction = () => {
               disabledDate={(current) =>
                 current && current > dayjs().endOf("day")
               }
+              value={fullDate}
             />
           </Space>
           <div className="flex">

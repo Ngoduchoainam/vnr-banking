@@ -111,6 +111,10 @@ const Sheet = () => {
     fetchSheet(globalTerm);
   }, [globalTerm, keys]);
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddSheet: boolean) => {
     try {
       await form.validateFields();
@@ -139,7 +143,9 @@ const Sheet = () => {
       form.resetFields();
       setCurrentSheet(null);
       await setPageIndex(1);
-      await setDataSheet([])
+      await setDataSheet([]);
+      ClearFilter();
+
       fetchSheet();
     } catch (error) {
       console.error("Lỗi:", error);
@@ -171,7 +177,9 @@ const Sheet = () => {
       setIsAddModalOpen(false);
       await deleteSheet([x.id]);
       await setPageIndex(1);
-      await setDataSheet([])
+      await setDataSheet([]);
+      ClearFilter();
+
       fetchSheet();
       toast.success("Xóa thành công!");
     } catch (error) {
@@ -284,7 +292,9 @@ const Sheet = () => {
       await deleteSheet(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataSheet([])
+      await setDataSheet([]);
+      ClearFilter();
+
       fetchSheet();
       setSelectedRowKeys([]);
     } catch (error) {

@@ -197,6 +197,10 @@ const Role = () => {
     return true;
   }
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddRole: boolean) => {
     // const formData = form.getFieldsValue();
     try {
@@ -235,7 +239,9 @@ const Role = () => {
       form.resetFields();
       setCurrentRole(null);
       await setPageIndex(1);
-      await setDataRolePage([])
+      await setDataRolePage([]);
+      ClearFilter();
+
       fetchListRole();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -277,7 +283,9 @@ const Role = () => {
       setIsAddModalOpen(false);
       await deleteRole([role.id]);
       await setPageIndex(1);
-      await setDataRolePage([])
+      await setDataRolePage([]);
+      ClearFilter();
+
       fetchListRole();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
@@ -410,7 +418,9 @@ const Role = () => {
       await deleteRole(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataRolePage([])
+      await setDataRolePage([]);
+      ClearFilter();
+
       fetchListRole();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -453,6 +463,7 @@ const Role = () => {
               await setDataRolePage([])
               handleSearch(inputValue);
             }}
+            value={globalTerm}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

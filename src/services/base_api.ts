@@ -1,5 +1,6 @@
 import axios from "axios";
 import { getSession } from "next-auth/react";
+import Cookies from 'js-cookie';
 
 export const apiClient = axios.create({
   baseURL: "https://apiweb.bankings.vnrsoftware.vn",
@@ -9,10 +10,27 @@ export const apiClient = axios.create({
   },
 });
 
+const CACHE_KEY_SESSION = "sessionCache";
+
 // Thêm interceptor để lấy token động
 apiClient.interceptors.request.use(
   async (config) => {
-    const session = await getSession();
+    let session;
+
+    const cache = Cookies.get(CACHE_KEY_SESSION);
+    if (cache) {
+      const parsedCache = JSON.parse(cache);
+      if (Date.now() < parsedCache.expiresAt) {
+        session = parsedCache.data;
+      }
+      else {
+        session = await getSession();
+      }
+    }
+    else {
+      session = await getSession();
+    }
+
     if (session?.user?.access_token) {
       config.headers.Authorization = `Bearer ${session.user.access_token}`;
     }

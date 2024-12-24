@@ -111,6 +111,10 @@ const GroupSystemPage = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddGroupSystem: boolean) => {
     try {
       await form.validateFields();
@@ -137,8 +141,9 @@ const GroupSystemPage = () => {
         currentSystem ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
 
-      await setPageIndex(1);;
-      await setDataSystem([])
+      await setPageIndex(1);
+      await setDataSystem([]);
+      ClearFilter();
 
       fetchGroupSystem();
       setLoading(false);
@@ -180,8 +185,10 @@ const GroupSystemPage = () => {
       setIsAddModalOpen(false);
       await deleteGroupSystem([x.id]);
       toast.success("Xóa nhóm hệ thống thành công!");
-      await setPageIndex(1);;
-      await setDataSystem([])
+      await setPageIndex(1);
+      await setDataSystem([]);
+      ClearFilter();
+
       fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -285,8 +292,10 @@ const GroupSystemPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupSystem(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);;
-      await setDataSystem([])
+      await setPageIndex(1);
+      await setDataSystem([]);
+      ClearFilter();
+
       fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -343,6 +352,7 @@ const GroupSystemPage = () => {
 
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTerm}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

@@ -128,6 +128,10 @@ const GroupBranchPage = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddGroupBranch: boolean) => {
     try {
       await form.validateFields();
@@ -152,8 +156,10 @@ const GroupBranchPage = () => {
       toast.success(
         currentBranch ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
-      await setPageIndex(1);;
-      await setDataBranch([])
+      await setPageIndex(1);
+      await setDataBranch([]);
+      ClearFilter();
+
       fetchGroupSystem();
       setLoading(false);
     } catch (error) {
@@ -196,8 +202,10 @@ const GroupBranchPage = () => {
       setIsAddModalOpen(false);
       await deleteGroupBranch([x.id]);
       toast.success("Xóa nhóm chi nhánh thành công!");
-      await setPageIndex(1);;
-      await setDataBranch([])
+      await setPageIndex(1);
+      await setDataBranch([]);
+      ClearFilter();
+
       fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -330,8 +338,10 @@ const GroupBranchPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupBranch(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);;
-      await setDataBranch([])
+      await setPageIndex(1);
+      await setDataBranch([]);
+      ClearFilter();
+
       fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -387,6 +397,7 @@ const GroupBranchPage = () => {
               await setDataBranch([])
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTeam}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

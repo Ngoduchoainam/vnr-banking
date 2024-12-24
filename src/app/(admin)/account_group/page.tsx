@@ -142,6 +142,10 @@ const PhoneNumber: React.FC = () => {
     loadMoreDataAccountGroup();
   }, []);
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isCreateAccountGroup: boolean) => {
     try {
       await form.validateFields();
@@ -159,8 +163,10 @@ const PhoneNumber: React.FC = () => {
         currentAccount ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
       setIsAddModalOpen(false);
-      await setPageIndex(1);;
-      await setDataAccountGroup([])
+      await setPageIndex(1);
+      await setDataAccountGroup([]);
+      ClearFilter();
+
       fetchAccountGroup();
       form.resetFields();
       setCurrentAccount(null);
@@ -197,8 +203,10 @@ const PhoneNumber: React.FC = () => {
         return;
       }
       toast.success("Xóa thành công!");
-      await setPageIndex(1);;
-      await setDataAccountGroup([])
+      await setPageIndex(1);
+      await setDataAccountGroup([]);
+      ClearFilter();
+
       fetchAccountGroup();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -287,8 +295,10 @@ const PhoneNumber: React.FC = () => {
       }
 
       toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);;
-      await setDataAccountGroup([])
+      await setPageIndex(1);
+      await setDataAccountGroup([]);
+      ClearFilter();
+
       fetchAccountGroup();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -356,6 +366,7 @@ const PhoneNumber: React.FC = () => {
               await setDataAccountGroup([])
               handleSearch((e.target as HTMLInputElement).value)
             }}
+            value={globalTeam}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

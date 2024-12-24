@@ -119,7 +119,9 @@ const ListTransactionPage = () => {
       if (responsive.data.success) {
         toast.success(responsive.data.message || "Xóa bản ghi thành công");
         await setPageIndex(1);;
-        await setDataTransaction([])
+        await setDataTransaction([]);
+        ClearFilter();
+
         fetchData({});
       } else {
         toast.error(responsive.data.message || "Xảy ra lỗi");
@@ -159,9 +161,9 @@ const ListTransactionPage = () => {
       key: "descriptionTransType",
     },
     {
-      title: "Loại tài sản",
-      dataIndex: "descriptionPurposeTrans",
-      key: "descriptionPurposeTrans",
+      title: "Ghi chú",
+      dataIndex: "note",
+      key: "note",
     },
     {
       title: "Bộ phận quản lý",
@@ -365,6 +367,13 @@ const ListTransactionPage = () => {
     }
   };
 
+  const [fullDate, setFullDate] = useState();
+
+  const ClearFilter = () => {
+    setDataFilter(undefined);
+    setFullDate(undefined)
+  }
+
   return (
     <>
       {isLoading && (
@@ -391,6 +400,7 @@ const ListTransactionPage = () => {
                 await setDataTransaction([])
                 handleChangeType(e)
               }}
+              value={dataFilter?.dataTypeTransaction || undefined}
             />
             <Select
               placeholder="Kiểu giao dịch"
@@ -406,6 +416,7 @@ const ListTransactionPage = () => {
                 await setDataTransaction([])
                 handleChangeKind(e)
               }}
+              value={dataFilter?.dataKindTransaction || undefined}
             />
             <RangePicker
               id={{
@@ -416,6 +427,7 @@ const ListTransactionPage = () => {
               disabledDate={(current) =>
                 current && current > dayjs().endOf("day")
               }
+              value={fullDate}
             />
           </div>
           <div className="flex items-center gap-2">
@@ -455,6 +467,7 @@ const ListTransactionPage = () => {
           await setPageIndex(1);
           await setDataTransaction([]);
           fetchData({});
+          ClearFilter();
         }}
       />
 

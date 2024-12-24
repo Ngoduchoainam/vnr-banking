@@ -67,6 +67,12 @@ interface OptionAccountGroup {
   value?: number;
 }
 
+interface OptionPhone {
+  phoneId?: number;
+  label?: string;
+  value?: number;
+}
+
 interface FilterProducts {
   Name: string;
   Value: any;
@@ -84,7 +90,7 @@ const Account = () => {
   };
   const [dataAccount, setDataAccount] = useState<BankAccounts[]>([]);
   const [banks, setBanks] = useState([]);
-  const [phoneNumber, setPhoneNumber] = useState<Array<BankAccounts>>([]);
+  const [phoneNumber, setPhoneNumber] = useState<Array<OptionPhone>>([]);
   const [groupSystem, setGroupSystem] = useState<Array<Option>>([]);
   const [branchSystem, setBranchSystem] = useState<Array<OptionBranch>>([]);
   const [groupTeam, setGroupTeam] = useState<Array<OptionTeam>>([]);
@@ -412,6 +418,12 @@ const Account = () => {
     });
   };
 
+  const ClearFilter = () => {
+    setBankId(undefined);
+    setBankAccountId(undefined);
+    setGroupAccountFilter(undefined);
+  }
+
   const handleAddConfirm = async (isAddAccount: boolean) => {
     const formData = await form.validateFields();
 
@@ -444,13 +456,15 @@ const Account = () => {
         typeGroupAccountString: formData.typeGroupAccountString,
       });
       if (!res || !res.success) {
-        toast.error(res?.message || "Có lỗi xảy ra, vui lòng thử lại.");
+        toast.error(res?.message);
       } else {
         setIsAddModalOpen(false);
         form.resetFields();
         setCurrentAccount(null);
-        await setPageIndex(1);;
-        await setDataAccount([])
+        await setPageIndex(1);
+        await setDataAccount([]);
+        ClearFilter();
+
         fetchAccounts();
         toast.success("Thêm mới thành công!");
       }
@@ -558,8 +572,10 @@ const Account = () => {
         return;
       }
       toast.success("Xóa thành công tài khoản ngân hàng!");
-      await setPageIndex(1);;
-      await setDataAccount([])
+      await setPageIndex(1);
+      await setDataAccount([]);
+      ClearFilter();
+
       fetchAccounts();
     } catch (error: any) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
@@ -757,7 +773,7 @@ const Account = () => {
     const arr: FilterGroupAccount[] = [];
     const system: FilterGroupAccount = {
       Name: "groupSystemId",
-      Value: groupSystemId!.toString(),
+      Value: groupSystemId?.toString(),
     };
     const team: FilterGroupAccount = {
       Name: "groupTeamId",
@@ -885,8 +901,10 @@ const Account = () => {
         return;
       }
       toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);;
-      await setDataAccount([])
+      await setPageIndex(1);
+      await setDataAccount([]);
+      ClearFilter();
+
       fetchAccounts();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -1044,6 +1062,7 @@ const Account = () => {
 
                   fetchAccounts(value, bankAccountId, groupAccountFilter, 1);
                 }}
+                value={bankId}
               />
 
               <CustomSelect
@@ -1069,6 +1088,7 @@ const Account = () => {
 
                   fetchAccounts(bankId, parsedValue, groupAccountFilter, 1);
                 }}
+                value={bankAccountId}
               />
 
               <CustomSelect
@@ -1108,6 +1128,7 @@ const Account = () => {
                     );
                   }
                 }}
+                value={groupAccountFilter}
               />
             </Space>
 
@@ -1418,7 +1439,10 @@ const Account = () => {
             </Form.Item>
           </div>
           <div className="flex justify-between">
-            <Form.Item label="Lấy giao dịch từ" name="transactionSource">
+            <Form.Item label="Lấy giao dịch từ" name="transactionSource"
+              rules={[
+                { required: true, message: "Vui lòng chọn Lấy giao dịch từ!" },
+              ]}>
               <Radio.Group
                 onChange={(e) => handleValueChange(e.target.value)}
                 // defaultValue={"1"}
@@ -1441,6 +1465,10 @@ const Account = () => {
                     options={phoneNumber}
                     onFocus={getListPhoneNumber}
                     placeholder="Chọn số điện thoại"
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.label.toLowerCase().includes(input.toLowerCase())
+                    }
                     onChange={async (value: any) => {
                       const selectedGroup = await phoneNumber.find(
                         (item: any) => item.value === value

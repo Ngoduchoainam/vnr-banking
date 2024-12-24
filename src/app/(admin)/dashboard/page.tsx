@@ -896,7 +896,6 @@ const Dashboard = () => {
                 {dataTransaction?.logChatSqlRes?.map(
                   // eslint-disable-next-line @typescript-eslint/no-explicit-any
                   (x: any, index: number) => {
-                    console.log(864, x)
                     return (
                       <div
                         key={index}
@@ -947,13 +946,14 @@ const Dashboard = () => {
                             <div className="bg-[#ff0000] w-12 rounded-xl flex justify-center text-white my-1">
                               {x?.logMessageDescription}
                             </div>
-                            <SyncOutlined
-                              // spin={isLoading}
-                              onClick={() => {
-                                handleResendSheet(x.transactionId, x?.id);
-                              }}
-                              className="cursor-pointer"
-                            />
+                            {dataTransaction?.logStatus === "Giao dịch lỗi" &&
+                              <SyncOutlined
+                                // spin={isLoading}
+                                onClick={() => {
+                                  handleResendSheet(x.transactionId, x?.id);
+                                }}
+                                className="cursor-pointer"
+                              />}
                           </div>
                         ) : (
                           <div className="bg-[#04a616] w-24 rounded-xl flex justify-center text-white my-1">

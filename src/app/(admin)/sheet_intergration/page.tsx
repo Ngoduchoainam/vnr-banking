@@ -221,6 +221,13 @@ const SheetIntergration = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setBankId(undefined);
+    setBankAccountId(undefined);
+    setSheetIdFilter(undefined);
+    setTransTypeFilter(undefined);
+  }
+
   const handleAddConfirm = async (isAddSheetInter: boolean) => {
     try {
       await form.validateFields();
@@ -262,7 +269,9 @@ const SheetIntergration = () => {
       form.resetFields();
       setCurrentSheet(null);
       await setPageIndex(1);
-      await setDataSheetIntegration([])
+      await setDataSheetIntegration([]);
+      ClearFilter();
+
       fetchSheetIntegration();
     } catch (error) {
       console.error("Lỗi:", error);
@@ -297,7 +306,9 @@ const SheetIntergration = () => {
       setIsAddModalOpen(false);
       await deleteSheetIntergration([x.id]);
       await setPageIndex(1);
-      await setDataSheetIntegration([])
+      await setDataSheetIntegration([]);
+      ClearFilter();
+
       fetchSheetIntegration();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
@@ -521,7 +532,9 @@ const SheetIntergration = () => {
       await deleteSheetIntergration(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataSheetIntegration([])
+      await setDataSheetIntegration([]);
+      ClearFilter();
+
       fetchSheetIntegration();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -625,6 +638,7 @@ const SheetIntergration = () => {
                     );
                   }
                 }}
+                value={bankId}
               />
 
               <CustomSelect
@@ -659,6 +673,7 @@ const SheetIntergration = () => {
                     1
                   );
                 }}
+                value={bankAccountId}
               />
               <CustomSelect
                 mode="multiple"
@@ -692,6 +707,7 @@ const SheetIntergration = () => {
                     );
                   }
                 }}
+                value={sheetIdFilter}
               />
               <Select
                 options={options}
@@ -722,6 +738,7 @@ const SheetIntergration = () => {
                     );
                   }
                 }}
+                value={transTypeFilter}
               />
             </Space>
           </div>

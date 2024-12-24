@@ -138,6 +138,10 @@ const GroupTeamPage = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddGroupTeam: boolean) => {
     try {
       await form.validateFields();
@@ -164,8 +168,10 @@ const GroupTeamPage = () => {
       toast.success(
         currentTeam ? "Cập nhật thành công!" : "Thêm mới thành công!"
       );
-      await setPageIndex(1);;
-      await setDataTeam([])
+      await setPageIndex(1);
+      await setDataTeam([]);
+      ClearFilter();
+
       fetchGroupSystem();
       setLoading(false);
     } catch (error) {
@@ -210,8 +216,10 @@ const GroupTeamPage = () => {
       setAddModalOpen(false);
       await deleteGroupTeam([x.id]);
       toast.success("Xóa nhóm chi nhánh thành công!");
-      await setPageIndex(1);;
-      await setDataTeam([])
+      await setPageIndex(1);
+      await setDataTeam([]);
+      ClearFilter();
+
       fetchGroupSystem();
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
@@ -382,8 +390,10 @@ const GroupTeamPage = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       await deleteGroupTeam(idsToDelete);
       toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);;
-      await setDataTeam([])
+      await setPageIndex(1);
+      await setDataTeam([]);
+      ClearFilter();
+
       fetchGroupSystem();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -439,6 +449,7 @@ const GroupTeamPage = () => {
               await setDataTeam([])
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTeam}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

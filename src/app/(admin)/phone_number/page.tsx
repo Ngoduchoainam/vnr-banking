@@ -121,6 +121,10 @@ const PhoneNumber: React.FC = () => {
     return true;
   }
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddPhoneNumber: boolean) => {
     try {
       await form.validateFields();
@@ -151,7 +155,9 @@ const PhoneNumber: React.FC = () => {
       );
       setIsAddModalOpen(false);
       await setPageIndex(1);
-      await setDataPhoneNumber([])
+      await setDataPhoneNumber([]);
+      ClearFilter();
+
       fetchListPhone();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -189,7 +195,9 @@ const PhoneNumber: React.FC = () => {
       }
       toast.success("Xóa số điện thoại thành công!");
       await setPageIndex(1);
-      await setDataPhoneNumber([])
+      await setDataPhoneNumber([]);
+      ClearFilter();
+
       fetchListPhone();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -321,7 +329,9 @@ const PhoneNumber: React.FC = () => {
       }
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataPhoneNumber([])
+      await setDataPhoneNumber([]);
+      ClearFilter();
+
       fetchListPhone();
       setSelectedRowKeys([]);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -386,6 +396,7 @@ const PhoneNumber: React.FC = () => {
               await setDataPhoneNumber([])
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTerm}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

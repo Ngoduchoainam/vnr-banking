@@ -116,6 +116,10 @@ const Telegram = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setGlobalTerm("");
+  }
+
   const handleAddConfirm = async (isAddTelegram: boolean) => {
     try {
       await form.validateFields();
@@ -142,7 +146,9 @@ const Telegram = () => {
       );
       setIsAddModalOpen(false);
       await setPageIndex(1);
-      await setDataTelegram([])
+      await setDataTelegram([]);
+      ClearFilter();
+
       fetchTelegram();
       setLoading(false);
     } catch (error) {
@@ -184,7 +190,9 @@ const Telegram = () => {
       await deleteTelegram([x.id]);
       toast.success("Xóa nhóm telegram thành công!");
       await setPageIndex(1);
-      await setDataTelegram([])
+      await setDataTelegram([]);
+      ClearFilter();
+
       fetchTelegram();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
@@ -291,7 +299,9 @@ const Telegram = () => {
       await deleteTelegram(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataTelegram([])
+      await setDataTelegram([]);
+      ClearFilter();
+
       fetchTelegram();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -349,6 +359,7 @@ const Telegram = () => {
               await setDataTelegram([])
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTeam}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

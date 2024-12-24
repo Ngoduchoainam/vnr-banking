@@ -6,6 +6,8 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith(route)
   );
 
+  console.log(1, "call")
+
   if (isPublicRoute) {
     return NextResponse.next(); // Cho phép truy cập các trang công khai
   }

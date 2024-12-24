@@ -240,6 +240,13 @@ const TelegramIntegration = () => {
     }
   };
 
+  const ClearFilter = () => {
+    setBankId(undefined);
+    setBankAccountId(undefined);
+    setGroupChatFilter(undefined);
+    setTransTypeFilter(undefined);
+  }
+
   const handleAddConfirm = async (isCreateTelegramInter: boolean) => {
     if (loading) return;
 
@@ -262,7 +269,9 @@ const TelegramIntegration = () => {
       form.resetFields();
       setCurrentTelegram(null);
       await setPageIndex(1);
-      await setDataTelegramIntegration([])
+      await setDataTelegramIntegration([]);
+      ClearFilter();
+
       fetchListTelegramIntegration();
 
     } catch (error) {
@@ -295,7 +304,9 @@ const TelegramIntegration = () => {
       setIsAddModalOpen(false);
       await deleteTelegramIntergration([x.id]);
       await setPageIndex(1);
-      await setDataTelegramIntegration([])
+      await setDataTelegramIntegration([]);
+      ClearFilter();
+
       fetchListTelegramIntegration();
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản ngân hàng:", error);
@@ -550,7 +561,9 @@ const TelegramIntegration = () => {
       await deleteTelegramIntergration(idsToDelete);
       toast.success("Xóa các mục thành công!");
       await setPageIndex(1);
-      await setDataTelegramIntegration([])
+      await setDataTelegramIntegration([]);
+      ClearFilter();
+
       fetchListTelegramIntegration();
       setSelectedRowKeys([]);
     } catch (error) {
@@ -613,6 +626,7 @@ const TelegramIntegration = () => {
                     );
                   }
                 }}
+                value={bankId}
               />
               <CustomSelect
                 mode="multiple"
@@ -645,6 +659,7 @@ const TelegramIntegration = () => {
                     1
                   );
                 }}
+                value={bankAccountId}
               />
               <CustomSelect
                 mode="multiple"
@@ -674,6 +689,7 @@ const TelegramIntegration = () => {
                     );
                   }
                 }}
+                value={groupChatFilter}
               />
               <Select
                 options={options}
@@ -702,6 +718,7 @@ const TelegramIntegration = () => {
                     );
                   }
                 }}
+                value={transTypeFilter}
               />
             </Space>
 

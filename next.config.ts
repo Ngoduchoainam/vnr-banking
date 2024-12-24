@@ -9,6 +9,16 @@ const nextConfig = {
 
 module.exports = {
   reactStrictMode: false,  // Tắt React Strict Mode
+
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/dashboard',
+        permanent: true, // permanent: true sẽ trả mã trạng thái 308, còn false sẽ trả 307
+      },
+    ];
+  },
 }
 
 export default nextConfig;
