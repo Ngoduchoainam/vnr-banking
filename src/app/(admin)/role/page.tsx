@@ -144,7 +144,7 @@ const Role = () => {
 
   useEffect(() => {
     fetchListRole(globalTerm);
-  }, [globalTerm, keys]);
+  }, [keys]);
 
   const getGroupSystems = async () => {
     try {
@@ -456,6 +456,10 @@ const Role = () => {
             style={{
               width: 253,
               marginRight: 15,
+            }}
+            onChange={async (e) => {
+              const value = e.target.value;
+              setGlobalTerm(value);
             }}
             onPressEnter={async (e) => {
               const inputValue = (e.target as HTMLInputElement).value;

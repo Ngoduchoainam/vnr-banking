@@ -96,6 +96,8 @@ const Sheet = () => {
           notes: x.notes,
         })) || [];
 
+      console.log(99, "call here")
+
       setTotalRecord(response?.data?.totalRecords || 0);
 
       setDataSheet((prevData) => [...prevData, ...formattedData]);
@@ -109,7 +111,7 @@ const Sheet = () => {
 
   useEffect(() => {
     fetchSheet(globalTerm);
-  }, [globalTerm, keys]);
+  }, [keys]);
 
   const ClearFilter = () => {
     setGlobalTerm("");
@@ -236,6 +238,8 @@ const Sheet = () => {
             notes: x.notes,
           })) || [];
 
+        console.log(239, "call here")
+
         setDataSheet(formattedData);
       }
     } catch (error) {
@@ -331,11 +335,16 @@ const Sheet = () => {
               width: 253,
               marginRight: 15,
             }}
+            onChange={async (e) => {
+              const value = e.target.value;
+              setGlobalTerm(value);
+            }}
             onPressEnter={async (e) => {
               await setPageIndex(1);
               await setDataSheet([])
               handleSearch((e.target as HTMLInputElement).value);
             }}
+            value={globalTerm}
           />
           <div className="flex">
             {selectedRowKeys.length > 0 && (

@@ -490,7 +490,7 @@ const TelegramIntegration = () => {
     const addedParams = new Set<string>();
     arr.push({
       Name: "bankId",
-      Value: bankId || "0",
+      Value: bankId,
     });
     arr.push({
       Name: keys!,
@@ -582,6 +582,10 @@ const TelegramIntegration = () => {
   const handleDeleteConfirmation = () => {
     setIsModalVisible(true);
   };
+
+  useEffect(() => {
+    filterBankAccount();
+  }, []);
 
   return (
     <>

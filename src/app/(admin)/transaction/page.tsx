@@ -608,7 +608,7 @@ const Transaction = () => {
     const addedParams = new Set<string>();
     arr.push({
       Name: "bankId",
-      Value: bankId || "0",
+      Value: bankId,
     });
     arr.push({
       Name: keys!,
