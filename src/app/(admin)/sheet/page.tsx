@@ -281,6 +281,12 @@ const Sheet = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataSheet.map((item) => ({
     ...item,
@@ -293,14 +299,20 @@ const Sheet = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteSheet(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataSheet([]);
-      ClearFilter();
+      const res = await deleteSheet(idsToDelete);
 
-      fetchSheet();
-      setSelectedRowKeys([]);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataSheet([]);
+        ClearFilter();
+
+        fetchSheet();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -373,6 +385,7 @@ const Sheet = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

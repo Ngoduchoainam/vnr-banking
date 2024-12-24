@@ -200,8 +200,13 @@ const GroupBranchPage = () => {
     setLoading(true);
     try {
       setIsAddModalOpen(false);
-      await deleteGroupBranch([x.id]);
-      toast.success("Xóa nhóm chi nhánh thành công!");
+      const res = await deleteGroupBranch([x.id]);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa chi nhánh thành công!");
+      }
       await setPageIndex(1);
       await setDataBranch([]);
       ClearFilter();
@@ -324,6 +329,12 @@ const GroupBranchPage = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataBranch.map((item) => ({
     ...item,
@@ -336,14 +347,19 @@ const GroupBranchPage = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteGroupBranch(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataBranch([]);
-      ClearFilter();
+      const res = await deleteGroupBranch(idsToDelete);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataBranch([]);
+        ClearFilter();
 
-      fetchGroupSystem();
-      setSelectedRowKeys([]);
+        fetchGroupSystem();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -426,6 +442,7 @@ const GroupBranchPage = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

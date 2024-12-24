@@ -6,6 +6,10 @@ interface LoadingTableProps {
     pageIndex: number;
     dataSource: any[];
     columns: any[];
+    rowSelection?: {
+        selectedRowKeys: React.Key[];
+        onChange: (newSelectedRowKeys: React.Key[]) => void;
+    };
 }
 
 const LoadingTable = ({
@@ -13,6 +17,7 @@ const LoadingTable = ({
     pageIndex,
     dataSource,
     columns,
+    rowSelection,
 }: LoadingTableProps) => {
     if (loading) {
         if (pageIndex === 1) {
@@ -25,6 +30,7 @@ const LoadingTable = ({
                     dataSource={([...Array(10)]).map((_, index) => ({
                         key: `key${index}`,
                     }))}
+                    rowSelection={rowSelection}
                     columns={columns.map((column) => ({
                         ...column,
                         render: function renderPlaceholder() {
@@ -39,7 +45,7 @@ const LoadingTable = ({
     }
 
     // Khi không còn loading, hiển thị bảng với dữ liệu thực tế
-    return <Table dataSource={dataSource} columns={columns} pagination={false} />;
+    return <Table dataSource={dataSource} columns={columns} pagination={false} rowSelection={rowSelection} />;
 };
 
 export default LoadingTable;

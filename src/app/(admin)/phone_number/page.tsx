@@ -310,6 +310,12 @@ const PhoneNumber: React.FC = () => {
   // ........................................................................//
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataPhoneNumber.map((item) => ({
     ...item,
@@ -323,18 +329,18 @@ const PhoneNumber: React.FC = () => {
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       const response = await deletePhone(idsToDelete);
-      if (response.success === false) {
-        toast.error(response.message || "Có lỗi xảy ra khi xóa các mục.");
-        return;
+      if (!response || !response.success) {
+        toast.error(response?.message);
       }
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataPhoneNumber([]);
-      ClearFilter();
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataPhoneNumber([]);
+        ClearFilter();
 
-      fetchListPhone();
-      setSelectedRowKeys([]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fetchListPhone();
+        setSelectedRowKeys([]);
+      }
     } catch (error: any) {
       console.error("Lỗi khi xóa:", error);
       if (error.isAxiosError && error.response) {
@@ -425,6 +431,7 @@ const PhoneNumber: React.FC = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

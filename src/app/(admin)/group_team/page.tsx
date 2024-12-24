@@ -214,8 +214,14 @@ const GroupTeamPage = () => {
     setLoading(true);
     try {
       setAddModalOpen(false);
-      await deleteGroupTeam([x.id]);
-      toast.success("Xóa nhóm chi nhánh thành công!");
+      const res = await deleteGroupTeam([x.id]);
+
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa đội nhóm thành công!");
+      }
       await setPageIndex(1);
       await setDataTeam([]);
       ClearFilter();
@@ -376,6 +382,12 @@ const GroupTeamPage = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataTeam.map((item) => ({
     ...item,
@@ -388,14 +400,19 @@ const GroupTeamPage = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteGroupTeam(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataTeam([]);
-      ClearFilter();
+      const res = await deleteGroupTeam(idsToDelete);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataTeam([]);
+        ClearFilter();
 
-      fetchGroupSystem();
-      setSelectedRowKeys([]);
+        fetchGroupSystem();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -478,6 +495,7 @@ const GroupTeamPage = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

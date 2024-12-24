@@ -883,6 +883,12 @@ const Account = () => {
   }, [checkFilter]);
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataAccount.map((item) => ({
     ...item,
@@ -896,18 +902,19 @@ const Account = () => {
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       const response = await deleteBankAccount(idsToDelete);
-      if (response.success === false) {
-        toast.error(response.message || "Có lỗi xảy ra khi xóa các mục.");
-        return;
+      if (!response || !response.success) {
+        toast.error(response?.message);
       }
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataAccount([]);
-      ClearFilter();
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataAccount([]);
+        ClearFilter();
 
-      fetchAccounts();
-      setSelectedRowKeys([]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fetchAccounts();
+        setSelectedRowKeys([]);
+      }
+
     } catch (error: any) {
       console.error("Lỗi khi xóa:", error);
       if (error.isAxiosError && error.response) {
@@ -1161,6 +1168,7 @@ const Account = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

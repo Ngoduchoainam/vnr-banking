@@ -525,6 +525,12 @@ const Transaction = () => {
   // .........................................................................//
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataTransaction.map((item) => ({
     ...item,
@@ -537,14 +543,20 @@ const Transaction = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteTransaction(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataTransaction([]);
-      ClearFilter();
+      const res = await deleteTransaction(idsToDelete);
 
-      fetchTransaction();
-      setSelectedRowKeys([]);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataTransaction([]);
+        ClearFilter();
+
+        fetchTransaction();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -769,6 +781,7 @@ const Transaction = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

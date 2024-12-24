@@ -86,6 +86,7 @@ export const resendSheet = async (transId: number, sheetMapId: number) => {
         transId: transId,
         sheetMapId: sheetMapId,
       },
+      timeout: 30000,
     });
     return res.data;
   } catch (error) {

@@ -546,6 +546,12 @@ const TelegramIntegration = () => {
 
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataTelegramIntegration.map((item) => ({
     ...item,
@@ -558,14 +564,20 @@ const TelegramIntegration = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteTelegramIntergration(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataTelegramIntegration([]);
-      ClearFilter();
+      const res = await deleteTelegramIntergration(idsToDelete);
 
-      fetchListTelegramIntegration();
-      setSelectedRowKeys([]);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataTelegramIntegration([]);
+        ClearFilter();
+
+        fetchListTelegramIntegration();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -754,6 +766,7 @@ const TelegramIntegration = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

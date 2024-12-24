@@ -517,6 +517,12 @@ const SheetIntergration = () => {
   //...........................................................................//
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataSheetIntegration.map((item) => ({
     ...item,
@@ -529,14 +535,20 @@ const SheetIntergration = () => {
     setLoading(true);
     try {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
-      await deleteSheetIntergration(idsToDelete);
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataSheetIntegration([]);
-      ClearFilter();
+      const res = await deleteSheetIntergration(idsToDelete);
 
-      fetchSheetIntegration();
-      setSelectedRowKeys([]);
+      if (!res || !res.success) {
+        toast.error(res?.message);
+      }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataSheetIntegration([]);
+        ClearFilter();
+
+        fetchSheetIntegration();
+        setSelectedRowKeys([]);
+      }
     } catch (error) {
       console.error("Lỗi khi xóa:", error);
       toast.error("Có lỗi xảy ra khi xóa!");
@@ -773,6 +785,7 @@ const SheetIntergration = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal

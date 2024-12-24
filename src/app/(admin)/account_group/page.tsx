@@ -276,6 +276,12 @@ const PhoneNumber: React.FC = () => {
   ];
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: (newSelectedRowKeys: React.Key[]) => {
+      setSelectedRowKeys(newSelectedRowKeys);
+    },
+  };
 
   const dataSource = dataAccountGroup.map((item) => ({
     ...item,
@@ -290,18 +296,18 @@ const PhoneNumber: React.FC = () => {
       const idsToDelete = selectedRowKeys.map((key) => Number(key));
       const response = await deleteAccountGroup(idsToDelete);
 
-      if (!response.success || response.code !== 200) {
-        throw new Error(response.message || "Xóa không thành công");
+      if (!response || !response.success) {
+        toast.error(response?.message);
       }
+      else {
+        toast.success("Xóa các mục thành công!");
+        await setPageIndex(1);
+        await setDataAccountGroup([]);
+        ClearFilter();
 
-      toast.success("Xóa các mục thành công!");
-      await setPageIndex(1);
-      await setDataAccountGroup([]);
-      ClearFilter();
-
-      fetchAccountGroup();
-      setSelectedRowKeys([]);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fetchAccountGroup();
+        setSelectedRowKeys([]);
+      }
     } catch (error: any) {
       console.error("Lỗi khi xóa nhóm tài khoản:", error);
       if (error.isAxiosError && error.response) {
@@ -395,6 +401,7 @@ const PhoneNumber: React.FC = () => {
           pageIndex={pageIndex}
           dataSource={dataSource}
           columns={columns}
+          rowSelection={rowSelection}
         />
       </div>
       <BaseModal
