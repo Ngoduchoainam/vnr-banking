@@ -500,8 +500,7 @@ const Transaction = () => {
   };
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [purposeDescription, setPurposeDescription] = useState();
-  const [startDateFilter, setTranDateFilter] = useState();
+  const [purposeDescription] = useState();
   //
   const [checkFilter, setCheckFilter] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -701,7 +700,6 @@ const Transaction = () => {
               }}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={async (value: any) => {
-                setTranDateFilter(value);
                 await setPageIndex(1);
                 await setDataTransaction([])
                 if (!value || value.length !== 2) {
