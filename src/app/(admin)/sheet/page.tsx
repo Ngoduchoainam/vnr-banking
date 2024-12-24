@@ -313,7 +313,7 @@ const Sheet = () => {
       )}
       <Header />
       <div className="px-[30px]">
-        <div className="text-[32px] font-bold py-5">Danh sách trang tính</div>
+        <div className="text-[32px] font-bold py-5">Danh sách nhóm trang tính</div>
         <div className="flex justify-between items-center mb-7">
           <Input
             placeholder="Tìm kiếm tên nhóm tài khoản ..."

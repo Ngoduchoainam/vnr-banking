@@ -296,7 +296,7 @@ const PhoneNumber: React.FC = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchListPhone();
+    fetchListPhone(globalTerm);
   }, [keys, checkFilter]);
 
   // ........................................................................//

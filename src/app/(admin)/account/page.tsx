@@ -251,7 +251,7 @@ const Account = () => {
 
   const fetchBankData = async () => {
     try {
-      const bankData = await getBank(pageIndex, pageSize);
+      const bankData = await getBank(1, 100);
       const formattedBanks =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bankData?.data?.source?.map((bank: any) => ({
@@ -266,7 +266,7 @@ const Account = () => {
 
   const getListPhoneNumber = async () => {
     try {
-      const phone = await getListPhone(pageIndex, pageSize);
+      const phone = await getListPhone(1, 100);
 
       const res = phone?.data?.source?.map((x: any) => ({
         value: x.id,
@@ -289,8 +289,8 @@ const Account = () => {
     addedParams.add(keys!);
     try {
       const accountGroup = await getAccountGroup(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         globalTerm
       );
 
@@ -318,8 +318,8 @@ const Account = () => {
     addedParams.add(keys!);
     try {
       const getSystem = await getGroupSystem(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         globalTerm,
         arrAccountGroup
       );
@@ -352,8 +352,8 @@ const Account = () => {
     addedParams.add(keys!);
     try {
       const getBranch = await getBranchSystem(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         globalTerm,
         arr
       );
@@ -386,8 +386,8 @@ const Account = () => {
     addedParams.add(keys!);
     try {
       const groupTeams = await getGroupTeam(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         globalTerm,
         arr
       );

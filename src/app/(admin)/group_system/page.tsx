@@ -308,7 +308,7 @@ const GroupSystemPage = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchGroupSystem();
+    fetchGroupSystem(globalTerm);
   }, [checkFilter, keys]);
 
   return (

@@ -320,7 +320,7 @@ const PhoneNumber: React.FC = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchAccountGroup();
+    fetchAccountGroup(globalTeam);
   }, [checkFilter, keys]);
 
   return (

@@ -261,7 +261,7 @@ const GroupTeamPage = () => {
 
   const getGroupSystems = async () => {
     try {
-      const getSystem = await getGroupSystem(1, 20);
+      const getSystem = await getGroupSystem(1, 100);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = getSystem?.data?.source?.map((x: any) => ({
         value: x.id,
@@ -284,7 +284,7 @@ const GroupTeamPage = () => {
     };
     await arr.push(obj);
     try {
-      const getBranch = await getBranchSystem(1, 20, undefined, arr);
+      const getBranch = await getBranchSystem(1, 100, undefined, arr);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = getBranch?.data?.source?.map((x: any) => ({
         value: x.id,
@@ -405,7 +405,7 @@ const GroupTeamPage = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchGroupSystem();
+    fetchGroupSystem(globalTeam);
   }, [checkFilter, keys]);
 
   return (
@@ -475,7 +475,7 @@ const GroupTeamPage = () => {
           setAddModalOpen(false);
           form.resetFields();
         }}
-        title={currentTeam ? "Chỉnh sửa chi nhánh" : "Thêm mới chi nhánh"}
+        title={currentTeam ? "Chỉnh sửa đội nhóm" : "Thêm mới đội nhóm"}
         maskClosable={false}
       >
         <Form

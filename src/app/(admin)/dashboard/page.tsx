@@ -546,7 +546,14 @@ const Dashboard = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchListStatistics(bankIdFilterAPI, bankFilter, chatFilter);
+    fetchListStatistics(
+      bankIdFilterAPI,
+      bankFilter,
+      chatFilter,
+      transTypeFilter,
+      transTypeCompanyFilter,
+      startDateFilter,
+      endDateFilter);
   }, [checkFilter]);
 
   return (

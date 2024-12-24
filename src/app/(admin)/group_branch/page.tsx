@@ -243,7 +243,7 @@ const GroupBranchPage = () => {
 
   const getGroupSystems = async () => {
     try {
-      const getSystem = await getGroupSystem(1, 20);
+      const getSystem = await getGroupSystem(1, 100);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res = getSystem?.data?.source?.map((x: any) => ({
         value: x.id,
@@ -353,7 +353,7 @@ const GroupBranchPage = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchGroupSystem();
+    fetchGroupSystem(globalTeam);
   }, [checkFilter, keys]);
 
   return (

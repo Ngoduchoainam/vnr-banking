@@ -83,7 +83,8 @@ const SheetIntergration = () => {
     if (pageIndex > 1 && dataSheetIntegration.length < totalRecord) {
       const scrollPositionBeforeFetch = window.scrollY;
 
-      fetchSheetIntegration(globalTerm,
+      fetchSheetIntegration(
+        globalTerm,
         sheetIdFilter,
         transTypeFilter,
         bankAccountId,
@@ -189,7 +190,7 @@ const SheetIntergration = () => {
 
   const genBankData = async () => {
     try {
-      const bankData = await fetchBankAccounts(1, 50);
+      const bankData = await fetchBankAccounts(1, 100);
       const formattedBanks =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bankData?.data?.source?.map((bank: any) => ({
@@ -206,7 +207,7 @@ const SheetIntergration = () => {
 
   const genSheetData = async () => {
     try {
-      const dataTelegram = await getListSheet(1, 50);
+      const dataTelegram = await getListSheet(1, 100);
       const formattedTelegram =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         dataTelegram?.data?.source?.map((sheet: any) => ({
@@ -492,7 +493,12 @@ const SheetIntergration = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    fetchSheetIntegration(sheetIdFilter);
+    fetchSheetIntegration(
+      globalTerm,
+      sheetIdFilter,
+      transTypeFilter,
+      bankAccountId,
+      bankId);
   }, [checkFilter, keys]);
 
   const [bankAccountIdSelect, setBankAccountIdSelect] = useState();

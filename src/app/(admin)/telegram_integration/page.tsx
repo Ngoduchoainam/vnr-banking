@@ -208,7 +208,7 @@ const TelegramIntegration = () => {
 
   const genBankData = async () => {
     try {
-      const bankData = await fetchBankAccounts(1, 50);
+      const bankData = await fetchBankAccounts(1, 100);
       const formattedBanks =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bankData?.data?.source?.map((bank: any) => ({
@@ -226,7 +226,7 @@ const TelegramIntegration = () => {
 
   const genTelegramData = async () => {
     try {
-      const dataTelegram = await getListTelegram(1, 50);
+      const dataTelegram = await getListTelegram(1, 100);
       const formattedTelegram =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         dataTelegram?.data?.source?.map((tele: any) => ({

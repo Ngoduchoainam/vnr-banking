@@ -64,22 +64,34 @@ export default function BarChartRealEstate({
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
+        display: true,
         onClick: (e: any, legendItem: any) => {
           const { index } = legendItem;
           const label = data.labels[index];
 
           // Toggle visibility of the clicked legend item
-          setHiddenBars((prev) => ({
-            ...prev,
-            [label]: !prev[label],
-          }));
+          setHiddenBars((prev) => {
+            const newHiddenBars = { ...prev };
+            newHiddenBars[label] = !newHiddenBars[label]; // Toggle trạng thái ẩn/hiện
+            return newHiddenBars;
+          });
         },
         labels: {
           usePointStyle: false,  // Không dùng kiểu điểm, giữ dạng hình chữ nhật
           padding: 40,
           font: {
             size: 16,
+          },
+          generateLabels: (chart) => {
+            // Tạo label cho mỗi màu của cột
+            return chart.data.labels.map((label, index) => ({
+              text: label,
+              fillStyle: listBackground[index] || "#000000", // Màu sắc cột cho legend
+              strokeStyle: listBackground[index] || "#000000",
+              lineWidth: 2,
+              hidden: hiddenBars[label] || false,
+              index,
+            }));
           },
         },
       },
@@ -131,8 +143,10 @@ export default function BarChartRealEstate({
     labels: data.labels,
     datasets: [
       {
-        data: data.datasets[0].data.filter((_, index) => !hiddenBars[data.labels[index]]),
-        backgroundColor: data.datasets[0].backgroundColor.filter((_, index) => !hiddenBars[data.labels[index]]),
+        data: listDataCovert.map((value, index) =>
+          hiddenBars[listLabelConvert[index]] ? 0 : value
+        ),
+        backgroundColor: listBackground,
         barThickness: 25,
         stack: "Stack 1",
       },

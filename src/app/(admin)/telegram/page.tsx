@@ -313,8 +313,7 @@ const Telegram = () => {
 
   const [checkFilter, setCheckFilter] = useState(false);
   useEffect(() => {
-    console.log(546, "call useEffect")
-    fetchTelegram();
+    fetchTelegram(globalTeam);
   }, [checkFilter, keys]);
 
   return (

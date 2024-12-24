@@ -160,8 +160,8 @@ const ListTransactionPage = () => {
     },
     {
       title: "Loại tài sản",
-      dataIndex: "",
-      key: "",
+      dataIndex: "descriptionPurposeTrans",
+      key: "descriptionPurposeTrans",
     },
     {
       title: "Bộ phận quản lý",

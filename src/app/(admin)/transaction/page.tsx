@@ -214,7 +214,7 @@ const Transaction = () => {
 
   const fetchBankData = async () => {
     try {
-      const bankData = await getBank(pageIndex, pageSize);
+      const bankData = await getBank(1, 100);
       const formattedBanks =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bankData?.data?.source?.map((bank: any) => ({
@@ -238,7 +238,7 @@ const Transaction = () => {
     };
     await arr.push(obj);
     try {
-      const bankData = await fetchBankAccounts(1, 50, undefined, arr);
+      const bankData = await fetchBankAccounts(1, 100, undefined, arr);
       const formattedBanks =
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         bankData?.data?.source?.map((bankAccount: any) => ({
@@ -508,7 +508,7 @@ const Transaction = () => {
   const [selectBankId, setSelectBankId] = useState(0);
 
   useEffect(() => {
-    fetchTransaction(globalTerm, startDateFilter, startDateFilter);
+    fetchTransaction(startDate, endDate, bankId, bankAccountId);
   }, [checkFilter, keys]);
 
   // .........................................................................//
