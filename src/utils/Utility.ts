@@ -20,8 +20,6 @@ export class Utility {
     static calculateStepSize = (maxValue) => {
         const magnitude = Math.pow(10, Math.floor(Math.log10(maxValue)));
 
-        console.log(23, maxValue);
-
         if (maxValue < 10) {
             return 1; // Nếu maxValue quá nhỏ, đặt bước nhảy là 1
         }
@@ -39,8 +37,6 @@ export class Utility {
     //Trả về giá trị lớn nhất của biểu đồ
     static calculateMax = (maxValue) => {
         const stepSize = Utility.calculateStepSize(maxValue);
-
-        console.log(37, Math.ceil((maxValue + maxValue / 10) / stepSize) * stepSize)
 
         return Math.ceil((maxValue + maxValue / 10) / stepSize) * stepSize;
     };

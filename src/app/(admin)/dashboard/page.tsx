@@ -7,6 +7,7 @@ import Header from "@/src/component/Header";
 import BarChart from "../products/BarChartMoney";
 import Statistics from "../products/statistics";
 import {
+  getDataGenaral,
   getListStatistics,
   getTransactionById,
   resendSheet,
@@ -89,6 +90,7 @@ const Dashboard = () => {
   const [pageIndex, setPageIndex] = useState(1);
   const [pageSize] = useState(20);
   const [totalRecord, setTotalRecord] = useState(100);
+  const [chartData, setChartData] = useState([]);
 
   const isFetchingRef = useRef(false);
 
@@ -228,6 +230,12 @@ const Dashboard = () => {
       setTotalRecord(response?.data?.totalRecords || 0);
 
       setDataStatistics((prevData) => [...prevData, ...formattedData]);
+
+      const chartResponse = await GetDataGenaral(pageIndex, pageSize, undefined, arrFilter);
+
+      console.log(236, chartResponse);
+      setChartData(chartResponse?.data || []);
+
     } catch (error) {
       console.error("Error fetching statistics:", error);
     } finally {
@@ -559,6 +567,15 @@ const Dashboard = () => {
     filterBankAccount();
   }, []);
 
+  const GetDataGenaral = (pageIndex: number,
+    pageSize: number,
+    globalTerm?: string,
+    searchTerms: Array<{ Name: string; Value: string }> = []) => {
+    const res = getDataGenaral(pageIndex, pageSize, globalTerm, searchTerms);
+
+    return res;
+  }
+
   return (
     <>
       {isLoading && (
@@ -577,8 +594,15 @@ const Dashboard = () => {
               justifyContent: "space-between",
             }}
           >
-            <BarChart />
-            <BarChartType />
+            <BarChart
+              dataChart={chartData}
+              GetDataGenaral={(pageIndex: number, pageSize: number, globalTerm?: string, searchTerms = []) =>
+                GetDataGenaral(pageIndex, pageSize, globalTerm, searchTerms)} />
+            <BarChartType
+              dataChart={chartData}
+              GetDataGenaral={(pageIndex: number, pageSize: number, globalTerm?: string, searchTerms = []) =>
+                GetDataGenaral(pageIndex, pageSize, globalTerm, searchTerms)}
+            />
             <Statistics />
           </div>
         </div>

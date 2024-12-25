@@ -67,7 +67,6 @@ const Statistics = () => {
     try {
       const response = await getDetailCurentBalance(page, 20); // Hàm API
 
-      console.log(70, response);
       const formattedData =
         response?.source?.map((x: any) => ({
           id: x.id,

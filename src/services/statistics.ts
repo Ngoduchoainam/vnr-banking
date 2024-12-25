@@ -14,7 +14,6 @@ export const getListStatistics = async (
       globalTerm: globalTerm || undefined,
     });
 
-    console.log(17, params);
     const res = await apiClient.get(`/transaction-api/find-transaction`, {
       params,
     });
