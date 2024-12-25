@@ -4,21 +4,14 @@ import { ExclamationCircleOutlined } from "@ant-design/icons";
 import BaseModal from "@/src/component/config/BaseModal";
 import { Spin, Table, Tooltip } from "antd";
 import {
-  getDataGenaral,
   getDetailCurentBalance,
 } from "@/src/services/statistics";
 
-interface filterRole {
-  Name: string;
-  Value: string;
-}
-
-const Statistics = () => {
+const Statistics = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dataDetailCurentBalance, setDataDetailCurentBalance] = useState([]);
   const [databalance, setDataBalance] = useState();
-  const [dataTotalAmount, setDataTotalAmount] = useState();
-  const [keys, setKeys] = useState<string | null>(null);
+  const [dataTotalAmount, setDataTotalAmount] = useState<number>(0);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [values, setValues] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,44 +21,22 @@ const Statistics = () => {
   const tableContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setKeys(localStorage.getItem("key"));
-    setValues(localStorage.getItem("value"));
-  }, []);
+    if (props.dataChart) {
+      setValues(localStorage.getItem("value"));
 
-  const fetchDataGenaral = async () => {
-    const arrRole: filterRole[] = [];
-    const addedParams = new Set<string>();
-    arrRole.push({
-      Name: localStorage.getItem("key")!,
-      Value: localStorage.getItem("value")!,
-    });
-    addedParams.add(keys!);
-    try {
-      const res = await getDataGenaral(1, 20, undefined, arrRole);
-      if (
-        res &&
-        res.data &&
-        res.data.balance !== undefined &&
-        res.data.totalAmount !== undefined
-      ) {
-        setDataBalance(res.data.balance);
-        setDataTotalAmount(res.data.totalAmount);
-      } else {
-        console.warn("Balance or Total Amount is missing in the response");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
+      const { totalAmountOut, totalAmountIn, balance } = props.dataChart;
+
+      const profit = totalAmountIn - totalAmountOut;
+
+      setDataTotalAmount(profit || 0);
+      setDataBalance(balance);
     }
-  };
+  }, [props.dataChart]);
 
-  useEffect(() => {
-    fetchDataGenaral();
-  }, []);
-
-  const fetchListStatistics = async (page: number) => {
+  const fetchListStatistics = async (page: number, resetList?: boolean) => {
     setLoading(true);
     try {
-      const response = await getDetailCurentBalance(page, 20); // Hàm API
+      const response = await getDetailCurentBalance(page, 20, undefined, props.searchTerms); // Hàm API
 
       const formattedData =
         response?.source?.map((x: any) => ({
@@ -79,7 +50,7 @@ const Statistics = () => {
       if (formattedData.length === 0) {
         setHasMoreData(false); // Nếu không có dữ liệu mới, ngừng tải thêm
       } else {
-        setDataDetailCurentBalance((prev) => [...prev, ...formattedData]); // Gộp dữ liệu cũ và mới
+        setDataDetailCurentBalance(resetList ? formattedData : (prev) => [...prev, ...formattedData]); // Gộp dữ liệu cũ và mới
       }
     } catch (error) {
       console.error("Error fetching phone numbers:", error);
@@ -134,6 +105,12 @@ const Statistics = () => {
   useEffect(() => {
     fetchListStatistics(pageIndex); // Gọi hàm fetch dữ liệu khi pageIndex thay đổi
   }, [pageIndex]);
+
+  useEffect(() => {
+    fetchListStatistics(1, true);
+
+    console.log(120, "call here")
+  }, [props.searchTerms]);
 
   return (
     <div

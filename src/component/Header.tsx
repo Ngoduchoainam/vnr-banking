@@ -27,7 +27,7 @@ const Header = () => {
       );
       const data = await response.json();
       setAccountData(data?.data?.fullName);
-      // console.log("Account data:", data);
+      console.log("Account data:", data);
     } catch (error) {
       console.error("Error fetching account data:", error);
     }

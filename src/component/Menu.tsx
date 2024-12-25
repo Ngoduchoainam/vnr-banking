@@ -20,8 +20,13 @@ type MenuItem = {
 const items: MenuItem[] = [
   {
     key: "dashboard",
-    label: "Thống kê",
+    label: "Dashboard",
     path: "/dashboard",
+  },
+  {
+    key: "statistical",
+    label: "Thống kê",
+    path: "/statistical",
   },
   {
     key: "system_configuration",
@@ -106,11 +111,6 @@ const items: MenuItem[] = [
     key: "asset-management",
     label: "Quản lý tài sản",
     items: [
-      {
-        key: "asset-report",
-        label: "Báo cáo quản lý tài sản",
-        path: "/asset-report",
-      },
       {
         key: "list-transaction",
         label: "Danh sách giao dịch",

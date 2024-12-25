@@ -1,13 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TypeAsset } from "@/src/common/type";
-import { options } from "@/src/utils/buildQueryParams";
-import { Progress, Select, Spin } from "antd";
 import React from "react";
 
 const ProgressRealEstate = ({
-  progress,
-  handleChangeMonthProgress,
-  isLoading2,
+  progress
 }: {
   progress: TypeAsset[] | null;
   handleChangeMonthProgress: (e: string) => void;
@@ -34,6 +30,7 @@ const ProgressRealEstate = ({
           percentage: parseFloat(percentage.toFixed(2)),
           color: color(),
           title: item.key,
+          amount: item.amount
         };
       });
     }
@@ -41,43 +38,34 @@ const ProgressRealEstate = ({
 
   return (
     <div className="bg-white px-4 py-10 rounded-lg flex flex-col gap-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-semibold">Đã giao dịch</span>
-        <Select
-          placeholder="Tháng"
-          allowClear
-          options={options}
-          className="w-[120px]"
-          onChange={(e) => handleChangeMonthProgress(e)}
-        />
-      </div>
-      {isLoading2 ? (
-        <Spin />
-      ) : (
-        <>
-          {listMoneyPercentage.length > 0 ? (
-            listMoneyPercentage?.map((item) => {
-              if (item.percentage === 0) return null;
-              return (
-                <div key={item.key}>
-                  <div className="flex justify-between">
-                    <p>{item.title}</p>
-                    <span>{`${item.percentage}%`}</span>
-                  </div>
-                  <Progress
-                    percent={item.percentage}
-                    strokeColor={item.color}
-                    showInfo={false}
-                    className="pt-2 aseet-progress"
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <p className="text-base text-center italic">Không có dữ liệu!</p>
-          )}
-        </>
-      )}
+      <p className="uppcase text-2xl font-bold">Tổng</p>
+      <ul className="flex flex-col gap-4 pl-3">
+        {listMoneyPercentage.length > 0 ? (
+          listMoneyPercentage?.map((item, index) => {
+            if (item.percentage === 0) return null;
+            return (
+              <li key={index}>
+                <p>
+                  <span className="inline-block w-[150px] text-base">
+                    {item.title}:
+                  </span>
+                  <span className="font-semibold w-[100px] text-base">
+                    {
+                      new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(item.amount)
+                    }
+                  </span>
+                </p>
+              </li>
+            );
+          })
+        ) : (
+          <p className="text-base text-center italic">Không có dữ liệu!</p>
+        )}
+
+      </ul>
     </div>
   );
 };

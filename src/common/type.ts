@@ -50,7 +50,7 @@ export type Transaction1Props = {
 export interface ModalAddNewType {
   isAddModalOpen: boolean;
   onCancel: () => void;
-  fetchData: ({}) => void;
+  fetchData: ({ }) => void;
 }
 
 export interface AssetInventory {
@@ -100,7 +100,7 @@ export interface ModalDetailType {
 
 export interface FormMoneyType {
   onCancel: () => void;
-  fetchData: ({}) => void;
+  fetchData: ({ }) => void;
   banks?: any;
 }
 
@@ -131,6 +131,7 @@ export interface ItemFaceValueChooseType {
 export interface TypeAsset {
   key: string;
   value: number;
+  amount?: number;
 }
 
 export interface ChartAssetType {

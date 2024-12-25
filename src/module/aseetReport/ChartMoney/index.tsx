@@ -142,9 +142,11 @@ const ChartMoney = ({ active }: { active: number }) => {
       const responsive = await apiClient.get(`/asset-api/get-chart`, {
         params,
       });
+
       const listMoneyChart = responsive.data.data.cashChart?.filter(
         (item: TypeAsset) => item.value !== 0
       );
+
       setProgress(listMoneyChart ?? []);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {

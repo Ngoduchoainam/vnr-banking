@@ -78,8 +78,6 @@ export default function BarChartMoney({
     });
   }
 
-  console.log(81, listDataCovert)
-
   const data = {
     labels: listLabelConvert,
     datasets: [

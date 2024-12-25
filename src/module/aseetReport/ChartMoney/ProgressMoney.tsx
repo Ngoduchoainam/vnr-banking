@@ -1,20 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Progress, Select, Spin } from "antd";
 import React from "react";
 import { TypeAsset } from "@/src/common/type";
-import { options } from "@/src/utils/buildQueryParams";
 
 const ProgressMoney = ({
   progress,
-  moneyType,
-  handleChangeMonthProgress,
-  isLoading2,
+  moneyType
 }: {
   progress: TypeAsset[] | null;
   moneyType: string;
   handleChangeMonthProgress: (e: string) => void;
   isLoading2: boolean;
 }) => {
+
+  console.log(19, progress)
   let listMoneyPercentage: any[] = [];
   if (progress && moneyType === "1") {
     const totalMoney = progress?.reduce((sum, item) => {
@@ -42,11 +40,15 @@ const ProgressMoney = ({
 
         const title = `${item.key.split(".")[0]}k`;
 
+        console.log(47, item.amount)
+
         return {
           key: item.key,
           percentage: parseFloat(percentage.toFixed(2)),
           color: color(),
           title,
+          amount: item.amount,
+          type: 'VND'
         };
       });
     }
@@ -73,55 +75,58 @@ const ProgressMoney = ({
           if (item.key === "$100") return "#07C751";
         };
 
+        console.log(82, item)
+
         return {
           key: item.key,
           percentage: parseFloat(percentage.toFixed(2)),
           color: color(),
           title: item.key,
+          amount: Math.abs(item.value) * Number(item.key.replace("$", "")),
+          type: 'USD'
         };
       });
     }
   }
 
+  console.log(89, listMoneyPercentage)
+
   return (
+
     <div className="bg-white px-4 py-10 rounded-lg flex flex-col gap-4">
-      <div className="flex items-center justify-between mb-4">
-        <span className="font-semibold">Đã giao dịch</span>
-        <Select
-          placeholder="Tháng"
-          allowClear
-          options={options}
-          className="w-[120px]"
-          onChange={(e) => handleChangeMonthProgress(e)}
-        />
-      </div>
-      {isLoading2 ? (
-        <Spin />
-      ) : (
-        <>
-          {listMoneyPercentage.length > 0 ? (
-            listMoneyPercentage?.map((item) => {
-              if (item.percentage === 0) return null;
-              return (
-                <div key={item.key}>
-                  <div className="flex justify-between">
-                    <p>{item.title}</p>
-                    <span>{`${item.percentage}%`}</span>
-                  </div>
-                  <Progress
-                    percent={item.percentage}
-                    strokeColor={item.color}
-                    className="pt-2 aseet-progress"
-                    showInfo={false}
-                  />
-                </div>
-              );
-            })
-          ) : (
-            <p className="text-base text-center italic">Không có dữ liệu!</p>
-          )}
-        </>
-      )}
+      <p className="uppcase text-2xl font-bold">Tổng</p>
+      <ul className="flex flex-col gap-4 pl-3">
+        {listMoneyPercentage.length > 0 ? (
+          listMoneyPercentage?.map((item, index) => {
+            if (item.percentage === 0) return null;
+            return (
+              <li key={index}>
+                <p>
+                  <span className="inline-block w-[100px] text-base">
+                    {item.title}:
+                  </span>
+                  <span className="font-semibold w-[100px] text-base">
+                    {item.type == 'VND' ?
+                      new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(item.amount) :
+                      new Intl.NumberFormat("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                        maximumFractionDigits: 0,
+                      }).format(item.amount)
+                    }
+                  </span>
+                </p>
+              </li>
+            );
+          })
+        ) : (
+          <p className="text-base text-center italic">Không có dữ liệu!</p>
+        )}
+
+      </ul>
     </div>
   );
 };
