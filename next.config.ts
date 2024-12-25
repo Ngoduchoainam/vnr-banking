@@ -14,8 +14,8 @@ module.exports = {
     return [
       {
         source: '/',
-        destination: '/dashboard',
-        permanent: true, // permanent: true sẽ trả mã trạng thái 308, còn false sẽ trả 307
+        destination: '/login',
+        permanent: true,
       },
     ];
   },
