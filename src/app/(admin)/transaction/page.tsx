@@ -30,21 +30,21 @@ import LoadingTable from "@/src/component/LoadingTable";
 import CustomSelect from "@/src/component/CustomSelect";
 
 export interface TransactionModal {
-  id: number;
-  bankName: string;
+  id?: number;
+  bankName?: string;
   bankAccountId: number;
-  bankAccount: string;
-  fullName: string;
-  transDateString: string;
+  bankAccount?: string;
+  fullName?: string;
+  transDateString?: string;
   transType: string;
-  purposeDescription: string;
+  purposeDescription?: string;
   reason: string;
   balanceBeforeTrans: number;
   currentBalance: number;
   notes: string;
   transDate?: string;
   bankId?: number;
-  feeIncurred: number;
+  feeIncurred?: number;
   transAmount: number;
 }
 

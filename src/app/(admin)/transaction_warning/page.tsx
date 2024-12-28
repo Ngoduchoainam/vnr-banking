@@ -28,12 +28,15 @@ import LoadingTable from "@/src/component/LoadingTable";
 import CustomSelect from "@/src/component/CustomSelect";
 
 export interface transactionAdditional {
+    bankId: number;
     bankName: string;
+    bankAccountId: number;
     bankAccountNumber: string;
     transType: string;
     currentBalanceBefore: number;
     transAmount: number;
     currentBalanceAfter: number;
+    differenceAmount: number
 }
 
 export interface TransactionModal {
@@ -203,24 +206,18 @@ const TransactionWarning = () => {
             setIsAddTransaction(isAddTransaction);
 
             const requestData = {
-                id: currentTransaction ? currentTransaction.id : formData.id,
-                bankName: formData.bankName,
+                bankId: formData.bankId,
                 bankAccountId: formData.bankAccountId,
-                fullName: formData.fullName,
-                transDateString: formData.transDateString,
-                transType: formData.transType,
-                purposeDescription: formData.purposeDescription,
-                reason: formData.reason,
-                balanceBeforeTrans: formData.balanceBeforeTrans,
-                currentBalance: formData.currentBalance,
-                notes: formData.notes,
-                transAmount: formData.transAmount,
                 transDate: selectedDate
                     ? dayjs(selectedDate).format("YYYY-MM-DDTHH:mm:ss.SSSZ")
                     : undefined,
-                bankId: selectBankId,
-                feeIncurred: formData.feeIncurred,
-                bankAccount: "",
+                transType: formData.transType,
+                transAmount: formData.transAmount,
+                reason: formData.reason,
+                notes: formData.notes,
+                currentBalance: formData.currentBalance,
+                balanceBeforeTrans: parseInt(formData.balanceBeforeTrans.replace(/\./g, '').replace(/[^0-9]/g, '')),
+                accountNumber: formData.bankAccountName,
             };
 
             const response = await addTransaction(requestData);
@@ -241,9 +238,9 @@ const TransactionWarning = () => {
                 ClearFilter();
 
                 fetchTransaction();
-                setSelectBankId(0);
             }
         } catch (error) {
+            console.log(244, error)
             if (error instanceof AxiosError && error.response) {
                 const message =
                     error.response.status === 400
@@ -429,15 +426,19 @@ const TransactionWarning = () => {
 
         console.log(506, item)
         form.setFieldsValue({
+            bankId: item.bankId,
             bankName: item.bankName,
+            bankAccountId: item.bankAccountId,
             bankAccountName: item.bankAccountNumber,
             transType: item.transType,
             balanceBeforeTrans: new Intl.NumberFormat("vi-VN", {
                 style: "currency",
                 currency: "VND",
             }).format(item.currentBalanceBefore),
-            transAmount: item.transAmount,
-            currentBalance: item.currentBalanceAfter
+            transAmount: item.differenceAmount,
+            currentBalance: item.currentBalanceAfter,
+            differenceAmount: item.differenceAmount,
+            feeIncurred: 0
         });
         setIsAddModalOpen(true);
 
@@ -445,7 +446,6 @@ const TransactionWarning = () => {
 
     //
     const [selectedDate, setSelectedDate] = useState("");
-    const [selectBankId, setSelectBankId] = useState(0);
 
     useEffect(() => {
         fetchTransaction(bankId, bankAccountId);
@@ -744,20 +744,6 @@ const TransactionWarning = () => {
                             className="w-[45%]"
                             label="Số dư trước giao dịch"
                             name="balanceBeforeTrans"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Vui lòng nhập số dư trước giao dịch!",
-                                },
-                                {
-                                    validator: (_, value) =>
-                                        value >= 0
-                                            ? Promise.resolve()
-                                            : Promise.reject(
-                                                new Error("Số dư trước giao dịch phải lớn hơn 0!")
-                                            ),
-                                },
-                            ]}
                         >
                             <Input disabled />
                         </Form.Item>
@@ -887,7 +873,7 @@ const TransactionWarning = () => {
                                 } bg-[#4B5CB8] border text-white font-medium w-[189px] !h-10`}
                             loading={isAddTransaction}
                         >
-                            {currentTransaction ? "Cập nhật" : "Thêm mới"}
+                            Thêm mới
                         </Button>
                     </div>
                 </Form>
