@@ -3,6 +3,7 @@ import { RoleWpparProvidrer } from "@/src/component/RoleWapper";
 import React from "react";
 import { redirect } from "next/navigation";
 import { SetSession } from "@/src/component/CustomHook/useSession";
+import Header from "@/src/component/Header";
 
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await SetSession();
@@ -27,6 +28,7 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <LayoutWapper>
+      <Header />
       <RoleWpparProvidrer data={data?.data}>{children}</RoleWpparProvidrer>
     </LayoutWapper>
   );

@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import BaseModal from "@/src/component/config/BaseModal";
-import Header from "@/src/component/Header";
 import { Button, Form, Input, Space, Spin } from "antd";
 import { addSheet, deleteSheet, getListSheet } from "@/src/services/sheet";
 import { toast } from "react-toastify";
@@ -337,7 +336,6 @@ const Sheet = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách nhóm trang tính</div>
         <div className="flex justify-between items-center mb-7">

@@ -11,6 +11,7 @@ const Header = () => {
   const [accountData, setAccountData] = useState(null);
 
   const getRoleByAccount = async () => {
+    const start = performance.now();
     try {
       const response = await apiClient.get("/account/find-role-by-account");
       setRoleData(response?.data?.data?.accountId);
@@ -18,9 +19,12 @@ const Header = () => {
     } catch (error) {
       console.error("Error fetching role data:", error);
     }
+    const end = performance.now(); // End measuring performance
+    console.log(`getRoleByAccount in header ${end - start} milliseconds.`);
   };
 
   const accountFind = async () => {
+    const start = performance.now();
     try {
       const response = await fetch(
         `https://apiweb.bankings.vnrsoftware.vn/account/find-by-id?id=${roleData}`
@@ -31,6 +35,8 @@ const Header = () => {
     } catch (error) {
       console.error("Error fetching account data:", error);
     }
+    const end = performance.now(); // End measuring performance
+    console.log(`accountFind took ${end - start} milliseconds.`);
   };
 
   useEffect(() => {

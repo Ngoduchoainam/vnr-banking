@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import Header from "@/src/component/Header";
 import { Col, Row } from "antd";
 import { useEffect, useState } from "react";
 
@@ -34,8 +32,9 @@ const AssetPage = () => {
     try {
       const responsive = await apiClient.get("/asset-api/get-summary");
       setAsset(responsive.data.data);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) { }
+    } catch (error) {
+      console.error(error)
+    }
   };
 
   useEffect(() => {
@@ -44,7 +43,6 @@ const AssetPage = () => {
 
   return (
     <div>
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Báo cáo quản lý tài sản

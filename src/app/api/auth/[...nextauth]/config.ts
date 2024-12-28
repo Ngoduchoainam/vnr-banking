@@ -36,7 +36,6 @@ export const authOptions: NextAuthConfig = {
   providers: [
     CredentialsProvider({
       authorize: async (credentials) => {
-        console.log("Credentials received:", credentials);
         const { username, password } = credentials as {
           username: string;
           password: string;
@@ -77,21 +76,16 @@ export const authOptions: NextAuthConfig = {
   },
   callbacks: {
     jwt({ token, user }: { token: JWT; user: unknown }) {
-      console.log("JWT Callback - User:", user);
       if (user) {
         token.user = user as User;
       }
-      console.log("JWT Callback - Token:", token);
       return token;
     },
 
     session({ session, token }: { session: Session; token: JWT }) {
-      console.log("Session Callback - Token:", token); // Log token in session callback
-      console.log("Session Callback - Session:", session);
       if (token.user) {
         session.user = token.user;
       }
-      console.log("Session Callback - Updated Session:", session);
       return session;
     },
   },

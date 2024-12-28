@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Header from "@/src/component/Header";
 import {
   Button,
   Checkbox,
@@ -459,7 +458,6 @@ const Role = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách quyền</div>
         <div className="flex justify-between items-center mb-7">

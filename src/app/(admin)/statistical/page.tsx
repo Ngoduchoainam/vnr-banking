@@ -3,7 +3,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { DatePicker, Select, Space, Spin } from "antd";
 import type { TableProps } from "antd/es/table";
-import Header from "@/src/component/Header";
 import BarChart from "../products/BarChartMoney";
 import Statistics from "../products/statistics";
 import {
@@ -587,7 +586,6 @@ const Dashboard = () => {
         </div>
       )}
       <div>
-        <Header />
         <div className="dashboard mt-7">
           <div
             style={{

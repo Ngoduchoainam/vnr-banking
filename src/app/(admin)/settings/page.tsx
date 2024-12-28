@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { EditOutlined } from "@ant-design/icons";
-import Header from "@/src/component/Header";
 import { Button, Form, Input, Space, Spin } from "antd";
 import { editSettings, getSettings } from "@/src/services/settings";
 import BaseModal from "@/src/component/config/BaseModal";
@@ -147,7 +146,6 @@ const Settings = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Danh sách cấu hình trang tính

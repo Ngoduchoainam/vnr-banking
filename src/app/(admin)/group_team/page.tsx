@@ -2,7 +2,6 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import Header from "@/src/component/Header";
 import { Button, Form, Input, Select, Space, Spin } from "antd";
 import BaseModal from "@/src/component/config/BaseModal";
 import { toast } from "react-toastify"; // Import toast
@@ -442,7 +441,6 @@ const GroupTeamPage = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách đội nhóm</div>
         <div className="flex justify-between items-center mb-7">

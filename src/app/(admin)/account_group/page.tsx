@@ -1,6 +1,5 @@
 "use client";
 
-import Header from "@/src/component/Header";
 import { Button, Form, Input, Space, Spin } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
@@ -346,7 +345,6 @@ const PhoneNumber: React.FC = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Danh sách nhóm tài khoản

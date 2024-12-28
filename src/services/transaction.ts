@@ -45,3 +45,25 @@ export const deleteTransaction = async (ids: number[]) => {
     throw error;
   }
 };
+
+export const getTransactionWarning = async (
+  pageIndex: number,
+  pageSize: number,
+  globalTerm?: string,
+  searchTerms: Array<{ Name: string; Value: string }> = []
+) => {
+  try {
+    const params = buildSearchParams(searchTerms, {
+      pageIndex,
+      pageSize,
+      globalTerm: globalTerm || undefined,
+    });
+    const res = await apiClient.get(`/find`, {
+      params,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi khi gọi API:", error);
+    throw error;
+  }
+};

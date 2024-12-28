@@ -103,6 +103,11 @@ const items: MenuItem[] = [
     ],
   },
   {
+    key: "transaction_warning",
+    label: "Cảnh báo giao dịch",
+    path: "/transaction_warning",
+  },
+  {
     key: "transaction",
     label: "Giao dịch thủ công",
     path: "/transaction",

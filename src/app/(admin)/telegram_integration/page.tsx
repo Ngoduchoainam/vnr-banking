@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import Header from "@/src/component/Header";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { Button, Form, Input, Select, Space, Spin } from "antd";
 import {
@@ -606,7 +605,6 @@ const TelegramIntegration = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Danh sách tích hợp telegram

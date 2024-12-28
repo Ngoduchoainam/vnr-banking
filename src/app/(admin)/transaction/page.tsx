@@ -2,7 +2,6 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { DeleteOutlined } from "@ant-design/icons";
-import Header from "@/src/component/Header";
 import {
   Button,
   DatePicker,
@@ -667,7 +666,6 @@ const Transaction = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">
           Danh sách giao dịch thủ công

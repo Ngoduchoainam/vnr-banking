@@ -2,7 +2,6 @@
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from "react";
-import Header from "@/src/component/Header";
 import {
   Button,
   Form,
@@ -1045,7 +1044,6 @@ const Account = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách tài khoản</div>
         <div className="flex justify-between items-center mb-7">

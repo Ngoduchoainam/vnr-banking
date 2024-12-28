@@ -11,7 +11,6 @@ import {
 import { useContext, useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
-import Header from "@/src/component/Header";
 import ModalAddNew from "@/src/module/listTransaction/modalAddNew";
 import { apiClient } from "@/src/services/base_api";
 import { DeatailIcon } from "@/public/icon/detail";
@@ -381,7 +380,6 @@ const ListTransactionPage = () => {
           <Spin size="large" />
         </div>
       )}
-      <Header />
       <div className="px-[30px]">
         <div className="text-[32px] font-bold py-5">Danh sách giao dịch</div>
         <div className="flex justify-between items-center mb-7">
