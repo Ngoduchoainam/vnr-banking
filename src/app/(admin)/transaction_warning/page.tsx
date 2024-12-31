@@ -14,14 +14,12 @@ import {
 } from "antd";
 import {
     addTransaction,
-    deleteTransaction,
     getTransactionWarning,
 } from "@/src/services/transaction";
 import BaseModal from "@/src/component/config/BaseModal";
 import { fetchBankAccounts, getBank } from "@/src/services/bankAccount";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
-import DeleteModal from "@/src/component/config/modalDelete";
 import dayjs, { Dayjs } from "dayjs";
 import { RoleContext } from "@/src/component/RoleWapper";
 import LoadingTable from "@/src/component/LoadingTable";
@@ -79,8 +77,7 @@ const TransactionWarning = () => {
     const [dataTransaction, setDataTransaction] = useState<TransactionModal[]>(
         []
     );
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [globalTerm, setGlobalTerm] = useState("");
+    const [globalTerm] = useState("");
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [currentTransaction, setCurrentTransaction] =
         useState<TransactionModal | null>(null);
@@ -240,7 +237,6 @@ const TransactionWarning = () => {
                 fetchTransaction();
             }
         } catch (error) {
-            console.log(244, error)
             if (error instanceof AxiosError && error.response) {
                 const message =
                     error.response.status === 400
@@ -254,55 +250,6 @@ const TransactionWarning = () => {
         } finally {
             setLoading(false);
             setIsAddTransaction(false);
-        }
-    };
-
-    const handleDelete = async (x: TransactionModal) => {
-        setLoading(true);
-
-        try {
-            const response = await deleteTransaction([x.id]);
-
-            if (response && response.success === false) {
-                toast.error(response.message || "Xóa giao dịch thất bại.");
-            } else {
-                toast.success("Xóa giao dịch thành công!");
-                await setPageIndex(1);
-                await setDataTransaction([]);
-                ClearFilter();
-
-                fetchTransaction(); // Hoặc cập nhật state trực tiếp để tránh fetch lại toàn bộ.
-            }
-
-            setIsAddModalOpen(false); // Đặt trong try để chắc chắn chỉ đóng khi thành công.
-        } catch (error) {
-            if (error instanceof AxiosError && error.response) {
-                const message =
-                    error.response.status === 400
-                        ? error.response.data.message || "Không thể xóa giao dịch này!"
-                        : "Đã xảy ra lỗi, vui lòng thử lại.";
-                toast.error(message);
-            } else {
-                toast.error("Đã xảy ra lỗi không xác định.");
-            }
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [selectedAccountGroup, setSelectedAccountGroup] =
-        useState<TransactionModal | null>(null);
-
-    const handleCancel = () => {
-        setIsDeleteModalOpen(false);
-        setSelectedAccountGroup(null);
-    };
-
-    const handleConfirmDelete = () => {
-        if (selectedAccountGroup) {
-            handleDelete(selectedAccountGroup);
-            setIsDeleteModalOpen(false);
         }
     };
 
@@ -424,7 +371,6 @@ const TransactionWarning = () => {
         setCurrentTransaction(record);
         const item = record.transactionAdditional;
 
-        console.log(506, item)
         form.setFieldsValue({
             bankId: item.bankId,
             bankName: item.bankName,
@@ -451,47 +397,10 @@ const TransactionWarning = () => {
         fetchTransaction(bankId, bankAccountId);
     }, [keys]);
 
-    // .........................................................................//
-
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
-
     const dataSource = dataTransaction.map((item) => ({
         ...item,
         key: item.id,
     }));
-
-    const [isModalVisible, setIsModalVisible] = useState(false);
-
-    const handleDeletes = async () => {
-        setLoading(true);
-        try {
-            const idsToDelete = selectedRowKeys.map((key) => Number(key));
-            const res = await deleteTransaction(idsToDelete);
-
-            if (!res || !res.success) {
-                toast.error(res?.message);
-            }
-            else {
-                toast.success("Xóa các mục thành công!");
-                await setPageIndex(1);
-                await setDataTransaction([]);
-                ClearFilter();
-
-                fetchTransaction();
-                setSelectedRowKeys([]);
-            }
-        } catch (error) {
-            console.error("Lỗi khi xóa:", error);
-            toast.error("Có lỗi xảy ra khi xóa!");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleConfirmDeletes = () => {
-        handleDeletes();
-        setIsModalVisible(false);
-    };
 
     const [bankDataFilter, setBankDataFilter] = useState<
         Array<{ value: string; label: string }>
@@ -572,6 +481,23 @@ const TransactionWarning = () => {
             console.error("Error fetching bank accounts:", error);
         }
     };
+
+    // const disabledDate = (current: Moment | null) => {
+    //     if (!currentTransaction) return false;
+    //     return (
+    //       (current && current < currentTransaction.startDate.startOf("day")) ||
+    //       (current && current > currentTransaction.endDate.endOf("day"))
+    //     );
+    //   };
+
+    //   const disabledTime = (date: Moment | null) => {
+    //     if (!currentTransaction) return {};
+    //     const allowedHours = currentTransaction.allowedHours;
+    //     return {
+    //       disabledHours: () =>
+    //         [...Array(24).keys()].filter((hour) => !allowedHours.includes(hour)),
+    //     };
+    //   };
 
     useEffect(() => {
         filterBankAPI();
@@ -803,7 +729,6 @@ const TransactionWarning = () => {
                                 formatter={(value) =>
                                     `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                 }
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
                             />
                         </Form.Item>
@@ -832,7 +757,6 @@ const TransactionWarning = () => {
                                 formatter={(value) =>
                                     `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                                 }
-                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
                             />
                         </Form.Item>
@@ -878,21 +802,6 @@ const TransactionWarning = () => {
                     </div>
                 </Form>
             </BaseModal>
-            <DeleteModal
-                open={isDeleteModalOpen}
-                onCancel={handleCancel}
-                onConfirm={handleConfirmDelete}
-                transaction={selectedAccountGroup}
-            />
-            <DeleteModal
-                open={isModalVisible}
-                onCancel={() => setIsModalVisible(false)}
-                onConfirm={handleConfirmDeletes}
-                handleDeleteTele={async () => {
-                    await handleDeletes();
-                    setIsModalVisible(false);
-                }}
-            />
         </>
     );
 };

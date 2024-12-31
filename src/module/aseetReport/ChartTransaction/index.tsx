@@ -203,6 +203,7 @@ const ChartTransaction = () => {
 
     try {
       setIsLoading(true);
+      console.log(206, params);
       const responsive = await apiClient.get(`/asset-api/get-transaction`, {
         params,
       });
@@ -210,10 +211,10 @@ const ChartTransaction = () => {
       const isCheckData = responsive.data.data.some(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (item: any) =>
-          item.balance !== 0 &&
           item.totalAmountIn !== 0 &&
           item.totalAmountOut !== 0
       );
+
       setTransaction(isCheckData ? responsive.data.data : []);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
@@ -364,8 +365,6 @@ const ChartTransaction = () => {
   const totalBalance = transaction?.reduce((sum, item) => {
     return sum + item.balance;
   }, 0);
-
-  console.log(363, listOptions.account);
 
   return (
     <>
