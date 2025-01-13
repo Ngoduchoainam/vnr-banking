@@ -191,11 +191,11 @@ const Account = () => {
 
     if (Array.isArray(bankAccountId) && bankAccountId.length > 0 && !addedParams.has("bankAccountId")) {
       arrBankAccount.push({
-        Name: "bankAccountId",
+        Name: "id",
         Value: bankAccountId,
       });
 
-      addedParams.add("bankAccountId");
+      addedParams.add("id");
     }
 
     arrBankAccount.push({
@@ -640,8 +640,8 @@ const Account = () => {
     arrAccountGroup.push(obj, groupAccount);
     try {
       const fetchBankAccountAPI = await getAccountGroup(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         globalTerm
         // arr
       );
@@ -964,7 +964,7 @@ const Account = () => {
     });
     addedParams.add(keys!);
     try {
-      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+      const fetchBankDataAPI = await getBank(1, 100, arr);
 
       if (
         fetchBankDataAPI &&
@@ -1006,8 +1006,8 @@ const Account = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await fetchBankAccounts(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );

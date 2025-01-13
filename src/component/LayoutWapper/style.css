@@ -1,0 +1,28 @@
+/* Menu chung */
+.menu {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    position: absolute;
+    /* Đảm bảo menu không chiếm không gian trong layout */
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+
+/* Khi menu hiển thị */
+.menu-visible {
+    transform: translateX(0);
+    opacity: 1;
+    visibility: visible;
+    /* Menu hiển thị */
+    position: relative;
+    /* Đảm bảo menu nằm trong luồng layout */
+}
+
+/* Khi menu ẩn */
+.menu-hidden {
+    transform: translateX(-100%);
+    opacity: 0;
+    visibility: hidden;
+    /* Menu không chiếm không gian trong layout */
+}

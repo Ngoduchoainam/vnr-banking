@@ -180,6 +180,8 @@ const TransactionWarning = () => {
                     transactionAdditional: item.transactionAdditional
                 })) || [];
 
+            console.log(183, formattedData);
+
             setTotalRecord(response?.data?.totalRecords || 0);
             setDataTransaction((prevData) => [...prevData, ...formattedData]);
         } catch (error) {
@@ -283,7 +285,7 @@ const TransactionWarning = () => {
             title: "Thời gian giao dịch trước", dataIndex: "transDateBefore", key: "transDateBefore",
             render: (date: string) => {
                 // Định dạng lại chuỗi thời gian
-                return dayjs(date).format("DD/MM/YYYY hh:mm:ss");
+                return dayjs(date).format("DD/MM/YYYY HH:mm:ss");
             },
         },
         {
@@ -292,7 +294,7 @@ const TransactionWarning = () => {
             key: "transDateAfter",
             render: (date: string) => {
                 // Định dạng lại chuỗi thời gian
-                return dayjs(date).format("DD/MM/YYYY hh:mm:ss");
+                return dayjs(date).format("DD/MM/YYYY HH:mm:ss");
             },
         },
         {
@@ -415,7 +417,7 @@ const TransactionWarning = () => {
         });
         addedParams.add(keys!);
         try {
-            const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+            const fetchBankDataAPI = await getBank(1, 100, arr);
 
             if (
                 fetchBankDataAPI &&
@@ -456,8 +458,8 @@ const TransactionWarning = () => {
         addedParams.add(keys!);
         try {
             const fetchBankAccountAPI = await fetchBankAccounts(
-                pageIndex,
-                pageSize,
+                1,
+                100,
                 undefined,
                 arr
             );
@@ -481,23 +483,6 @@ const TransactionWarning = () => {
             console.error("Error fetching bank accounts:", error);
         }
     };
-
-    // const disabledDate = (current: Moment | null) => {
-    //     if (!currentTransaction) return false;
-    //     return (
-    //       (current && current < currentTransaction.startDate.startOf("day")) ||
-    //       (current && current > currentTransaction.endDate.endOf("day"))
-    //     );
-    //   };
-
-    //   const disabledTime = (date: Moment | null) => {
-    //     if (!currentTransaction) return {};
-    //     const allowedHours = currentTransaction.allowedHours;
-    //     return {
-    //       disabledHours: () =>
-    //         [...Array(24).keys()].filter((hour) => !allowedHours.includes(hour)),
-    //     };
-    //   };
 
     useEffect(() => {
         filterBankAPI();

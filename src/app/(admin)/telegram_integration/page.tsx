@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { RoleContext } from "@/src/component/RoleWapper";
 import CustomSelect from "@/src/component/CustomSelect";
 import LoadingTable from "@/src/component/LoadingTable";
+import "./style.css";
 
 export interface ListTelegramIntegration {
   chatName?: string;
@@ -460,7 +461,7 @@ const TelegramIntegration = () => {
     });
     addedParams.add(keys!);
     try {
-      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+      const fetchBankDataAPI = await getBank(1, 100, arr);
 
       if (
         fetchBankDataAPI &&
@@ -498,8 +499,8 @@ const TelegramIntegration = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await fetchBankAccounts(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );
@@ -610,7 +611,7 @@ const TelegramIntegration = () => {
           Danh sách tích hợp telegram
         </div>
         <div className="flex justify-between items-center mb-7">
-          <div>
+          <div className="ant-space-container-telegram-integration">
             <Space direction="horizontal" size="middle">
               <CustomSelect
                 options={bankFilter}

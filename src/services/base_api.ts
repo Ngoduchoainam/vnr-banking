@@ -3,7 +3,7 @@ import { getSession } from "next-auth/react";
 import Cookies from 'js-cookie';
 
 export const apiClient = axios.create({
-  baseURL: "https://apiweb.bankings.vnrsoftware.vn",
+  baseURL: "https://apisms.bankings.vnrsoftware.vn/",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -42,7 +42,7 @@ apiClient.interceptors.request.use(
 );
 
 export const httpClient = axios.create({
-  baseURL: "https://apiweb.bankings.vnrsoftware.vn",
+  baseURL: "https://apisms.bankings.vnrsoftware.vn/",
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",

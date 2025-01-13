@@ -388,7 +388,7 @@ const Dashboard = () => {
     });
     addedParams.add(keys!);
     try {
-      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+      const fetchBankDataAPI = await getBank(1, 100, arr);
 
       if (
         fetchBankDataAPI &&
@@ -425,8 +425,8 @@ const Dashboard = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await fetchBankAccounts(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );
@@ -467,8 +467,8 @@ const Dashboard = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await getListTelegram(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );

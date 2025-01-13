@@ -27,7 +27,7 @@ const Header = () => {
     const start = performance.now();
     try {
       const response = await fetch(
-        `https://apiweb.bankings.vnrsoftware.vn/account/find-by-id?id=${roleData}`
+        `https://apisms.bankings.vnrsoftware.vn/account/find-by-id?id=${roleData}`
       );
       const data = await response.json();
       setAccountData(data?.data?.fullName);

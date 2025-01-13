@@ -4,7 +4,7 @@ canvas {
 
 .ant-space-container-dashboard {
     @media (min-width: 431px) and (max-width: 1366px) {
-        width: 100%;
+        width: 95%;
     }
 
     @media (max-width: 430px) {

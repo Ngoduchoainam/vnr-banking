@@ -469,7 +469,7 @@ const SheetIntergration = () => {
     });
     addedParams.add(keys!);
     try {
-      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+      const fetchBankDataAPI = await getBank(1, 100, arr);
 
       if (
         fetchBankDataAPI &&
@@ -580,8 +580,8 @@ const SheetIntergration = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await fetchBankAccounts(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );

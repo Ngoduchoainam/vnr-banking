@@ -17,6 +17,6 @@ export async function authenticatorResponse(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (error) {
     console.log("error 19: ", error)
-    return { error: "Intet username or password" };
+    return { error: "Thông tin đăng nhập không đúng" };
   }
 }

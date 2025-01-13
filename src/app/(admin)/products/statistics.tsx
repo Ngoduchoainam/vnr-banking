@@ -123,7 +123,7 @@ const Statistics = (props) => {
     >
       <div
         style={statBoxStyle}
-        className="flex justify-center flex-col items-center"
+        className="flex justify-center flex-col items-center profit-box"
       >
         <h3 className="font-bold text-lg">Lợi Nhuận</h3>
         <h1 className="font-bold text-3xl">
@@ -137,7 +137,7 @@ const Statistics = (props) => {
       </div>
       <div
         style={statBoxStyles}
-        className="flex justify-center flex-col items-center relative"
+        className="flex justify-center flex-col items-center relative profit-box"
       >
         <div className="font-bold text-lg">Số Dư Hiện Tại</div>
         <h1 className="font-bold text-3xl">

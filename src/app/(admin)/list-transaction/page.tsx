@@ -6,14 +6,12 @@ import {
   Form,
   Select,
   Spin,
-  Tooltip,
 } from "antd";
 import { useContext, useEffect, useRef, useState } from "react";
 import dayjs, { Dayjs } from "dayjs";
 
 import ModalAddNew from "@/src/module/listTransaction/modalAddNew";
 import { apiClient } from "@/src/services/base_api";
-import { DeatailIcon } from "@/public/icon/detail";
 import { DataDetail, DataTransactionType } from "@/src/common/type";
 import { buildSearchParams, formatDate } from "@/src/utils/buildQueryParams";
 import { RoleContext } from "@/src/component/RoleWapper";
@@ -59,7 +57,7 @@ const ListTransactionPage = () => {
   });
 
   const [isShowDetail, setIsShowDetail] = useState(false);
-  const [dataDetail, setDataDetail] = useState<DataDetail>();
+  const [dataDetail] = useState<DataDetail>();
   const [isShowModalDelete, setIsShowModalDelete] = useState(false);
   const [listItemDelete] = useState<number[]>([]);
   const [selectedRowKeys] = useState<React.Key[]>([]);
@@ -73,7 +71,6 @@ const ListTransactionPage = () => {
         cdName: "TRANS_TYPE",
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dataConvert = responsive.data.data.map((item: any) => {
       return { label: item.vnContent, value: item.cdVal };
     });
@@ -87,7 +84,6 @@ const ListTransactionPage = () => {
         cdName: "TRANS_KIND",
       },
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const dataConvert = responsive.data.data.map((item: any) => {
       return { label: item.vnContent, value: item.cdVal };
     });
@@ -98,19 +94,6 @@ const ListTransactionPage = () => {
     getListTypeTransaction();
     getListKindTransaction();
   }, []);
-
-  const getDataDetail = async (id: number) => {
-    try {
-      const responsive = await apiClient.get("/asset-api/find-by-id", {
-        params: {
-          id: id,
-        },
-      });
-
-      setDataDetail(responsive.data.data);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) { }
-  };
 
   const deleleTransaction = async (id: number[]) => {
     try {
@@ -125,16 +108,11 @@ const ListTransactionPage = () => {
       } else {
         toast.error(responsive.data.message || "Xảy ra lỗi");
       }
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      console.error(error);
     } finally {
       setIsShowModalDelete(false);
     }
-  };
-
-  const handleDetail = (id: number) => {
-    setIsShowDetail(true);
-    getDataDetail(id);
   };
 
   const columns = [
@@ -168,25 +146,7 @@ const ListTransactionPage = () => {
       title: "Bộ phận quản lý",
       dataIndex: "departmentManager",
       key: "departmentManager",
-    },
-    {
-      title: "Chức năng",
-      key: "action",
-      render: (recode: DataTransactionType) => {
-        return (
-          <div className="flex items-center gap-6">
-            <Tooltip placement="top" title="Chi tiết" className="z-[999]">
-              <span>
-                <DeatailIcon
-                  onClick={() => handleDetail(recode.id)}
-                  className="cursor-pointer"
-                />
-              </span>
-            </Tooltip>
-          </div>
-        );
-      },
-    },
+    }
   ];
 
   const [pageIndex, setPageIndex] = useState(1);
@@ -295,8 +255,8 @@ const ListTransactionPage = () => {
 
       setTotalRecord(responsive?.data?.data.totalRecords || 0);
       setDataTransaction((prevData) => [...prevData, ...dataTransactionConvert]);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+      console.error(error);
     } finally {
       setLoading(false);
       setIsLoading(false)

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { DeleteOutlined } from "@ant-design/icons";
 import {
   Button,
   DatePicker,
@@ -70,8 +69,7 @@ const Transaction = () => {
   const [dataTransaction, setDataTransaction] = useState<TransactionModal[]>(
     []
   );
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [globalTerm, setGlobalTerm] = useState("");
+  const [globalTerm] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [currentTransaction, setCurrentTransaction] =
     useState<TransactionModal | null>(null);
@@ -181,7 +179,6 @@ const Transaction = () => {
         arrRole
       );
       const formattedData =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         response?.data?.source?.map((item: any) => ({
           id: item.id, // id
           bankName: item.bankName, // Mã ngân hàng
@@ -230,9 +227,7 @@ const Transaction = () => {
   };
 
   const genBankAccountData = async (bankId?: number) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const arr: any[] = [];
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const obj: any = {
       Name: "bankId",
       Value: bankId,
@@ -361,11 +356,6 @@ const Transaction = () => {
   const [selectedAccountGroup, setSelectedAccountGroup] =
     useState<TransactionModal | null>(null);
 
-  const handleDeleteClick = (tele: TransactionModal) => {
-    setSelectedAccountGroup(tele);
-    setIsDeleteModalOpen(true);
-  };
-
   const handleCancel = () => {
     setIsDeleteModalOpen(false);
     setSelectedAccountGroup(null);
@@ -401,7 +391,6 @@ const Transaction = () => {
       title: "Chi phí phát sinh",
       dataIndex: "feeIncurred",
       key: "feeIncurred",
-      // hidden: true,
     },
     {
       title: "Số tài khoản",
@@ -432,11 +421,6 @@ const Transaction = () => {
         </>
       ),
     },
-    // {
-    //   title: "Mục đích",
-    //   dataIndex: "purposeDescription",
-    //   key: "purposeDescription",
-    // },
     { title: "Lý do", dataIndex: "reason", key: "reason" },
     {
       title: "Số tiền",
@@ -467,51 +451,12 @@ const Transaction = () => {
       title: "Số dư hiện tại",
       dataIndex: "currentBalance",
       key: "currentBalance",
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       render: (balance: any) =>
         balance.toLocaleString("vi-VN", { style: "currency", currency: "VND" }),
     },
-    { title: "Ghi chú", dataIndex: "notes", key: "notes" },
-    {
-      title: "Chức năng",
-      key: "action",
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      render: (record: TransactionModal) => (
-        <Space size="middle">
-          {/* <Button onClick={() => handleEdit(record)} icon={<EditOutlined />}>
-            Chỉnh sửa
-          </Button> */}
-          <Button
-            onClick={() => handleDeleteClick(record)}
-            icon={<DeleteOutlined />}
-            danger
-          >
-            Xóa
-          </Button>
-        </Space>
-      ),
-    },
+    { title: "Ghi chú", dataIndex: "notes", key: "notes" }
   ];
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [filterParams, setFilterParams] = useState<{
-    purpose?: string;
-    tranDate?: string;
-  }>({});
-  const handleSelectChange = (
-    purpose?: string,
-    startDate?: string,
-    endDate?: string
-  ) => {
-    setFilterParams((prevParams) => ({
-      ...prevParams,
-      purpose: purpose,
-      startDate: startDate,
-      endDate: endDate,
-    }));
-  };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [purposeDescription] = useState();
   //
   const [checkFilter, setCheckFilter] = useState(false);
   const [selectedDate, setSelectedDate] = useState("");
@@ -520,8 +465,6 @@ const Transaction = () => {
   useEffect(() => {
     fetchTransaction(startDate, endDate, bankId, bankAccountId);
   }, [checkFilter, keys]);
-
-  // .........................................................................//
 
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
   const rowSelection = {
@@ -586,7 +529,7 @@ const Transaction = () => {
     });
     addedParams.add(keys!);
     try {
-      const fetchBankDataAPI = await getBank(pageIndex, pageSize, arr);
+      const fetchBankDataAPI = await getBank(1, 100, arr);
 
       if (
         fetchBankDataAPI &&
@@ -614,7 +557,6 @@ const Transaction = () => {
   >([]);
 
   const filterBankAccount = async (bankId?: string) => {
-    // console.log(352, bankId)
     const arr: FilterProducts[] = [];
     const addedParams = new Set<string>();
     arr.push({
@@ -628,8 +570,8 @@ const Transaction = () => {
     addedParams.add(keys!);
     try {
       const fetchBankAccountAPI = await fetchBankAccounts(
-        pageIndex,
-        pageSize,
+        1,
+        100,
         undefined,
         arr
       );
@@ -639,7 +581,6 @@ const Transaction = () => {
         fetchBankAccountAPI.data &&
         fetchBankAccountAPI.data.source
       ) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const res = fetchBankAccountAPI.data.source.map((x: any) => ({
           value: x.id,
           label: x.fullName + "-" + x.accountNumber || "Không xác định",
@@ -724,16 +665,13 @@ const Transaction = () => {
                 start: "startInput",
                 end: "endInput",
               }}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onChange={async (value: any) => {
                 await setPageIndex(1);
                 await setDataTransaction([])
                 if (!value || value.length !== 2) {
-                  handleSelectChange(purposeDescription);
                   setCheckFilter(!checkFilter);
                 } else {
                   const [startDate, endDate] = value;
-                  handleSelectChange(startDate, endDate);
                   setFullDate(value);
                   setStartDate(startDate);
                   setEndDate(endDate);
@@ -829,7 +767,6 @@ const Transaction = () => {
                     return;
                   }
                   const selectedGroup = banks.find(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (item: any) => item.value === value
                   );
                   if (selectedGroup) {
@@ -867,7 +804,6 @@ const Transaction = () => {
                 }
                 onChange={async (value: any) => {
                   const selectedGroup = await bankAccount.find(
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     (item: any) => item.value === value
                   );
                   if (selectedGroup) {
@@ -962,7 +898,6 @@ const Transaction = () => {
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
               />
             </Form.Item>
@@ -991,7 +926,6 @@ const Transaction = () => {
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
               />
             </Form.Item>
@@ -1022,7 +956,6 @@ const Transaction = () => {
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
               />
             </Form.Item>
@@ -1051,7 +984,6 @@ const Transaction = () => {
                 formatter={(value) =>
                   `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 parser={(value: any) => value.replace(/\s?VND|(,*)/g, "")}
               />
             </Form.Item>

@@ -8,14 +8,12 @@ import Header from "@/src/component/Header";
 const RootLayout = async ({ children }: { children: React.ReactNode }) => {
   const session = await SetSession();
 
-  console.log(11, session)
-
   if (!session?.user?.access_token) {
     redirect("/login");
   }
 
   const response = await fetch(
-    "https://apiweb.bankings.vnrsoftware.vn/account/find-role-by-account",
+    "https://apisms.bankings.vnrsoftware.vn/account/find-role-by-account",
     {
       method: "GET",
       headers: {
@@ -24,7 +22,13 @@ const RootLayout = async ({ children }: { children: React.ReactNode }) => {
     }
   );
 
-  const data = response.ok ? await response.json() : undefined;
+  const responseResult = await response.json();
+
+  if (responseResult.Code == 401) {
+    redirect("/login");
+  }
+
+  const data = response.ok ? responseResult : undefined;
 
   return (
     <LayoutWapper>

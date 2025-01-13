@@ -1,4 +1,5 @@
 import { Bar } from 'react-chartjs-2';
+import './style.css';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -72,7 +73,7 @@ const BarChart = (props) => {
   };
 
   return (
-    <div>
+    <div className='bar-char'>
       {loading ? (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
           <Spin size="default" />

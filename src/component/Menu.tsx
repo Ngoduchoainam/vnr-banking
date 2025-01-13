@@ -135,7 +135,11 @@ const items: MenuItem[] = [
   },
 ];
 
-const SideMenu = () => {
+type SideMenuProps = {
+  onMenuClick: (key: string) => void;
+};
+
+const SideMenu = ({ onMenuClick }: SideMenuProps) => {
   const { getRoleByAccount } = useContext(RoleContext);
 
   const pathname = usePathname();
@@ -166,7 +170,11 @@ const SideMenu = () => {
           icon={item.icon}
           className="custom-link-item"
         >
-          <Link href={item.path ?? "/"} onClick={() => getRoleByAccount()}>
+          <Link href={item.path ?? "/"}
+            onClick={() => {
+              getRoleByAccount();
+              onMenuClick(item.path);
+            }}>
             {item.label}
           </Link>
         </AntMenu.Item>

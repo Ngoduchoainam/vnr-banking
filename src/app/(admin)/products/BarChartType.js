@@ -75,7 +75,7 @@ const BarChartType = (props) => {
 
 
     return (
-        <div>
+        <div className='bar-char'>
             {loading ? (
                 <div style={{ textAlign: 'center', marginTop: '50px' }}>
                     <Spin size="default" />
